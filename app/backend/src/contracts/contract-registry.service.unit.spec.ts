@@ -6,6 +6,7 @@ import { AuditService } from "../audit/audit.service";
 import { ContractRegistryService } from "./contract-registry.service";
 import { ContractChangeWebhookService } from "./contract-change-webhook.service";
 import { ContractChangeWebhookDispatcher } from "./contract-change-webhook.dispatcher";
+import { ContractWritePolicyService } from "../feature-flags/contract-write-policy.service";
 
 describe("ContractRegistryService", () => {
   let service: ContractRegistryService;
@@ -66,11 +67,12 @@ describe("ContractRegistryService", () => {
       mockEventEmitter,
       mockContractChangeWebhookService as unknown as ContractChangeWebhookService,
       mockWebhookDispatcher as unknown as ContractChangeWebhookDispatcher,
+      { checkWritePermission: jest.fn().mockResolvedValue({ allowed: true, reason: "ok" }) } as unknown as ContractWritePolicyService,
     );
   });
 
   it("publishes and returns the active registry", async () => {
-    const mockClient = mockSupabaseService.getClient();
+    const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
     mockClient.rpc.mockResolvedValue({
       data: { success: true, newVersion: 1, publishedCount: 1, previousVersion: 0 },
       error: null,
@@ -117,7 +119,7 @@ describe("ContractRegistryService", () => {
   });
 
   it("rolls back to a previous contract version", async () => {
-    const mockClient = mockSupabaseService.getClient();
+    const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
     mockClient.rpc.mockResolvedValue({
       data: { success: true, newVersion: 1, publishedCount: 1, previousVersion: 0 },
       error: null,
@@ -180,7 +182,7 @@ describe("ContractRegistryService", () => {
 
   describe("Dual-read finalization", () => {
     it("finalizes dual-read by clearing previousContractId", async () => {
-      const mockClient = mockSupabaseService.getClient();
+      const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
       mockClient.rpc.mockResolvedValue({
         data: {
           success: true,
@@ -205,7 +207,7 @@ describe("ContractRegistryService", () => {
     });
 
     it("throws when no active entry exists", async () => {
-      const mockClient = mockSupabaseService.getClient();
+      const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
       mockClient.rpc.mockResolvedValue({
         data: null,
         error: { message: "No active registry entry found for missing" },
@@ -217,7 +219,7 @@ describe("ContractRegistryService", () => {
     });
 
     it("throws when not in dual-read window", async () => {
-      const mockClient = mockSupabaseService.getClient();
+      const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
       mockClient.rpc.mockResolvedValue({
         data: null,
         error: {
@@ -233,7 +235,7 @@ describe("ContractRegistryService", () => {
 
   describe("Atomic and durable persistence", () => {
     it("does not emit audit logs or webhooks on failed DB write", async () => {
-      const mockClient = mockSupabaseService.getClient();
+      const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
       mockClient.rpc.mockResolvedValue({
         data: null,
         error: { message: "Database connection failed" },
@@ -265,7 +267,7 @@ describe("ContractRegistryService", () => {
     });
 
     it("uses optimistic concurrency to prevent race conditions", async () => {
-      const mockClient = mockSupabaseService.getClient();
+      const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
       
       // First publish succeeds
       mockClient.rpc.mockResolvedValueOnce({
@@ -311,7 +313,7 @@ describe("ContractRegistryService", () => {
     });
 
     it("only updates in-memory fallback after successful persistence", async () => {
-      const mockClient = mockSupabaseService.getClient();
+      const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
       mockClient.rpc.mockResolvedValue({
         data: { success: true, newVersion: 1, publishedCount: 1, previousVersion: 0 },
         error: null,
@@ -337,7 +339,7 @@ describe("ContractRegistryService", () => {
     });
 
     it("prevents concurrent publishes from creating duplicate active entries", async () => {
-      const mockClient = mockSupabaseService.getClient();
+      const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
       
       // Simulate concurrent publishes - the second one should fail due to unique constraint
       mockClient.rpc.mockResolvedValueOnce({

@@ -7,6 +7,7 @@ import { AuditService } from "../audit/audit.service";
 import { ContractRegistryService } from "./contract-registry.service";
 import { ContractChangeWebhookService } from "./contract-change-webhook.service";
 import { ContractChangeWebhookDispatcher } from "./contract-change-webhook.dispatcher";
+import { ContractWritePolicyService } from "../feature-flags/contract-write-policy.service";
 // import {
 //   ContractRegistryEntryDto,
 //   PublishContractRegistryDto,
@@ -72,12 +73,13 @@ describe("ContractRegistryService Integration", () => {
       mockEventEmitter,
       mockContractChangeWebhookService as unknown as ContractChangeWebhookService,
       mockWebhookDispatcher as unknown as ContractChangeWebhookDispatcher,
+      { checkWritePermission: jest.fn().mockResolvedValue({ allowed: true, reason: "ok" }) } as unknown as ContractWritePolicyService,
     );
   });
 
   describe("Retry logic for transient failures", () => {
     it("retries on connection errors", async () => {
-      const mockClient = mockSupabaseService.getClient();
+      const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
       let attempts = 0;
 
       mockClient.rpc.mockImplementation(async () => {
@@ -109,7 +111,7 @@ describe("ContractRegistryService Integration", () => {
     });
 
     it("fails after max retries on persistent errors", async () => {
-      const mockClient = mockSupabaseService.getClient();
+      const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
       mockClient.rpc.mockResolvedValue({
         data: null,
         error: { message: "Persistent database error" },
@@ -135,7 +137,7 @@ describe("ContractRegistryService Integration", () => {
     });
 
     it("does not retry on non-transient errors", async () => {
-      const mockClient = mockSupabaseService.getClient();
+      const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
       let attempts = 0;
 
       mockClient.rpc.mockImplementation(async () => {
@@ -164,7 +166,7 @@ describe("ContractRegistryService Integration", () => {
 
   describe("Error handling with specific error types", () => {
     it("throws ConflictException on unique constraint violation", async () => {
-      const mockClient = mockSupabaseService.getClient();
+      const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
       mockClient.rpc.mockResolvedValue({
         data: null,
         error: {
@@ -189,7 +191,7 @@ describe("ContractRegistryService Integration", () => {
     });
 
     it("throws ConflictException on optimistic concurrency failure", async () => {
-      const mockClient = mockSupabaseService.getClient();
+      const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
       mockClient.rpc.mockResolvedValue({
         data: null,
         error: {
@@ -214,7 +216,7 @@ describe("ContractRegistryService Integration", () => {
     });
 
     it("throws InternalServerErrorException on connection errors", async () => {
-      const mockClient = mockSupabaseService.getClient();
+      const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
       mockClient.rpc.mockResolvedValue({
         data: null,
         error: { message: "Database connection failed" },
@@ -239,7 +241,7 @@ describe("ContractRegistryService Integration", () => {
 
   describe("API-level optimistic concurrency", () => {
     it("uses expectedVersion from DTO when provided", async () => {
-      const mockClient = mockSupabaseService.getClient();
+      const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
       mockClient.rpc.mockResolvedValue({
         data: { success: true, newVersion: 2, publishedCount: 1, previousVersion: 1 },
         error: null,
@@ -268,7 +270,7 @@ describe("ContractRegistryService Integration", () => {
     });
 
     it("uses current version when expectedVersion not provided", async () => {
-      const mockClient = mockSupabaseService.getClient();
+      const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
       mockClient.rpc.mockResolvedValue({
         data: { success: true, newVersion: 1, publishedCount: 1, previousVersion: 0 },
         error: null,
@@ -298,7 +300,7 @@ describe("ContractRegistryService Integration", () => {
 
   describe("Rollback with retry and error handling", () => {
     it("retries rollback on transient errors", async () => {
-      const mockClient = mockSupabaseService.getClient();
+      const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
       let attempts = 0;
 
       mockClient.rpc.mockImplementation(async () => {
@@ -325,7 +327,7 @@ describe("ContractRegistryService Integration", () => {
     });
 
     it("throws ConflictException on rollback concurrency failure", async () => {
-      const mockClient = mockSupabaseService.getClient();
+      const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
       mockClient.rpc.mockResolvedValue({
         data: null,
         error: {
@@ -341,7 +343,7 @@ describe("ContractRegistryService Integration", () => {
 
   describe("Finalize dual-read with retry and error handling", () => {
     it("retries finalize on transient errors", async () => {
-      const mockClient = mockSupabaseService.getClient();
+      const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
       let attempts = 0;
 
       mockClient.rpc.mockImplementation(async () => {
@@ -365,7 +367,7 @@ describe("ContractRegistryService Integration", () => {
     });
 
     it("throws appropriate error when no active entry exists", async () => {
-      const mockClient = mockSupabaseService.getClient();
+      const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
       mockClient.rpc.mockResolvedValue({
         data: null,
         error: { message: "No active registry entry found for missing" },
@@ -379,7 +381,7 @@ describe("ContractRegistryService Integration", () => {
 
   describe("Integration scenarios", () => {
     it("handles publish -> finalize -> rollback workflow", async () => {
-      const mockClient = mockSupabaseService.getClient();
+      const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
 
       // Publish
       mockClient.rpc.mockResolvedValueOnce({
@@ -432,7 +434,7 @@ describe("ContractRegistryService Integration", () => {
     });
 
     it("handles concurrent publish attempts with proper error handling", async () => {
-      const mockClient = mockSupabaseService.getClient();
+      const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
 
       // First publish succeeds
       mockClient.rpc.mockResolvedValueOnce({
