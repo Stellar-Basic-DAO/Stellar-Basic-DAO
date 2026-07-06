@@ -66,7 +66,7 @@ export class SentryExceptionFilter implements ExceptionFilter {
     const context: Record<string, unknown> = {
       method: request.method,
       url: request.url,
-      correlationId: (request as Record<string, unknown>)['correlationId'],
+      correlationId: (request as unknown as Record<string, unknown>)['correlationId'],
       userAgent: request.headers['user-agent'],
       ip: request.ip,
     };

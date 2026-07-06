@@ -59,7 +59,7 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
     const isProduction = this.config.isProduction;
 
     // Extract correlation ID for traceability
-    const correlationId = (request as Record<string, unknown>)[
+    const correlationId = (request as unknown as Record<string, unknown>)[
       "correlationId"
     ] as string | undefined;
 
@@ -82,7 +82,7 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
         retryAfterSeconds,
       };
 
-      const reqRecord = request as Record<string, unknown>;
+      const reqRecord = request as unknown as Record<string, unknown>;
       const rateLimitContext =
         (reqRecord["rateLimitContext"] as
           | { group?: string; keyType?: string }
@@ -103,7 +103,7 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
       this.logger.warn(
         `[SorobanDomainException] ${body.code}: ${exception.technicalError}`,
       );
-      return response.status(status).json({
+      response.status(status).json({
         success: false,
         error: {
           code: body.code,
@@ -112,6 +112,7 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
           ...(body.details && !isProduction ? { details: body.details } : {}),
         },
       });
+      return;
     } else if (exception instanceof HttpException) {
       status = exception.getStatus();
       const res = exception.getResponse() as HttpExceptionResponse;
@@ -123,7 +124,7 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
         if ("fields" in res) {
           const validation = res as ValidationExceptionPayload;
 
-          return response.status(status).json({
+          response.status(status).json({
             success: false,
             error: {
               code: "VALIDATION_ERROR",
@@ -132,6 +133,7 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
               ...(correlationId ? { request_id: correlationId, correlationId } : {}),
             },
           });
+          return;
         }
 
         // ✅ BUSINESS ERRORS
