@@ -3,6 +3,7 @@ import { DeploymentService } from "./deployment.service";
 import { HorizonService } from "../stellar/horizon.service";
 import { AppConfigService } from "../config";
 import { ContractRegistryService } from "../contracts/contract-registry.service";
+import { ContractWritePolicyService } from "../feature-flags/contract-write-policy.service";
 
 describe("Soroban tooling services", () => {
   const mockConfig = { network: "testnet" } as AppConfigService;
@@ -62,6 +63,7 @@ describe("Soroban tooling services", () => {
         mockConfig,
         fundingHelperService,
         contractRegistryService,
+        { assertWritePermission: jest.fn().mockResolvedValue(undefined), checkWritePermission: jest.fn().mockResolvedValue({ allowed: true, reason: 'ok' }) } as unknown as ContractWritePolicyService,
       );
 
       const result = await service.planDeployment({
