@@ -119,8 +119,8 @@ describe('ContractWritePolicyService', () => {
     });
 
     it('should use evaluateFlag for mainnet', async () => {
-      configService.network = 'mainnet';
-      configService.isTestnet = false;
+      Object.defineProperty(configService, 'network', { value: 'mainnet', writable: true, configurable: true });
+      Object.defineProperty(configService, 'isTestnet', { value: false, writable: true, configurable: true });
 
       (featureFlagsService.evaluateFlag as jest.Mock).mockResolvedValue({
         enabled: true,
