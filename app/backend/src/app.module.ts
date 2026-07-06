@@ -46,6 +46,9 @@ import { IndexerLagModule } from "./indexer-lag";
 import { SupportBundleModule } from "./support-bundle/support-bundle.module";
 import { getDynamicModules } from "./module-factory";
 import { ChatModule } from "./chat/chat.module";
+import { ReconciliationModule } from "./reconciliation/reconciliation.module";
+import { NotificationsModule } from "./notifications/notifications.module";
+import { DeveloperModule } from "./developer/developer.module";
 
 // Validate environment variables for module composition.
 // This ensures that feature flags are deterministic and typed.
@@ -54,45 +57,9 @@ const validatedEnv = envSchema.validate(process.env, {
   abortEarly: false,
 }).value as EnvConfig;
 
+type AppImport = Parameters<typeof Module>[0]["imports"][number];
+
 @Module({
-  imports: [
-    SentryModule,
-    AppConfigModule,
-    // ScheduleModule registered once here — shared by NotificationsModule and ReconciliationModule
-    ScheduleModule.forRoot(),
-    EventEmitterModule.forRoot({
-      wildcard: true,
-      delimiter: ".",
-    }),
-    ThrottlerModule.forRoot(throttlerModuleProfiles),
-    SupabaseModule,
-    HealthModule,
-    AssetMetadataModule,
-    StellarModule,
-    UsernamesModule,
-    MetricsModule,
-    AnalyticsModule,
-    LinksModule,
-    ScamAlertsModule,
-    TransactionsModule,
-    PaymentsModule,
-    IngestionModule,
-    ApiKeysModule,
-    MarketplaceModule,
-    FiatRampsModule,
-    RefundsModule,
-    ExportsModule,
-    JobQueueModule,
-    AuditModule,
-    ContractsModule,
-    FeatureFlagsModule,
-    PrivacyModule,
-    SorobanToolingModule,
-    EnvironmentParityModule,
-    IndexerLagModule,
-    SupportBundleModule,
-    ...getDynamicModules(validatedEnv),
-  ],
   imports: ((): AppImport[] => {
     const baseImports: AppImport[] = [
       SentryModule,
@@ -131,6 +98,7 @@ const validatedEnv = envSchema.validate(process.env, {
       IndexerLagModule,
       SupportBundleModule,
       ChatModule,
+      ...getDynamicModules(validatedEnv),
     ];
 
     // In development, if SUPABASE_URL points to a localhost placeholder (i.e. you don't
