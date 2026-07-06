@@ -17,7 +17,7 @@ describe("SorobanEventIndexerService - Dual-Read", () => {
   beforeEach(async () => {
     const mockCheckpointRepo = {
       getLastLedger: jest.fn().mockResolvedValue(null),
-      saveLastLedger: jest.fn().mockResolvedValue(undefined),
+      saveCheckpoint: jest.fn().mockResolvedValue(undefined),
     };
 
     const mockEscrowRepo = {
@@ -120,8 +120,8 @@ describe("SorobanEventIndexerService - Dual-Read", () => {
 
       await service.indexLedgerRange(currentId, 1000, 2000, config);
 
-      expect(checkpointRepo.saveLastLedger).toHaveBeenCalledWith(previousId, 2000);
-      expect(checkpointRepo.saveLastLedger).toHaveBeenCalledWith(currentId, 2000);
+      expect(checkpointRepo.saveCheckpoint).toHaveBeenCalledWith(expect.objectContaining({ contractId: previousId }));
+      expect(checkpointRepo.saveCheckpoint).toHaveBeenCalledWith(expect.objectContaining({ contractId: currentId }));
     });
   });
 
