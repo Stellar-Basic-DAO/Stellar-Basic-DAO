@@ -27,9 +27,7 @@ import { NetworkSafetyGuard } from '../feature-flags/network-safety.guard';
 import { RequiresFlag } from '../feature-flags/requires-flag.decorator';
 import { decodeCursor, clampLimit } from '../common/pagination/cursor.util';
 
-interface ApiKeyRequest extends Request {
-  apiKey: { id: string };
-}
+type ApiKeyRequest = Request & { apiKey: NonNullable<Request["apiKey"]> };
 
 @ApiTags('admin/refunds')
 @ApiHeader({

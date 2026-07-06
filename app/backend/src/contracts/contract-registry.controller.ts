@@ -23,9 +23,7 @@ import {
 } from './dto/contract-registry.dto';
 import { ContractWritePolicyService } from '../feature-flags/contract-write-policy.service';
 
-interface ApiKeyRequest extends Request {
-  apiKey: { id: string };
-}
+type ApiKeyRequest = Request & { apiKey: NonNullable<Request["apiKey"]> };
 
 @ApiTags('contracts')
 @ApiHeader({
