@@ -152,7 +152,7 @@ describe('RefundJobHandler', () => {
       
       // Override the client returned by supabaseService
       (supabaseService.getClient as jest.Mock).mockReturnValue(mockClient);
-      supabaseService.getClient.mockReturnValue(mockClient);
+      supabaseService.getClient.mockReturnValue(mockClient as any);
 
       sorobanRpc.submitAndWait.mockResolvedValue({
         status: 'SUCCESS',
@@ -194,7 +194,7 @@ describe('RefundJobHandler', () => {
       };
       
       (supabaseService.getClient as jest.Mock).mockReturnValue(mockClient);
-      supabaseService.getClient.mockReturnValue(mockClient);
+      supabaseService.getClient.mockReturnValue(mockClient as any);
 
       sorobanRpc.submitAndWait.mockResolvedValue({
         status: 'FAILED',
@@ -237,7 +237,7 @@ describe('RefundJobHandler', () => {
       };
       
       (supabaseService.getClient as jest.Mock).mockReturnValue(mockClient);
-      supabaseService.getClient.mockReturnValue(mockClient);
+      supabaseService.getClient.mockReturnValue(mockClient as any);
 
       sorobanRpc.submitAndWait.mockResolvedValue({
         status: 'FAILED',
@@ -285,7 +285,7 @@ describe('RefundJobHandler', () => {
       };
       
       (supabaseService.getClient as jest.Mock).mockReturnValue(mockClient);
-      supabaseService.getClient.mockReturnValue(mockClient);
+      supabaseService.getClient.mockReturnValue(mockClient as any);
 
       sorobanRpc.pollTransactionStatus.mockResolvedValue({
         status: 'SUCCESS',
