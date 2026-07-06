@@ -1,0 +1,241 @@
+import {
+  Injectable,
+  Logger,
+  BadRequestException,
+  InternalServerErrorException,
+} from "@nestjs/common";
+import { createHash } from "crypto";
+import * as StellarSdk from "@stellar/stellar-sdk";
+import { rpc as SorobanRpc } from "@stellar/stellar-sdk";
+import { ComposeTransactionDto } from "./dto/compose-transaction.dto";
+import {
+  ComposeTransactionResponse,
+  ComposeTransactionError,
+  ResourceEstimate,
+  FeeEstimate,
+} from "./dto/compose-transaction-response.dto";
+import { buildScVal } from "./utils/param-builder";
+import { SorobanRpcService } from "./soroban-rpc.service";
+import { mapSorobanError } from "../common/soroban-errors";
+import { SorobanErrorCode } from "../common/soroban-errors";
+
+const STROOPS_PER_XLM = 10_000_000;
+const BASE_FEE = 100; // stroops
+
+@Injectable()
+export class TransactionsService {
+  private readonly logger = new Logger(TransactionsService.name);
+  private readonly idempotencyResponses = new Map<
+    string,
+    ComposeTransactionResponse | ComposeTransactionError
+  >();
+  private readonly idempotencyFingerprints = new Map<string, string>();
+
+  constructor(private readonly sorobanRpcService: SorobanRpcService) {}
+
+  async composeTransaction(
+    dto: ComposeTransactionDto,
+  ): Promise<ComposeTransactionResponse | ComposeTransactionError> {
+    this.validatePayload(dto);
+
+    const payloadFingerprint = this.buildFingerprint(dto);
+    const idempotencyKey = dto.idempotencyKey ?? payloadFingerprint;
+    const fingerprintForKey = this.idempotencyFingerprints.get(idempotencyKey);
+    if (fingerprintForKey && fingerprintForKey !== payloadFingerprint) {
+      throw new BadRequestException(
+        "This idempotency key was already used with a different payload.",
+      );
+    }
+
+    const cached = this.idempotencyResponses.get(idempotencyKey);
+    if (cached) {
+      return cached;
+    }
+
+    const startTime = Date.now();
+
+    // 1. Resolve network passphrase
+    const networkPassphrase =
+      dto.networkPassphrase ??
+      (await this.sorobanRpcService.getNetworkPassphrase());
+
+    // 2. Load source account from network (gets current sequence number)
+    let account: StellarSdk.Account;
+    try {
+      account = await this.sorobanRpcService.getAccount(dto.sourceAccount);
+    } catch (err) {
+      return {
+        success: false,
+        error: err.message,
+        userMessage: `Source account not found: ${err.message}`,
+      };
+    }
+
+    // 3. Build ScVal params
+    let scParams: StellarSdk.xdr.ScVal[];
+    try {
+      scParams = dto.params.map(buildScVal);
+    } catch (err) {
+      throw new BadRequestException(`Invalid parameter: ${err.message}`);
+    }
+
+    // 4. Build the contract invocation operation
+    const contract = new StellarSdk.Contract(dto.contractId);
+    const operation = contract.call(dto.method, ...scParams);
+
+    // 5. Build transaction envelope (no private key — unsigned)
+    const tx = new StellarSdk.TransactionBuilder(account, {
+      fee: String(BASE_FEE),
+      networkPassphrase,
+    })
+      .addOperation(operation)
+      .setTimeout(StellarSdk.TimeoutInfinite)
+      .build();
+
+    // 6. Simulate (preflight)
+    this.logger.debug(
+      `Simulating transaction: ${dto.contractId}::${dto.method}`,
+    );
+
+    let simulationResult: SorobanRpc.Api.SimulateTransactionResponse;
+    try {
+      simulationResult = await this.sorobanRpcService.simulateTransaction(tx);
+    } catch (err) {
+      this.logger.error("RPC simulation request failed", err);
+      throw new InternalServerErrorException(
+        "Failed to reach Soroban RPC provider.",
+      );
+    }
+
+    const simulationLatencyMs = Date.now() - startTime;
+
+    // 7. Handle simulation failure
+    if (SorobanRpc.Api.isSimulationError(simulationResult)) {
+      const mapped = mapSorobanError(simulationResult.error);
+      this.logger.warn(`Simulation failed [${mapped.code}]: ${simulationResult.error}`);
+      const failedResponse: ComposeTransactionError = {
+        success: false,
+        error: mapped.code,
+        userMessage: mapped.message,
+        details: mapped.details,
+      };
+      this.rememberResponse(idempotencyKey, payloadFingerprint, failedResponse);
+      return failedResponse;
+    }
+
+    // 8. Handle restoration needed
+    if (SorobanRpc.Api.isSimulationRestore(simulationResult)) {
+      const restoreResponse = {
+        success: false,
+        error: SorobanErrorCode.RESTORE_REQUIRED,
+        userMessage:
+          "Some contract state entries have expired and must be restored before this transaction can proceed. Please run a restore operation first.",
+        details: {
+          restorePreamble: simulationResult.restorePreamble,
+        },
+      } as ComposeTransactionError;
+      this.rememberResponse(idempotencyKey, payloadFingerprint, restoreResponse);
+      return restoreResponse;
+    }
+
+    // 9. Assemble transaction with simulation results (sets soroban data & resource fee)
+    const assembledTx = SorobanRpc.assembleTransaction(
+      tx,
+      simulationResult,
+    ).build();
+
+    // 10. Extract resource estimates  ← REPLACE FROM HERE
+    const sorobanData = simulationResult.transactionData.build();
+    const resources = sorobanData.resources();
+
+    const resourceEstimate: ResourceEstimate = {
+      cpuInstructions: Number(resources.instructions()),
+      memoryBytes: 0, // not exposed by Soroban RPC simulate response
+      ledgerReads:
+        resources.footprint().readOnly().length +
+        resources.footprint().readWrite().length,
+      ledgerWrites: resources.footprint().readWrite().length,
+      eventBytes: Number(resources.writeBytes() ?? 0),
+      returnValueBytes: simulationResult.result?.retval
+        ? simulationResult.result.retval.toXDR().length
+        : 0,
+    };
+
+    // 11. Fee breakdown
+    const minResourceFee = simulationResult.minResourceFee ?? "0";
+    const totalFeeStroops = BASE_FEE + Number(minResourceFee);
+
+    const feeEstimate: FeeEstimate = {
+      baseFee: String(BASE_FEE),
+      inclusionFee: minResourceFee,
+      totalFee: String(totalFeeStroops),
+      totalFeeXLM: (totalFeeStroops / STROOPS_PER_XLM).toFixed(7),
+    };
+
+    // 12. Return unsigned XDR
+    const unsignedXdr = assembledTx.toEnvelope().toXDR("base64");
+
+    this.logger.log(
+      `Transaction composed successfully in ${simulationLatencyMs}ms — ` +
+        `${dto.contractId}::${dto.method}, fee: ${totalFeeStroops} stroops`,
+    );
+
+    const response: ComposeTransactionResponse = {
+      success: true,
+      unsignedXdr,
+      resourceEstimate,
+      feeEstimate,
+      minResourceFee,
+      simulationLatencyMs,
+      idempotencyKey,
+      simulationSummary: {
+        status: "success" as const,
+        footprint: {
+          readOnly: resources.footprint().readOnly().length,
+          readWrite: resources.footprint().readWrite().length,
+        },
+        estimatedCost: {
+          cpuInstructions: resourceEstimate.cpuInstructions,
+          ledgerReads: resourceEstimate.ledgerReads,
+          ledgerWrites: resourceEstimate.ledgerWrites,
+          eventBytes: resourceEstimate.eventBytes,
+          returnValueBytes: resourceEstimate.returnValueBytes,
+        },
+      },
+    };
+    this.rememberResponse(idempotencyKey, payloadFingerprint, response);
+    return response;
+  }
+
+  private validatePayload(dto: ComposeTransactionDto): void {
+    const payloadSize = Buffer.byteLength(JSON.stringify(dto.params ?? []), "utf8");
+    if (payloadSize > 4096) {
+      throw new BadRequestException("Transaction parameters exceed the 4KB limit.");
+    }
+
+    if ((dto.params ?? []).length > 16) {
+      throw new BadRequestException("A maximum of 16 contract parameters is supported.");
+    }
+  }
+
+  private buildFingerprint(dto: ComposeTransactionDto): string {
+    const normalized = JSON.stringify({
+      contractId: dto.contractId,
+      method: dto.method,
+      params: dto.params,
+      sourceAccount: dto.sourceAccount,
+      networkPassphrase: dto.networkPassphrase ?? "__default__",
+    });
+
+    return createHash("sha256").update(normalized).digest("hex");
+  }
+
+  private rememberResponse(
+    idempotencyKey: string,
+    fingerprint: string,
+    response: ComposeTransactionResponse | ComposeTransactionError,
+  ): void {
+    this.idempotencyFingerprints.set(idempotencyKey, fingerprint);
+    this.idempotencyResponses.set(idempotencyKey, response);
+  }
+}
