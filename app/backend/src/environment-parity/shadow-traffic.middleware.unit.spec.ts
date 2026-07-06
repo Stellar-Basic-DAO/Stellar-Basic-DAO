@@ -216,8 +216,8 @@ describe("ShadowTrafficMiddleware", () => {
     });
 
     it("should handle array headers", () => {
-      const headers = {
-        accept: ["application/json", "text/plain"],
+      const headers: import("http").IncomingHttpHeaders = {
+        accept: "application/json,text/plain",
       };
 
       const sanitiseHeaders = (
