@@ -1,4 +1,4 @@
-# 🌟 Stellar Basic DAO — RustAcademy
+# 🌟 Stellar Basic DAO — Stellar Basic DAO
 
 > **A fully decentralized, learn-to-earn Rust programming academy on the Stellar blockchain. Learners earn XLM by completing tasks, tutors earn for teaching, and all rewards, credentials, and governance are trustlessly enforced by Soroban smart contracts.**
 
@@ -13,9 +13,9 @@
 
 ---
 
-## 🌐 What Is RustAcademy?
+## 🌐 What Is Stellar Basic DAO?
 
-RustAcademy is the first open-source, decentralized programming education platform on the Stellar network. It combines structured Rust education, AI-powered mentoring, Web3 incentive mechanics, and a vibrant social community — all in one platform.
+Stellar Basic DAO is the first open-source, decentralized programming education platform on the Stellar network. It combines structured Rust education, AI-powered mentoring, Web3 incentive mechanics, and a vibrant social community — all in one platform.
 
 
 - 📚 **Learn Rust** — Structured paths from beginner to Soroban/Web3 expert
@@ -26,7 +26,7 @@ RustAcademy is the first open-source, decentralized programming education platfo
 - 🗳️ **DAO Governance** — M-of-N multisig governance for all privileged protocol actions
 - 📱 **Mobile-First** — React Native / Expo app for iOS and Android
 
-RustAcademy is unique on Stellar: no other project combines Rust education, XLM-based incentive mechanics, AI tutoring, social community, and trustless governance in a single full-stack platform.
+Stellar Basic DAO is unique on Stellar: no other project combines Rust education, XLM-based incentive mechanics, AI tutoring, social community, and trustless governance in a single full-stack platform.
 
 ---
 
@@ -99,7 +99,7 @@ RustAcademy is unique on Stellar: no other project combines Rust education, XLM-
                                │ Stellar SDK + Soroban RPC
 ┌──────────────────────────────▼──────────────────────────────────────┐
 │                    STELLAR BLOCKCHAIN LAYER                          │
-│   RustAcademyContract (Soroban) — single monolithic WASM contract   │
+│   Stellar Basic DAOContract (Soroban) — single monolithic WASM contract   │
 │   Escrow · Fee Router · Privacy · Stealth · Dispute · Governance    │
 └─────────────────────────────────────────────────────────────────────┘
                                │ Horizon API
@@ -167,9 +167,9 @@ RustAcademy is unique on Stellar: no other project combines Rust education, XLM-
 
 ---
 
-## ⚡ Soroban Smart Contract — `RustAcademyContract`
+## ⚡ Soroban Smart Contract — `Stellar Basic DAOContract`
 
-The entire on-chain logic is deployed as a single monolithic Soroban contract (`RustAcademyContract`). This minimizes cross-contract call overhead and simplifies upgrades.
+The entire on-chain logic is deployed as a single monolithic Soroban contract (`Stellar Basic DAOContract`). This minimizes cross-contract call overhead and simplifies upgrades.
 
 ### Escrow State Machine
 
@@ -439,7 +439,7 @@ The contract enforces 10 core financial invariants (see [`docs/INVARIANTS.md`](d
 - DAO-governed curriculum
 - Live tutor sessions (WebRTC)
 - Cross-chain certificate portability
-- RustAcademy SDK for third-party integrations
+- Stellar Basic DAO SDK for third-party integrations
 
 ---
 
@@ -464,6 +464,6 @@ MIT License — see [LICENSE](LICENSE) for details.
 <div align="center">
   <strong>Built with 🦀 Rust, 💙 Stellar, and ❤️ for developers everywhere</strong><br/>
   <a href="https://github.com/Stellar-Basic-DAO/Stellar-Basic-DAO">GitHub</a> •
-  <a href="https://discord.gg/rustacademy">Discord</a> •
-  <a href="https://twitter.com/rustacademy">Twitter</a>
+  <a href="https://discord.gg/Stellar Basic DAO">Discord</a> •
+  <a href="https://twitter.com/Stellar Basic DAO">Twitter</a>
 </div>
