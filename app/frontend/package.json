@@ -34,5 +34,9 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^3.2.3"
+  },
+  "overrides": {
+    "@typescript-eslint/eslint-plugin": "^8",
+    "@typescript-eslint/parser": "^8"
   }
 }
