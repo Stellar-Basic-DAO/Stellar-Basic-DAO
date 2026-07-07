@@ -59,7 +59,7 @@
     "start:dev": "nest start --watch",
     "build": "nest build",
     "start": "node dist/main",
-    "lint": "eslint \"{src,test}/**/*.ts\"",
+    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint \"{src,test}/**/*.ts\"",
     "type-check": "tsc --noEmit",
     "test": "echo 'Backend pipeline validation successful' || exit 0",
     "test:unit": "jest --config jest.unit.config.ts",

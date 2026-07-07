@@ -152,6 +152,7 @@ describe('RefundJobHandler', () => {
       
       // Override the client returned by supabaseService
       (supabaseService.getClient as jest.Mock).mockReturnValue(mockClient);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       supabaseService.getClient.mockReturnValue(mockClient as any);
 
       sorobanRpc.submitAndWait.mockResolvedValue({
@@ -194,6 +195,7 @@ describe('RefundJobHandler', () => {
       };
       
       (supabaseService.getClient as jest.Mock).mockReturnValue(mockClient);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       supabaseService.getClient.mockReturnValue(mockClient as any);
 
       sorobanRpc.submitAndWait.mockResolvedValue({
@@ -237,6 +239,7 @@ describe('RefundJobHandler', () => {
       };
       
       (supabaseService.getClient as jest.Mock).mockReturnValue(mockClient);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       supabaseService.getClient.mockReturnValue(mockClient as any);
 
       sorobanRpc.submitAndWait.mockResolvedValue({
@@ -285,6 +288,7 @@ describe('RefundJobHandler', () => {
       };
       
       (supabaseService.getClient as jest.Mock).mockReturnValue(mockClient);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       supabaseService.getClient.mockReturnValue(mockClient as any);
 
       sorobanRpc.pollTransactionStatus.mockResolvedValue({
