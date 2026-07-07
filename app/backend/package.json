@@ -66,6 +66,7 @@
     "test:int": "jest --config jest.int.config.ts",
     "test:e2e": "jest --config jest.e2e.config.ts",
     "soroban:deploy": "ts-node scripts/soroban-deploy.ts",
+    "db:migrate": "node run-migration-supabase.js",
     "test:fuzz": "jest --config jest.fuzz.config.ts",
     "test:fuzz:ci": "jest --config jest.fuzz.config.ts --runInBand",
     "test:smoke": "jest --config jest.e2e.config.ts test/smoke.e2e-spec.ts --testTimeout=30000",
