@@ -49,7 +49,31 @@ mod types;
 mod upgrade_test;
 
 use errors::RustAcademyError;
+use governance::GovernanceError;
 use storage::*;
+
+/// Map a `GovernanceError` to a `RustAcademyError`.
+///
+/// The contract entry points in `#[contractimpl]` must return `Result<_, RustAcademyError>`,
+/// but the governance module returns its own `GovernanceError` (split out to comply with
+/// the 50-variant `#[contracterror]` cap). This mapping is lossy by design — callers
+/// who need the precise governance error code should call the governance module
+/// functions directly.
+fn map_governance_error(e: GovernanceError) -> RustAcademyError {
+    match e {
+        GovernanceError::NotASigner => RustAcademyError::Unauthorized,
+        GovernanceError::ProposalAlreadyExists => RustAcademyError::CommitmentAlreadyExists,
+        GovernanceError::ProposalNotFound => RustAcademyError::CommitmentNotFound,
+        GovernanceError::InvalidProposalState => RustAcademyError::InvalidDisputeState,
+        GovernanceError::AlreadyApproved => RustAcademyError::ArbiterAlreadyVoted,
+        GovernanceError::InsufficientApprovals => RustAcademyError::InsufficientVotes,
+        GovernanceError::ExpiryTooFar => RustAcademyError::InvalidTimeout,
+        GovernanceError::InvalidSignerSet => RustAcademyError::InvalidCommitment,
+        GovernanceError::InvalidGovernanceThreshold => RustAcademyError::InvalidThreshold,
+        GovernanceError::DuplicateSigner => RustAcademyError::DuplicateArbiter,
+        GovernanceError::InternalError => RustAcademyError::InternalError,
+    }
+}
 use types::{
     ContractHealth, DeploymentMetadata, DisputeExpiryAction, EscrowEntry, EscrowOperationEstimate,
     EscrowOperationLimits, EscrowStatus, FeatureFlags, FeeConfig, OracleFeeConfig,
@@ -1422,6 +1446,7 @@ impl RustAcademyContract {
         valid_until: u64,
     ) -> Result<BytesN<32>, RustAcademyError> {
         governance::create_proposal(&env, proposer, action, nonce, valid_until)
+            .map_err(map_governance_error)
     }
 
     /// Approve an existing governance proposal.
@@ -1433,6 +1458,7 @@ impl RustAcademyContract {
         proposal_id: BytesN<32>,
     ) -> Result<(), RustAcademyError> {
         governance::approve_proposal(&env, caller, proposal_id)
+            .map_err(map_governance_error)
     }
 
     /// Execute a proposal that has reached the approval threshold.
@@ -1440,6 +1466,7 @@ impl RustAcademyContract {
     /// Any caller can trigger execution — no additional auth required.
     pub fn execute_proposal(env: Env, proposal_id: BytesN<32>) -> Result<(), RustAcademyError> {
         governance::execute_proposal(&env, proposal_id)
+            .map_err(map_governance_error)
     }
 
     /// Cancel a pending governance proposal.
@@ -1451,6 +1478,7 @@ impl RustAcademyContract {
         proposal_id: BytesN<32>,
     ) -> Result<(), RustAcademyError> {
         governance::cancel_proposal(&env, caller, proposal_id)
+            .map_err(map_governance_error)
     }
 
     /// Get the current governance signer set.

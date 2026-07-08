@@ -18,10 +18,47 @@
 //! - `DataKey::Proposal(proposal_id)` — GovernanceProposal struct
 //! - `DataKey::ProposalApproval(proposal_id, signer)` — bool (voted flag)
 
-use soroban_sdk::{contracttype, vec, Address, BytesN, Env, Symbol, Vec};
+use soroban_sdk::{contracterror, contracttype, vec, Address, BytesN, Env, Symbol, Vec};
 
-use crate::errors::RustAcademyError;
 use crate::storage::DataKey;
+
+// ---------------------------------------------------------------------------
+// GovernanceError
+// ---------------------------------------------------------------------------
+
+/// Errors specific to the governance multisig module.
+///
+/// Lives in its own `#[contracterror]` enum because the Stellar XDR ABI
+/// hardcaps a single error enum to 50 cases; the main `RustAcademyError`
+/// was at 60 and needed governance cases split out.
+#[contracterror]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+#[repr(u32)]
+pub enum GovernanceError {
+    /// Caller is not a member of the governance signer set.
+    NotASigner = 505,
+    /// A proposal with the derived proposal_id already exists in storage.
+    ProposalAlreadyExists = 506,
+    /// No proposal found for the given proposal_id.
+    ProposalNotFound = 507,
+    /// Proposal is not in the expected state for this operation.
+    InvalidProposalState = 508,
+    /// Signer has already approved this proposal.
+    AlreadyApproved = 509,
+    /// Insufficient approvals to execute the proposal.
+    InsufficientApprovals = 510,
+    /// valid_until is more than 30 days in the future.
+    ExpiryTooFar = 511,
+    /// The proposed signer set is empty, exceeds 10 members, or contains zero-addresses.
+    InvalidSignerSet = 512,
+    /// The governance threshold is 0 or exceeds the signer count.
+    InvalidGovernanceThreshold = 513,
+    /// The signer set contains duplicate addresses.
+    DuplicateSigner = 514,
+    /// Internal/unexpected condition (replaces RustAcademyError::InternalError
+    /// for governance-internal failures like unknown role discriminants).
+    InternalError = 515,
+}
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -54,12 +91,13 @@ pub const TOPIC_GOVERNANCE: &str = "TOPIC_GOVERNANCE";
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ProposalAction {
     /// Toggle the global contract pause state.
-    SetPaused { paused: bool },
+    SetPaused(bool),
     /// Set granular pause flags for specific operations.
-    SetPauseFlags { enable_mask: u64, disable_mask: u64 },
+    SetPauseFlags(u64, u64),
     /// Upgrade the contract WASM to a new hash.
-    UpgradeContract { new_wasm_hash: BytesN<32> },
+    UpgradeContract(BytesN<32>),
     /// Update the global platform fee configuration.
+<<<<<<< Updated upstream
     SetFeeConfig { fee_bps: u32 },
     /// Override fee configuration for a specific token.
     SetPerAssetFee {
@@ -67,9 +105,15 @@ pub enum ProposalAction {
         fee_bps: u32,
         arbiter_bps: u32,
     },
+=======
+    SetFeeConfig(u32),
+    /// Override fee configuration for a specific token. (token, fee_bps, arbiter_bps)
+    SetPerAssetFee(Address, u32, u32),
+>>>>>>> Stashed changes
     /// Change the platform wallet address.
-    SetPlatformWallet { wallet: Address },
+    SetPlatformWallet(Address),
     /// Transfer the admin role to a new address.
+<<<<<<< Updated upstream
     SetAdmin { new_admin: Address },
     /// Grant a role to a target address.
     GrantRole { target: Address, role: u32 },
@@ -80,6 +124,15 @@ pub enum ProposalAction {
         new_signers: Vec<Address>,
         new_threshold: u32,
     },
+=======
+    SetAdmin(Address),
+    /// Grant a role to a target address. (target, role)
+    GrantRole(Address, u32),
+    /// Revoke a role from a target address. (target, role)
+    RevokeRole(Address, u32),
+    /// Replace the signer set and threshold. (new_signers, new_threshold)
+    UpdateSignerSet(Vec<Address>, u32),
+>>>>>>> Stashed changes
 }
 
 // ---------------------------------------------------------------------------
@@ -217,13 +270,16 @@ fn record_approval(env: &Env, proposal_id: &BytesN<32>, signer: &Address) {
 
 /// Derive a deterministic 32-byte proposal_id from proposal content.
 ///
-/// `proposal_id = SHA256(action_tag_symbol || proposer || nonce || valid_until)`
+/// `proposal_id = SHA256(action_tag_str || proposer || nonce || valid_until)`
 ///
 /// Inputs are serialized in a fixed layout so the same inputs always produce
 /// the same ID, regardless of SDK version or field ordering.
+///
+/// Takes `&str` instead of `Symbol` because `Symbol::to_string()` is only
+/// available on non-wasm targets; the contract is compiled for wasm.
 pub fn derive_proposal_id(
     env: &Env,
-    action_tag: Symbol,
+    action_tag: &str,
     proposer: &Address,
     nonce: u64,
     valid_until: u64,
@@ -233,11 +289,12 @@ pub fn derive_proposal_id(
     let mut preimage = Bytes::new(env);
 
     // Append action tag bytes
-    let tag_bytes: Bytes = action_tag.to_val().to_string(env).as_bytes().into();
+    let tag_bytes = Bytes::from_slice(env, action_tag.as_bytes());
     preimage.append(&tag_bytes);
 
-    // Append proposer address bytes
-    let proposer_bytes: Bytes = proposer.to_string().as_bytes().into();
+    // Append proposer address bytes (Address -> soroban_sdk::String -> Bytes)
+    let proposer_str: soroban_sdk::String = proposer.to_string();
+    let proposer_bytes: Bytes = proposer_str.to_bytes().into();
     preimage.append(&proposer_bytes);
 
     // Append nonce as 8 big-endian bytes
@@ -262,22 +319,22 @@ pub fn derive_proposal_id(
     preimage.push_back(expiry_bytes[6]);
     preimage.push_back(expiry_bytes[7]);
 
-    env.crypto().sha256(&preimage)
+    env.crypto().sha256(&preimage).into()
 }
 
 /// Extract a stable action tag symbol from a ProposalAction variant.
 pub fn action_tag(action: &ProposalAction) -> &'static str {
     match action {
-        ProposalAction::SetPaused { .. } => "SetPaused",
-        ProposalAction::SetPauseFlags { .. } => "SetPauseFlags",
-        ProposalAction::UpgradeContract { .. } => "UpgradeContract",
-        ProposalAction::SetFeeConfig { .. } => "SetFeeConfig",
-        ProposalAction::SetPerAssetFee { .. } => "SetPerAssetFee",
-        ProposalAction::SetPlatformWallet { .. } => "SetPlatformWallet",
-        ProposalAction::SetAdmin { .. } => "SetAdmin",
-        ProposalAction::GrantRole { .. } => "GrantRole",
-        ProposalAction::RevokeRole { .. } => "RevokeRole",
-        ProposalAction::UpdateSignerSet { .. } => "UpdateSignerSet",
+        ProposalAction::SetPaused(_) => "SetPaused",
+        ProposalAction::SetPauseFlags(_, _) => "SetPauseFlags",
+        ProposalAction::UpgradeContract(_) => "UpgradeContract",
+        ProposalAction::SetFeeConfig(_) => "SetFeeConfig",
+        ProposalAction::SetPerAssetFee(_, _, _) => "SetPerAssetFee",
+        ProposalAction::SetPlatformWallet(_) => "SetPlatformWallet",
+        ProposalAction::SetAdmin(_) => "SetAdmin",
+        ProposalAction::GrantRole(_, _) => "GrantRole",
+        ProposalAction::RevokeRole(_, _) => "RevokeRole",
+        ProposalAction::UpdateSignerSet(_, _) => "UpdateSignerSet",
     }
 }
 
@@ -293,12 +350,12 @@ pub fn action_tag(action: &ProposalAction) -> &'static str {
 /// # Errors
 /// - `InvalidSignerSet` — empty set, >10 signers, or zero-address in set
 /// - `DuplicateSigner` — duplicate addresses in set
-/// - `InvalidThreshold` — threshold is 0 or exceeds signer count
+/// - `InvalidGovernanceThreshold` — threshold is 0 or exceeds signer count
 pub fn initialize_governance(
     env: &Env,
     signers: Vec<Address>,
     threshold: u32,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), GovernanceError> {
     validate_signer_set(env, &signers, threshold)?;
     set_signer_set(env, &signers);
     set_threshold(env, threshold);
@@ -317,9 +374,8 @@ pub fn initialize_governance(
 ///
 /// # Errors
 /// - `NotASigner` — proposer not in signer set
-/// - `SignatureExpired` — `valid_until` is in the past
+/// - `InvalidProposalState` — `valid_until` is in the past (or nonce consumed)
 /// - `ExpiryTooFar` — `valid_until` more than 30 days away
-/// - `NonceAlreadyUsed` — nonce already consumed for this signer
 /// - `ProposalAlreadyExists` — derived `proposal_id` already in storage
 pub fn create_proposal(
     env: &Env,
@@ -327,36 +383,36 @@ pub fn create_proposal(
     action: ProposalAction,
     nonce: u64,
     valid_until: u64,
-) -> Result<BytesN<32>, RustAcademyError> {
+) -> Result<BytesN<32>, GovernanceError> {
     proposer.require_auth();
 
     // 1. Signer membership check
     if !is_signer(env, &proposer) {
-        return Err(RustAcademyError::NotASigner);
+        return Err(GovernanceError::NotASigner);
     }
 
     let now = env.ledger().timestamp();
 
     // 2. Expiry in the past
     if now >= valid_until {
-        return Err(RustAcademyError::SignatureExpired);
+        return Err(GovernanceError::InvalidProposalState);
     }
 
     // 3. Expiry too far
     if valid_until - now > MAX_PROPOSAL_EXPIRY_SECS {
-        return Err(RustAcademyError::ExpiryTooFar);
+        return Err(GovernanceError::ExpiryTooFar);
     }
 
-    // 4. Nonce replay check
-    crate::nonce::verify_and_consume(env, &proposer, nonce)?;
+    // 4. Nonce replay check (map NonceAlreadyUsed -> InvalidProposalState)
+    crate::nonce::verify_and_consume(env, &proposer, nonce, valid_until)
+        .map_err(|_| GovernanceError::InvalidProposalState)?;
 
     // 5. Derive proposal_id
-    let tag = Symbol::new(env, action_tag(&action));
-    let proposal_id = derive_proposal_id(env, tag, &proposer, nonce, valid_until);
+    let proposal_id = derive_proposal_id(env, action_tag(&action), &proposer, nonce, valid_until);
 
     // 6. Duplicate proposal_id check
     if get_proposal(env, &proposal_id).is_some() {
-        return Err(RustAcademyError::ProposalAlreadyExists);
+        return Err(GovernanceError::ProposalAlreadyExists);
     }
 
     // 7. Store proposal + record proposer as first approval
@@ -391,37 +447,41 @@ pub fn create_proposal(
 /// # Errors
 /// - `NotASigner` — caller not in signer set
 /// - `ProposalNotFound` — no proposal for this ID
-/// - `SignatureExpired` — proposal has expired
-/// - `InvalidProposalState` — proposal is not `Pending`
+/// - `InvalidProposalState` — proposal has expired, or is not `Pending`
 /// - `AlreadyApproved` — caller already approved
 pub fn approve_proposal(
     env: &Env,
     caller: Address,
     proposal_id: BytesN<32>,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), GovernanceError> {
     caller.require_auth();
 
     // 1. Signer membership
     if !is_signer(env, &caller) {
-        return Err(RustAcademyError::NotASigner);
+        return Err(GovernanceError::NotASigner);
     }
 
     // 2. Proposal existence
+<<<<<<< Updated upstream
     let mut proposal = get_proposal(env, &proposal_id).ok_or(RustAcademyError::ProposalNotFound)?;
+=======
+    let mut proposal = get_proposal(env, &proposal_id)
+        .ok_or(GovernanceError::ProposalNotFound)?;
+>>>>>>> Stashed changes
 
     // 3. Expiry
     if env.ledger().timestamp() >= proposal.expires_at {
-        return Err(RustAcademyError::SignatureExpired);
+        return Err(GovernanceError::InvalidProposalState);
     }
 
     // 4. Status must be Pending
     if proposal.status != ProposalStatus::Pending {
-        return Err(RustAcademyError::InvalidProposalState);
+        return Err(GovernanceError::InvalidProposalState);
     }
 
     // 5. Duplicate approval
     if has_approved(env, &proposal_id, &caller) {
-        return Err(RustAcademyError::AlreadyApproved);
+        return Err(GovernanceError::AlreadyApproved);
     }
 
     // 6. Record approval
@@ -454,27 +514,36 @@ pub fn approve_proposal(
 ///
 /// # Errors
 /// - `ProposalNotFound`
-/// - `SignatureExpired`
-/// - `InvalidProposalState`
+/// - `InvalidProposalState` (covers expired + wrong status)
 /// - `InsufficientApprovals`
+<<<<<<< Updated upstream
 pub fn execute_proposal(env: &Env, proposal_id: BytesN<32>) -> Result<(), RustAcademyError> {
     // 1. Proposal existence
     let mut proposal = get_proposal(env, &proposal_id).ok_or(RustAcademyError::ProposalNotFound)?;
+=======
+pub fn execute_proposal(
+    env: &Env,
+    proposal_id: BytesN<32>,
+) -> Result<(), GovernanceError> {
+    // 1. Proposal existence
+    let mut proposal = get_proposal(env, &proposal_id)
+        .ok_or(GovernanceError::ProposalNotFound)?;
+>>>>>>> Stashed changes
 
     // 2. Expiry
     if env.ledger().timestamp() >= proposal.expires_at {
-        return Err(RustAcademyError::SignatureExpired);
+        return Err(GovernanceError::InvalidProposalState);
     }
 
     // 3. Status
     if proposal.status != ProposalStatus::Pending && proposal.status != ProposalStatus::Executable {
-        return Err(RustAcademyError::InvalidProposalState);
+        return Err(GovernanceError::InvalidProposalState);
     }
 
     // 4. Approval count
     let threshold = get_threshold(env);
     if proposal.approval_count < threshold {
-        return Err(RustAcademyError::InsufficientApprovals);
+        return Err(GovernanceError::InsufficientApprovals);
     }
 
     // 5. Apply action
@@ -506,17 +575,22 @@ pub fn cancel_proposal(
     env: &Env,
     caller: Address,
     proposal_id: BytesN<32>,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), GovernanceError> {
     caller.require_auth();
 
     if !is_signer(env, &caller) {
-        return Err(RustAcademyError::NotASigner);
+        return Err(GovernanceError::NotASigner);
     }
 
+<<<<<<< Updated upstream
     let mut proposal = get_proposal(env, &proposal_id).ok_or(RustAcademyError::ProposalNotFound)?;
+=======
+    let mut proposal = get_proposal(env, &proposal_id)
+        .ok_or(GovernanceError::ProposalNotFound)?;
+>>>>>>> Stashed changes
 
     if proposal.status != ProposalStatus::Pending {
-        return Err(RustAcademyError::InvalidProposalState);
+        return Err(GovernanceError::InvalidProposalState);
     }
 
     proposal.status = ProposalStatus::Cancelled;
@@ -535,73 +609,89 @@ pub fn cancel_proposal(
 ///
 /// This function is the central dispatch for all governance-gated privileged
 /// operations. It is called atomically inside `execute_proposal()`.
-fn apply_action(env: &Env, action: &ProposalAction) -> Result<(), RustAcademyError> {
+fn apply_action(env: &Env, action: &ProposalAction) -> Result<(), GovernanceError> {
     match action {
-        ProposalAction::SetPaused { paused } => {
+        ProposalAction::SetPaused(paused) => {
             crate::storage::set_paused(env, *paused);
             Ok(())
         }
+<<<<<<< Updated upstream
         ProposalAction::SetPauseFlags {
             enable_mask,
             disable_mask,
         } => {
             crate::storage::apply_pause_flags(env, *enable_mask, *disable_mask);
+=======
+        ProposalAction::SetPauseFlags(enable_mask, disable_mask) => {
+            // Governance is the authorized caller for this privileged op
+            crate::storage::set_pause_flags(env, &env.current_contract_address(), *enable_mask, *disable_mask);
+>>>>>>> Stashed changes
             Ok(())
         }
-        ProposalAction::SetFeeConfig { fee_bps } => {
+        ProposalAction::SetFeeConfig(fee_bps) => {
             use crate::types::FeeConfig;
             let config = FeeConfig {
                 fee_bps: *fee_bps,
                 schema_version: crate::types::FEE_CONFIG_SCHEMA_VERSION,
             };
-            crate::storage::set_fee_config(env, config);
+            crate::storage::set_fee_config(env, &config);
             Ok(())
         }
-        ProposalAction::SetPlatformWallet { wallet } => {
+        ProposalAction::SetPlatformWallet(wallet) => {
             crate::storage::set_platform_wallet(env, wallet);
             Ok(())
         }
-        ProposalAction::SetAdmin { new_admin } => {
+        ProposalAction::SetAdmin(new_admin) => {
             crate::storage::set_admin(env, new_admin);
             Ok(())
         }
+<<<<<<< Updated upstream
         ProposalAction::UpdateSignerSet {
             new_signers,
             new_threshold,
         } => {
+=======
+        ProposalAction::UpdateSignerSet(new_signers, new_threshold) => {
+>>>>>>> Stashed changes
             validate_signer_set(env, new_signers, *new_threshold)?;
             set_signer_set(env, new_signers);
             set_threshold(env, *new_threshold);
             emit_signer_set_updated(env, *new_threshold, new_signers.len());
             Ok(())
         }
-        ProposalAction::GrantRole { target, role } => {
+        ProposalAction::GrantRole(target, role) => {
             use crate::types::Role;
             let r = u32_to_role(*role)?;
-            crate::storage::grant_role(env, target, r);
+            // Governance is the authorized caller for this privileged op
+            crate::admin::grant_role(env, env.current_contract_address(), target.clone(), r);
             Ok(())
         }
-        ProposalAction::RevokeRole { target, role } => {
+        ProposalAction::RevokeRole(target, role) => {
             use crate::types::Role;
             let r = u32_to_role(*role)?;
-            crate::storage::revoke_role(env, target, r);
+            // Governance is the authorized caller for this privileged op
+            crate::admin::revoke_role(env, env.current_contract_address(), target.clone(), r);
             Ok(())
         }
+<<<<<<< Updated upstream
         ProposalAction::SetPerAssetFee {
             token,
             fee_bps,
             arbiter_bps,
         } => {
+=======
+        ProposalAction::SetPerAssetFee(token, fee_bps, arbiter_bps) => {
+>>>>>>> Stashed changes
             use crate::types::PerAssetFeeConfig;
             let config = PerAssetFeeConfig {
                 fee_bps: *fee_bps,
                 arbiter_bps: *arbiter_bps,
                 ..Default::default()
             };
-            crate::storage::set_per_asset_fee(env, token, config);
+            crate::storage::set_per_asset_fee(env, &token, &config);
             Ok(())
         }
-        ProposalAction::UpgradeContract { new_wasm_hash } => {
+        ProposalAction::UpgradeContract(new_wasm_hash) => {
             // Upgrade is executed after the governance threshold is met.
             // The actual WASM swap happens here.
             env.deployer()
@@ -612,12 +702,12 @@ fn apply_action(env: &Env, action: &ProposalAction) -> Result<(), RustAcademyErr
 }
 
 /// Convert a u32 role discriminant to a typed `Role` enum.
-fn u32_to_role(role: u32) -> Result<crate::types::Role, RustAcademyError> {
+fn u32_to_role(role: u32) -> Result<crate::types::Role, GovernanceError> {
     match role {
         1 => Ok(crate::types::Role::Admin),
         2 => Ok(crate::types::Role::Operator),
         3 => Ok(crate::types::Role::Arbiter),
-        _ => Err(RustAcademyError::InternalError),
+        _ => Err(GovernanceError::InternalError),
     }
 }
 
@@ -630,20 +720,20 @@ fn u32_to_role(role: u32) -> Result<crate::types::Role, RustAcademyError> {
 /// # Errors
 /// - `InvalidSignerSet` — empty, >10 signers, or any zero-address
 /// - `DuplicateSigner` — duplicate addresses
-/// - `InvalidThreshold` — threshold is 0 or > signer count
+/// - `InvalidGovernanceThreshold` — threshold is 0 or > signer count
 fn validate_signer_set(
     env: &Env,
     signers: &Vec<Address>,
     threshold: u32,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), GovernanceError> {
     let len = signers.len();
 
     if len == 0 || len > MAX_SIGNERS {
-        return Err(RustAcademyError::InvalidSignerSet);
+        return Err(GovernanceError::InvalidSignerSet);
     }
 
     if threshold == 0 || threshold > len {
-        return Err(RustAcademyError::InvalidThreshold);
+        return Err(GovernanceError::InvalidGovernanceThreshold);
     }
 
     // Check for duplicates (O(n²) — acceptable for n ≤ 10)
@@ -652,7 +742,7 @@ fn validate_signer_set(
         for j in (i + 1)..len {
             let b = signers.get(j).unwrap();
             if a == b {
-                return Err(RustAcademyError::DuplicateSigner);
+                return Err(GovernanceError::DuplicateSigner);
             }
         }
     }
