@@ -7,6 +7,7 @@
  */
 
 import { Test, TestingModule } from '@nestjs/testing';
+import { Account } from '@stellar/stellar-sdk';
 import { RefundJobHandler, PermanentRefundError } from './refund-job.handler';
 import { Job, JobStatus, JobType, CancellationToken } from '../types';
 import { RefundJobPayload } from '../types/job-payloads.types';
@@ -62,7 +63,7 @@ describe('RefundJobHandler', () => {
 
     const mockRegistry = {
       data: {
-        RustAcademy: { id: 'CCD123456789ABCDEF' },
+        RustAcademy: { id: 'CAAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQC526' },
       },
     };
 
@@ -71,18 +72,16 @@ describe('RefundJobHandler', () => {
     };
 
     const mockSorobanRpc = {
-      getAccount: jest.fn().mockResolvedValue({
-        accountId: 'G123456789',
-        sequenceNumber: '123',
-        publicKey: jest.fn().mockReturnValue('G123456789'),
-      }),
+      getAccount: jest.fn().mockResolvedValue(
+        new Account('GA7CLYKMLJF52LO3EO7WJM6TPFIVH2WJDCX2RWJBSVK46IBT4AFBIQP3', '123'),
+      ),
       prepareTransaction: jest.fn().mockImplementation((tx) => tx),
       submitAndWait: jest.fn(),
       pollTransactionStatus: jest.fn(),
     };
 
     const mockSigningService = {
-      publicKey: 'G123456789',
+      publicKey: 'GA7CLYKMLJF52LO3EO7WJM6TPFIVH2WJDCX2RWJBSVK46IBT4AFBIQP3',
       isConfigured: true,
       signTransaction: jest.fn(),
     };

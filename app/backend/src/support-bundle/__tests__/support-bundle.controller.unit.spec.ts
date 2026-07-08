@@ -1,7 +1,9 @@
+import { Reflector } from "@nestjs/core";
 import { Test, TestingModule } from "@nestjs/testing";
 import { SupportBundleController } from "../support-bundle.controller";
 import { SupportBundleService } from "../support-bundle.service";
 import { SupportBundleDto } from "../dto/support-bundle.dto";
+import { ApiKeysService } from "../../api-keys/api-keys.service";
 
 describe("SupportBundleController", () => {
   let controller: SupportBundleController;
@@ -58,6 +60,17 @@ describe("SupportBundleController", () => {
       generateBundle: jest.fn().mockResolvedValue(mockBundle),
     };
 
+    const mockApiKeysService = {
+      validateKey: jest.fn().mockResolvedValue(null),
+    };
+
+    const mockReflector = {
+      get: jest.fn().mockReturnValue(undefined),
+      getAll: jest.fn().mockReturnValue([]),
+      getAllAndMerge: jest.fn().mockReturnValue([]),
+      getAllAndOverride: jest.fn().mockReturnValue(undefined),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [SupportBundleController],
       providers: [
@@ -65,6 +78,8 @@ describe("SupportBundleController", () => {
           provide: SupportBundleService,
           useValue: mockService,
         },
+        { provide: ApiKeysService, useValue: mockApiKeysService },
+        { provide: Reflector, useValue: mockReflector },
       ],
     }).compile();
 

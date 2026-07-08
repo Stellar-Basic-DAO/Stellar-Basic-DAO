@@ -67,7 +67,7 @@ describe("ContractRegistryService", () => {
       mockEventEmitter,
       mockContractChangeWebhookService as unknown as ContractChangeWebhookService,
       mockWebhookDispatcher as unknown as ContractChangeWebhookDispatcher,
-      { checkWritePermission: jest.fn().mockResolvedValue({ allowed: true, reason: "ok" }) } as unknown as ContractWritePolicyService,
+      { assertWritePermission: jest.fn().mockResolvedValue({ allowed: true, reason: "ok" }) } as unknown as ContractWritePolicyService,
     );
   });
 

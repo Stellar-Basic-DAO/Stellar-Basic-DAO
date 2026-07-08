@@ -230,7 +230,7 @@ describe("SupportBundleService", () => {
         /\.\.\./,
       );
       expect(
-        bundle.contract_registry.active_contracts[0].wasm_hash,
+        bundle.contract_registry.active_contracts[0].wasm_hash.length,
       ).toBeLessThan(40);
     });
 
