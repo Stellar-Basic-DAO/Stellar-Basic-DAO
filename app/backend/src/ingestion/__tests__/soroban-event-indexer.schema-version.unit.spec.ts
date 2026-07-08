@@ -5,6 +5,7 @@ import {
   MAX_SUPPORTED_SCHEMA_VERSION,
   UnknownSchemaVersionHandler,
 } from "../soroban-event.parser";
+import { RustAcademy_EVENT_TOPICS } from "../event-schema";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -55,12 +56,13 @@ const COMMITMENT_HEX = "deadbeef".repeat(8);
 describe("SorobanEventParser – schema version handling", () => {
   it("treats absent schema_version as v1", () => {
     const parser = new SorobanEventParser();
-    const topics = [symVal("EscrowDeposited"), bytesVal(COMMITMENT_HEX), addressVal(OWNER)];
+    const topics = [symVal(RustAcademy_EVENT_TOPICS.escrow), symVal("EscrowDeposited"), bytesVal(COMMITMENT_HEX), addressVal(OWNER)];
     const data = mapVal({
-      token: addressVal(TOKEN),
-      amount: nativeToScVal(1_000n, { type: "i128" }),
+      amount_due: nativeToScVal(1_000n, { type: "i128" }),
+      amount_paid: nativeToScVal(1_000n, { type: "i128" }),
       expires_at: nativeToScVal(9999999n, { type: "u64" }),
       timestamp: nativeToScVal(1700000000n, { type: "u64" }),
+      token: addressVal(TOKEN),
       // no schema_version key
     });
 
@@ -71,13 +73,14 @@ describe("SorobanEventParser – schema version handling", () => {
 
   it("accepts schema_version == 2", () => {
     const parser = new SorobanEventParser();
-    const topics = [symVal("EscrowDeposited"), bytesVal(COMMITMENT_HEX), addressVal(OWNER)];
+    const topics = [symVal(RustAcademy_EVENT_TOPICS.escrow), symVal("EscrowDeposited"), bytesVal(COMMITMENT_HEX), addressVal(OWNER)];
     const data = mapVal({
-      schema_version: nativeToScVal(2, { type: "u32" }),
-      token: addressVal(TOKEN),
-      amount: nativeToScVal(1_000n, { type: "i128" }),
+      amount_due: nativeToScVal(1_000n, { type: "i128" }),
+      amount_paid: nativeToScVal(1_000n, { type: "i128" }),
       expires_at: nativeToScVal(9999999n, { type: "u64" }),
+      schema_version: nativeToScVal(2, { type: "u32" }),
       timestamp: nativeToScVal(1700000000n, { type: "u64" }),
+      token: addressVal(TOKEN),
     });
 
     const result = parser.parse(makeRaw(topics, data));
@@ -146,16 +149,18 @@ describe("SorobanEventParser – EphemeralKeyRegistered", () => {
   it("parses EphemeralKeyRegistered", () => {
     const parser = new SorobanEventParser();
     const topics = [
+      symVal(RustAcademy_EVENT_TOPICS.stealth),
       symVal("EphemeralKeyRegistered"),
       bytesVal(STEALTH_HEX),
       bytesVal(EPH_PUB_HEX),
     ];
     const data = mapVal({
-      schema_version: nativeToScVal(2, { type: "u32" }),
-      token: addressVal(TOKEN),
-      amount: nativeToScVal(500n, { type: "i128" }),
+      amount_due: nativeToScVal(500n, { type: "i128" }),
+      amount_paid: nativeToScVal(500n, { type: "i128" }),
       expires_at: nativeToScVal(9999999n, { type: "u64" }),
+      schema_version: nativeToScVal(2, { type: "u32" }),
       timestamp: nativeToScVal(1700000000n, { type: "u64" }),
+      token: addressVal(TOKEN),
     });
 
     const result = parser.parse(makeRaw(topics, data));

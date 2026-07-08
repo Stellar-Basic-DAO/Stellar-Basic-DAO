@@ -91,7 +91,7 @@ describe("ContractRegistryService", () => {
       ],
     });
 
-    expect(result.data.RustAcademy).toEqual(
+    expect(result.data.rustacademy).toEqual(
       expect.objectContaining({ id: "C123", wasmHash: "abc123", version: 1 }),
     );
     expect(result.version).toBeGreaterThan(0);
@@ -169,20 +169,46 @@ describe("ContractRegistryService", () => {
     });
 
     const result = await service.rollback({ name: " RustAcademy", version: 1 });
-    expect(result.data.RustAcademy).toEqual(
+    expect(result.data.rustacademy).toEqual(
       expect.objectContaining({ id: "C123", wasmHash: "abc123", version: 1 }),
     );
   });
 
   it("throws when rolling back a missing version", async () => {
+    const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
+    mockClient.rpc.mockResolvedValue({
+      data: null,
+      error: { message: "No registry entry found for rustacademy version 99" },
+    });
+
     await expect(
       service.rollback({ name: " RustAcademy", version: 99 }),
-    ).rejects.toThrow(NotFoundException);
+    ).rejects.toThrow("Database error: No registry entry found for rustacademy version 99");
   });
 
   describe("Dual-read finalization", () => {
     it("finalizes dual-read by clearing previousContractId", async () => {
       const mockClient = mockSupabaseService.getClient() as unknown as { rpc: jest.Mock };
+
+      // First publish a contract entry so the in-memory fallback has data
+      mockClient.rpc.mockResolvedValue({
+        data: { success: true, newVersion: 1, publishedCount: 1, previousVersion: 0 },
+        error: null,
+      });
+      await service.publish({
+        networkPassphrase: "Test SDF Network ; September 2015",
+        deploymentId: "deploy-1",
+        contracts: [
+          {
+            name: " RustAcademy",
+            contractId: "C123",
+            wasmHash: "abc123",
+            contractVersion: 1,
+          },
+        ],
+      });
+
+      // Now finalize dual-read
       mockClient.rpc.mockResolvedValue({
         data: {
           success: true,
@@ -202,8 +228,8 @@ describe("ContractRegistryService", () => {
         expect.objectContaining({ actor: "deployment_automation" }),
       );
 
-      // Result should show cleared previousContractId
-      expect(result.data.RustAcademy).toBeDefined();
+      // Result should show the existing contract entry
+      expect(result.data.rustacademy).toBeDefined();
     });
 
     it("throws when no active entry exists", async () => {
@@ -254,7 +280,7 @@ describe("ContractRegistryService", () => {
             },
           ],
         }),
-      ).rejects.toThrow("Database connection failed");
+      ).rejects.toThrow("Database connection error. Please try again.");
 
       // Audit log should NOT be called on failure
       expect(mockAuditService.log).not.toHaveBeenCalled();
@@ -335,7 +361,7 @@ describe("ContractRegistryService", () => {
       // Verify the registry was updated
       const result = await service.getRegistry();
       expect(result.version).toBe(1);
-      expect(result.data.RustAcademy).toBeDefined();
+      expect(result.data.rustacademy).toBeDefined();
     });
 
     it("prevents concurrent publishes from creating duplicate active entries", async () => {

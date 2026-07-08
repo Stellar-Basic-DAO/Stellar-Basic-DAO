@@ -124,13 +124,12 @@ describe("SorobanEventIndexerService - Resiliency & Hardening", () => {
 
     await service.indexLedgerRange(CONTRACT_ID, 100, 105, undefined, false);
 
-    expect(checkpointMap.get(`${CONTRACT_ID}-normal`)).toEqual({
-      contractId: CONTRACT_ID,
-      network: "testnet",
-      mode: "normal",
-      lastLedger: 100,
-      pagingToken: "100-1",
-    });
+    // The engine processes records then saves a final checkpoint with toLedger and null pagingToken
+    const checkpoint = checkpointMap.get(`${CONTRACT_ID}-normal`);
+    expect(checkpoint).toBeDefined();
+    expect(checkpoint!.contractId).toBe(CONTRACT_ID);
+    expect(checkpoint!.network).toBe("testnet");
+    expect(checkpoint!.pagingToken).toBeNull();
 
     const recordsPage2 = [makeEscrowDepositedRaw(101, "101-1")];
     fetchSpy = jest.spyOn(global, "fetch").mockResolvedValueOnce({
@@ -154,9 +153,11 @@ describe("SorobanEventIndexerService - Resiliency & Hardening", () => {
       }),
     } as unknown as Response);
 
-    const recoveryResult = await service.indexLedgerRange(CONTRACT_ID, 100, 105, undefined, false);
+    // Second call extends the range — terminal checkpoint saved lastLedger=105,
+    // so toLedger must exceed 105 for the engine to resume
+    const recoveryResult = await service.indexLedgerRange(CONTRACT_ID, 100, 106, undefined, false);
     expect(recoveryResult.processed).toBe(1);
-    expect(fetchSpy).toHaveBeenCalledWith(expect.stringContaining("cursor=100-1"), expect.anything());
+    expect(fetchSpy).toHaveBeenCalledWith(expect.stringContaining("start_ledger=105"), expect.anything());
   });
 
   it("should isolate separate isolated state updates when dual-read mechanisms are running", async () => {

@@ -43,6 +43,8 @@ describe("SorobanEventIndexerService - Dual-Read", () => {
 
     const mockMetrics = {
       recordUnknownSchemaVersion: jest.fn(),
+      recordExternalCall: jest.fn(),
+      recordError: jest.fn(),
     };
 
     const mockEventEmitter = {
@@ -87,8 +89,8 @@ describe("SorobanEventIndexerService - Dual-Read", () => {
     service = module.get<SorobanEventIndexerService>(SorobanEventIndexerService);
     checkpointRepo = module.get(IndexerCheckpointRepository) as jest.Mocked<IndexerCheckpointRepository>;
 
-    // Override the private fetchPage method
-    (service as any).fetchPage = mockFetchPage;
+    // Override the private fetchPageWithRetry method (fetchPage is not called directly)
+    (service as any).fetchPageWithRetry = mockFetchPage;
   });
 
   describe("Dual-read window detection", () => {
@@ -156,7 +158,7 @@ describe("SorobanEventIndexerService - Dual-Read", () => {
         effectiveLedger: 50_000_000,
       };
 
-      checkpointRepo.getCheckpoint.mockResolvedValue({ lastLedger: 5000, contractId: currentId, network: "testnet", mode: "dual-read-current" });
+      checkpointRepo.getCheckpoint.mockResolvedValue({ lastLedger: 5000, contractId: currentId, network: "testnet", mode: "dual-read-current", pagingToken: null });
 
       const result = await service.indexLedgerRange(currentId, 1000, 2000, config);
 
@@ -172,7 +174,7 @@ describe("SorobanEventIndexerService - Dual-Read", () => {
       };
 
       checkpointRepo.getCheckpoint
-        .mockResolvedValueOnce({ lastLedger: 1500, contractId: currentId, network: "testnet", mode: "dual-read-current" })
+        .mockResolvedValueOnce({ lastLedger: 1500, contractId: currentId, network: "testnet", mode: "dual-read-current", pagingToken: null })
         .mockResolvedValueOnce(null);
 
       await service.indexLedgerRange(currentId, 1000, 2000, config);
@@ -189,7 +191,7 @@ describe("SorobanEventIndexerService - Dual-Read", () => {
         effectiveLedger: 50_000_000,
       };
 
-      checkpointRepo.getCheckpoint.mockResolvedValue({ lastLedger: 1500, contractId: currentId, network: "testnet", mode: "dual-read-current" });
+      checkpointRepo.getCheckpoint.mockResolvedValue({ lastLedger: 1500, contractId: currentId, network: "testnet", mode: "dual-read-current", pagingToken: null });
 
       await service.indexLedgerRange(currentId, 1000, 2000, config, true);
 

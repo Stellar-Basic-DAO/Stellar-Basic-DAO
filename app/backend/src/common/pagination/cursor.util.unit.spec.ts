@@ -163,8 +163,9 @@ describe('Cursor Utility', () => {
 
     it('handles identical timestamps across multiple pages without skipping or duplicating', () => {
       // 10 rows with the EXACT SAME timestamp, but different IDs
+      // Zero-pad IDs so they sort correctly in string comparison (id-01 < id-10)
       const allRows = Array.from({ length: 10 }, (_, i) =>
-        makeRow(`id-${10 - i}`, `2026-01-01`),
+        makeRow(`id-${String(10 - i).padStart(2, '0')}`, `2026-01-01`),
       );
 
       const collectedIds: string[] = [];

@@ -93,15 +93,18 @@ describe("SorobanEventParser", () => {
 
     it("parses a valid EscrowDeposited event", () => {
       const topics = [
+        symVal(RustAcademy_EVENT_TOPICS.escrow),
         symVal("EscrowDeposited"),
         bytesVal(COMMITMENT_HEX),
         addressVal(OWNER),
       ];
       const data = mapVal({
-        token: addressVal(TOKEN),
-        amount: nativeToScVal(5_000_000n, { type: "i128" }),
+        amount_due: nativeToScVal(5_000_000n, { type: "i128" }),
+        amount_paid: nativeToScVal(5_000_000n, { type: "i128" }),
         expires_at: nativeToScVal(1800000000n, { type: "u64" }),
+        schema_version: nativeToScVal(1, { type: "u32" }),
         timestamp: nativeToScVal(1700000000n, { type: "u64" }),
+        token: addressVal(TOKEN),
       });
 
       const result = parser.parse(makeRaw(topics, data));
@@ -110,7 +113,7 @@ describe("SorobanEventParser", () => {
       expect(result.commitment).toBe(COMMITMENT_HEX);
       expect(result.owner).toBe(OWNER);
       expect(result.schemaVersion).toBe(1);
-      expect(result.topicNamespace).toBe("LEGACY");
+      expect(result.topicNamespace).toBe(RustAcademy_EVENT_TOPICS.escrow);
       expect(result.amount).toBe(5_000_000n);
       expect(result.amountPaid).toBe(5_000_000n);
       expect(result.expiresAt).toBe(1800000000n);
@@ -121,14 +124,17 @@ describe("SorobanEventParser", () => {
   describe("EscrowWithdrawn", () => {
     it("parses a valid EscrowWithdrawn event", () => {
       const topics = [
+        symVal(RustAcademy_EVENT_TOPICS.escrow),
         symVal("EscrowWithdrawn"),
         bytesVal(COMMITMENT_HEX),
         addressVal(OWNER),
       ];
       const data = mapVal({
-        token: addressVal(TOKEN),
         amount: nativeToScVal(5_000_000n, { type: "i128" }),
+        fee: nativeToScVal(100n, { type: "i128" }),
+        schema_version: nativeToScVal(RustAcademy_EVENT_SCHEMA_VERSION, { type: "u32" }),
         timestamp: nativeToScVal(1700001000n, { type: "u64" }),
+        token: addressVal(TOKEN),
       });
       const result = parser.parse(makeRaw(topics, data));
       expect(result?.eventType).toBe("EscrowWithdrawn");
@@ -276,15 +282,18 @@ describe("SorobanEventParser", () => {
 
     it("sets contractLedgerSequence to undefined for legacy events without the field", () => {
       const topics = [
+        symVal(RustAcademy_EVENT_TOPICS.escrow),
         symVal("EscrowDeposited"),
         bytesVal(COMMITMENT_HEX),
         addressVal(OWNER),
       ];
       const data = mapVal({
-        token: addressVal(TOKEN),
-        amount: nativeToScVal(5_000_000n, { type: "i128" }),
+        amount_due: nativeToScVal(5_000_000n, { type: "i128" }),
+        amount_paid: nativeToScVal(5_000_000n, { type: "i128" }),
         expires_at: nativeToScVal(1800000000n, { type: "u64" }),
+        schema_version: nativeToScVal(1, { type: "u32" }),
         timestamp: nativeToScVal(1700000000n, { type: "u64" }),
+        token: addressVal(TOKEN),
         // no ledger_sequence field (legacy v1 event)
       });
 

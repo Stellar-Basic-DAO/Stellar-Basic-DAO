@@ -282,7 +282,7 @@ async finalizeDualRead(
   actor = "deployment_automation",
 ) {
   const startTime = Date.now();
-  const targetName = contractName.toLowerCase();
+  const targetName = contractName.trim().toLowerCase();
 
   try {
     const result = await this.retryOperation(
@@ -357,7 +357,7 @@ async finalizeDualRead(
   actor = "deployment_automation",
 ) {
   const startTime = Date.now();
-  const targetName = dto.name.toLowerCase();
+  const targetName = dto.name.trim().toLowerCase();
   
   // Service-level policy check for defense in depth
   await this.contractWritePolicyService.assertWritePermission({
@@ -483,7 +483,7 @@ async finalizeDualRead(
 
   private validateContractSet(contracts: ContractRegistryEntryDto[]): void {
     const normalized = contracts
-      .map((contract) => contract.name.toLowerCase())
+      .map((contract) => contract.name.trim().toLowerCase())
       .sort();
     const expected = [...this.expectedContracts].sort();
 
@@ -510,7 +510,7 @@ async finalizeDualRead(
     timestamp: string,
   ): RegistryRecord {
     return {
-      name: contract.name.toLowerCase(),
+      name: contract.name.trim().toLowerCase(),
       network: this.configService.network,
       contractId: contract.contractId,
       wasmHash: contract.wasmHash,
