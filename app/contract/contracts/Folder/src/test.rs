@@ -2733,6 +2733,86 @@ fn test_resolve_expired_dispute_emits_auto_resolved_event() {
     assert!(found);
 }
 
+/// Issue #17 regression: ensure the auto-resolved payout is routed through
+/// `fee_router::route_payout`, so configured per-asset / global fees and the
+/// active collector are honoured when present. When fees are zero (default),
+/// the recipient still receives the full amount.
+#[test]
+fn test_resolve_expired_dispute_routes_through_fee_router() {
+    let (env, client) = setup();
+    let admin = Address::generate(&env);
+    let collector = Address::generate(&env);
+    let token = create_test_token(&env);
+    let owner = Address::generate(&env);
+    let arbiter = Address::generate(&env);
+    let amount: i128 = 10_000;
+    let salt = Bytes::from_slice(&env, b"issue_17_fee_routing_salt");
+
+    client.initialize(&admin);
+    // 10% global fee + active collector.
+    client.set_fee_config(
+        &admin,
+        &crate::types::FeeConfig {
+            fee_bps: 1000,
+            schema_version: crate::types::FEE_CONFIG_SCHEMA_VERSION,
+        },
+    );
+    client.set_platform_wallet(&admin, &collector);
+    client.rotate_fee_collector(&admin, &collector);
+    client.set_dispute_timeout(&admin, &10u64);
+    client.set_dispute_expiry_action(&admin, &DisputeExpiryAction::PayArbiter);
+
+    let token_client = token::StellarAssetClient::new(&env, &token);
+    token_client.mint(&owner, &amount);
+    let commitment = client.deposit(
+        &token,
+        &amount,
+        &owner,
+        &salt,
+        &1000,
+        &Some(arbiter.clone()),
+    );
+
+    client.dispute(&commitment);
+    let expiry = client.get_dispute_expiry(&commitment).unwrap();
+    env.ledger().set_timestamp(expiry.expires_at + 1);
+
+    client.resolve_expired_dispute(&commitment);
+
+    // 10% fee on 10_000 = 1_000 to collector; net 9_000 to arbiter.
+    assert_eq!(token_client.balance(&arbiter), 9_000);
+    assert_eq!(token_client.balance(&collector), 1_000);
+    assert_eq!(token_client.balance(&client.address), 0);
+    assert_eq!(
+        client.get_commitment_state(&commitment),
+        Some(EscrowStatus::Spent)
+    );
+
+    // Confirm the DisputeAutoResolved event is still emitted (event ordering
+    // must be preserved when replacing the direct transfer with the fee
+    // router).
+    let all = env.events().all();
+    let mut found = false;
+    for i in 0..all.len() {
+        let event = all.get(i).unwrap();
+        if event.0 != client.address {
+            continue;
+        }
+        let topics = event.1;
+        if topics.len() < 2 {
+            continue;
+        }
+        let t0: Symbol = topics.get(0).unwrap().try_into_val(&env).unwrap();
+        let t1: Symbol = topics.get(1).unwrap().try_into_val(&env).unwrap();
+        if t0 == Symbol::new(&env, EVENT_TOPIC_DISPUTE)
+            && t1 == Symbol::new(&env, "DisputeAutoResolved")
+        {
+            found = true;
+        }
+    }
+    assert!(found, "DisputeAutoResolved event must still be emitted");
+}
+
 #[test]
 fn test_get_escrow_details_shows_arbiter_to_owner_and_arbiter() {
     let (env, client) = setup();

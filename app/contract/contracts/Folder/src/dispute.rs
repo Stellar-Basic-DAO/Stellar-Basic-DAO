@@ -19,12 +19,12 @@
 //! The default action is [`RefundOwner`] because it is the safest deterministic
 //! fallback and avoids leaving funds locked in the contract.
 
-use soroban_sdk::{token, Address, Bytes, BytesN, Env};
+use soroban_sdk::{Address, Bytes, BytesN, Env};
 
 use crate::{
     admin,
     errors::RustAcademyError,
-    events, hook,
+    events, fee_router, hook,
     storage::{
         self, clear_dispute_state, get_dispute_expiry, get_dispute_expiry_action,
         get_dispute_timeout, get_escrow, put_dispute_expiry, put_escrow,
@@ -97,9 +97,11 @@ pub fn record_dispute_expiry(env: &Env, commitment: BytesN<32>) {
 ///
 /// Can be called by anyone once the timeout has elapsed. The outcome is
 /// determined by the snapshotted [`DisputeExpiryAction`] and is fully
-/// deterministic from on-chain state. Funds are released to the chosen
-/// recipient, the dispute auxiliary state is cleaned up, and state-change
-/// events are emitted.
+/// deterministic from on-chain state. Funds are routed through the fee
+/// router and released to the chosen recipient (net of any configured
+/// per-asset / global fees, with the active collector receiving the fee
+/// share). The dispute auxiliary state is then cleaned up, and the
+/// dispute/escrow state-change events are emitted.
 ///
 /// Auto-resolution is intentionally not gated by pause flags because it is a
 /// time-locked safety valve, but it still uses the reentrancy guard.
@@ -140,12 +142,27 @@ pub fn resolve_expired_dispute(
     updated.status = final_status;
     put_escrow(env, &commitment_bytes, &updated);
 
-    let token_client = token::Client::new(env, &entry.token);
-    token_client.transfer(
-        &env.current_contract_address(),
+    // Issue #17: route this payout through `fee_router::route_payout` instead
+    // of doing a direct token transfer, so that per-asset fees, arbiter
+    // splits, and the active collector are honoured the same way they are for
+    // normal `resolve_dispute`. When global/asset fees are zero (default),
+    // `route_payout` reduces to a single net-payout transfer of the full
+    // amount, preserving prior behaviour.
+    //
+    // For `PayArbiter` the recipient is the arbiter, so we also pass the
+    // recipient as the arbiter fee-split address — `route_payout` will then
+    // apply any configured per-asset `arbiter_bps` to the fee share.
+    let arbiter_for_fees: Option<&Address> = match expiry.action {
+        DisputeExpiryAction::RefundOwner => None,
+        DisputeExpiryAction::PayArbiter => Some(&recipient),
+    };
+    fee_router::route_payout(
+        env,
+        &entry.token,
         &recipient,
         &entry.amount_paid,
-    );
+        arbiter_for_fees,
+    )?;
 
     // Clean up dispute votes and expiry metadata so stale disputes cannot
     // accumulate storage rent.
