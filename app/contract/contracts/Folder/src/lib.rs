@@ -951,6 +951,22 @@ impl RustAcademyContract {
         admin::cancel_admin_transfer(&env, caller)
     }
 
+    /// Set the pending admin transfer window (**Admin only**).
+    ///
+    /// Defines how long, in seconds, a pending admin transfer remains
+    /// valid before it is auto-cleared (Issue #18). Default is 7 days.
+    /// `window_secs` must be greater than zero; subsequent
+    /// `propose_admin_transfer` calls snapshot this value into the new
+    /// proposal's `expires_at`.
+    pub fn set_admin_transfer_window(
+        env: Env,
+        caller: Address,
+        window_secs: u64,
+    ) -> Result<(), RustAcademyError> {
+        admin::guard_admin_config(&env)?;
+        admin::set_admin_transfer_window(&env, &caller, window_secs)
+    }
+
     /// Check if the contract is currently paused.
     ///
     /// Returns `true` if paused, `false` otherwise.

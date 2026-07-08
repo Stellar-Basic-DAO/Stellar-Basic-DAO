@@ -4118,3 +4118,93 @@ fn test_deposit_partial_has_escrow_id_mapping() {
     let mapped = client.get_escrow_id_commitment(&escrow_id);
     assert_eq!(mapped, Some(commitment));
 }
+// ============================================================================
+// Admin transfer expiry tests (Issue #18)
+// ============================================================================
+
+#[test]
+fn test_set_admin_transfer_window_requires_admin() {
+    let (env, client) = setup();
+    let admin = Address::generate(&env);
+    let rando = Address::generate(&env);
+    client.initialize(&admin);
+
+    // Non-admin: InsufficientRole.
+    let result = client.try_set_admin_transfer_window(&rando, &100u64);
+    assert_contract_error(result, RustAcademyError::InsufficientRole);
+
+    // Admin succeeds.
+    client.set_admin_transfer_window(&admin, &100u64);
+}
+
+#[test]
+fn test_set_admin_transfer_window_rejects_zero() {
+    let (env, client) = setup();
+    let admin = Address::generate(&env);
+    client.initialize(&admin);
+
+    let result = client.try_set_admin_transfer_window(&admin, &0u64);
+    assert_contract_error(result, RustAcademyError::InvalidTimeout);
+}
+
+#[test]
+fn test_accept_admin_transfer_within_window_succeeds() {
+    let (env, client) = setup();
+    let admin = Address::generate(&env);
+    let pending_admin = Address::generate(&env);
+    client.initialize(&admin);
+    client.set_admin_transfer_window(&admin, &100u64);
+
+    client.propose_admin_transfer(&admin, &pending_admin);
+    assert_eq!(
+        client.get_pending_admin_transfer(),
+        Some(pending_admin.clone())
+    );
+
+    let now = env.ledger().timestamp();
+    env.ledger().set_timestamp(now + 99);
+
+    client.accept_admin_transfer(&pending_admin);
+    assert_eq!(client.get_admin(), Some(pending_admin));
+    assert!(client.get_pending_admin_transfer().is_none());
+}
+
+#[test]
+fn test_accept_admin_transfer_after_window_fails_and_clears() {
+    let (env, client) = setup();
+    let admin = Address::generate(&env);
+    let pending_admin = Address::generate(&env);
+    client.initialize(&admin);
+    client.set_admin_transfer_window(&admin, &100u64);
+
+    client.propose_admin_transfer(&admin, &pending_admin);
+    assert!(client.get_pending_admin_transfer().is_some());
+
+    let now = env.ledger().timestamp();
+    env.ledger().set_timestamp(now + 101);
+
+    let result = client.try_accept_admin_transfer(&pending_admin);
+    assert_contract_error(result, RustAcademyError::AdminTransferExpired);
+
+    // Current admin unchanged; stale proposal auto-cleared.
+    assert_eq!(client.get_admin(), Some(admin));
+    assert!(client.get_pending_admin_transfer().is_none());
+}
+
+#[test]
+fn test_admin_transfer_expiry_default_window_is_one_week() {
+    let (env, client) = setup();
+    let admin = Address::generate(&env);
+    let pending_admin = Address::generate(&env);
+    client.initialize(&admin);
+
+    // No explicit window set: default must be 7 days.
+    client.propose_admin_transfer(&admin, &pending_admin);
+
+    let now = env.ledger().timestamp();
+    env.ledger().set_timestamp(now + 7 * 24 * 60 * 60 + 1);
+
+    let result = client.try_accept_admin_transfer(&pending_admin);
+    assert_contract_error(result, RustAcademyError::AdminTransferExpired);
+    assert!(client.get_pending_admin_transfer().is_none());
+}

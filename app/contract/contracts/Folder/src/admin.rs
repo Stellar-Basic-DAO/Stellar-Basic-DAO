@@ -186,6 +186,11 @@ pub fn set_admin(env: &Env, caller: Address, new_admin: Address) -> Result<(), R
 }
 
 /// Propose an admin transfer that must later be accepted by the target.
+///
+/// Issue #18: the proposal is recorded with `proposed_at` / `expires_at`
+/// (derived from the configured pending-transfer window) so stale
+/// transfers can be detected and auto-cleared instead of persisting
+/// indefinitely.
 pub fn propose_admin_transfer(
     env: &Env,
     caller: Address,
@@ -199,17 +204,38 @@ pub fn propose_admin_transfer(
         return Ok(());
     }
 
-    storage::set_pending_admin_transfer(env, &new_admin);
+    let now = env.ledger().timestamp();
+    let window_secs = storage::get_pending_admin_transfer_window(env);
+    let proposal = crate::types::PendingAdminTransferProposal {
+        new_admin: new_admin.clone(),
+        proposed_at: now,
+        expires_at: now.saturating_add(window_secs),
+    };
+    storage::set_pending_admin_transfer(env, &proposal);
     Ok(())
 }
 
 /// Accept the currently pending admin transfer.
+///
+/// Issue #18: if the proposal's `expires_at` has passed, the proposal is
+/// auto-cleared from storage and [`AdminTransferExpired`] is returned.
+/// This prevents a stale proposal (typo'd address, lost key, etc.) from
+/// being accepted long after it was filed.
 pub fn accept_admin_transfer(env: &Env, caller: Address) -> Result<(), RustAcademyError> {
     caller.require_auth();
-    let new_admin =
-        storage::get_pending_admin_transfer(env).ok_or(RustAcademyError::NoPendingAdminTransfer)?;
+    let proposal = storage::get_pending_admin_transfer_proposal(env)
+        .ok_or(RustAcademyError::NoPendingAdminTransfer)?;
+    let new_admin = proposal.new_admin;
+
     if caller != new_admin {
         return Err(RustAcademyError::InsufficientRole);
+    }
+
+    if env.ledger().timestamp() >= proposal.expires_at {
+        // Auto-clear the stale proposal so it does not occupy storage rent
+        // and so the admin can file a fresh one without an explicit cancel.
+        storage::clear_pending_admin_transfer(env);
+        return Err(RustAcademyError::AdminTransferExpired);
     }
 
     let old_admin = current_admin(env)?;
@@ -219,6 +245,22 @@ pub fn accept_admin_transfer(env: &Env, caller: Address) -> Result<(), RustAcade
     }
 
     apply_admin_transfer(env, &old_admin, &new_admin);
+    Ok(())
+}
+
+/// Set the window (seconds) during which a pending admin transfer remains
+/// valid. Issue #18: any subsequent `propose_admin_transfer` snapshots
+/// this value into the new proposal's `expires_at`.
+pub fn set_admin_transfer_window(
+    env: &Env,
+    caller: &Address,
+    window_secs: u64,
+) -> Result<(), RustAcademyError> {
+    require_admin(env, caller)?;
+    if window_secs == 0 {
+        return Err(RustAcademyError::InvalidTimeout);
+    }
+    storage::set_pending_admin_transfer_window(env, window_secs);
     Ok(())
 }
 

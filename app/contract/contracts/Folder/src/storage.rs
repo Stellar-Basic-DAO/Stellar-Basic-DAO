@@ -43,8 +43,9 @@ use soroban_sdk::{contracttype, Address, Bytes, BytesN, Env, Vec};
 
 use crate::errors::RustAcademyError;
 use crate::types::{
-    DisputeExpiry, DisputeExpiryAction, DisputeVote, EscrowEntry, FeeConfig, Role,
-    StealthEscrowEntry, PerAssetFeeConfig, OracleFeeConfig,
+    DisputeExpiry, DisputeExpiryAction, DisputeVote, EscrowEntry, FeeConfig,
+    PendingAdminTransferProposal, Role, StealthEscrowEntry, PerAssetFeeConfig,
+    OracleFeeConfig,
 };
 
 /// Record type for TTL policy selection.
@@ -129,6 +130,12 @@ pub const MAX_PRIVACY_HISTORY: u32 = 50;
 /// Used when no explicit timeout has been configured by the admin/operator.
 pub const DEFAULT_DISPUTE_TIMEOUT_SECS: u64 = 7 * 24 * 60 * 60; // 604800
 
+/// Default window in which a pending admin transfer must be accepted
+/// before it is auto-cleared (Issue #18). Mirrors the dispute timeout
+/// default so a freshly-deployed contract enforces a sane expiry on
+/// handover proposals without requiring any explicit configuration.
+pub const DEFAULT_ADMIN_TRANSFER_WINDOW_SECS: u64 = 7 * 24 * 60 * 60; // 604800
+
 /// Bitmask flags for granular operation pausing.
 #[contracttype]
 #[repr(u64)]
@@ -162,8 +169,15 @@ pub enum DataKey {
     ContractVersion,
     /// Admin address (singleton).
     Admin,
-    /// Pending admin transfer target (singleton).
+    /// Pending admin transfer target (singleton). Stored as
+    /// [`PendingAdminTransferProposal`](crate::types::PendingAdminTransferProposal)
+    /// so the proposal carries its own `proposed_at` / `expires_at` (Issue #18).
     PendingAdminTransfer,
+    /// Configured window (seconds) during which a pending admin transfer
+    /// remains valid. Default is
+    /// [`DEFAULT_ADMIN_TRANSFER_WINDOW_SECS`]. Set via
+    /// `admin::set_admin_transfer_window` (Issue #18).
+    PendingAdminTransferWindow,
     /// Explicit one-time initialization flag (singleton).
     Initialized,
     /// Paused state (singleton).
@@ -561,23 +575,52 @@ pub fn get_admin(env: &Env) -> Option<Address> {
     env.storage().persistent().get(&key)
 }
 
-/// Set the pending admin transfer target.
-pub fn set_pending_admin_transfer(env: &Env, pending_admin: &Address) {
+/// Store a pending admin transfer proposal (Issue #18).
+///
+/// Replaces the previous `&Address` setter so the proposal carries
+/// `proposed_at` / `expires_at` and can be auto-cleared on expiry.
+pub fn set_pending_admin_transfer(env: &Env, proposal: &PendingAdminTransferProposal) {
     let key = DataKey::PendingAdminTransfer;
-    env.storage().persistent().set(&key, pending_admin);
+    env.storage().persistent().set(&key, proposal);
 }
 
-/// Get the pending admin transfer target.
-pub fn get_pending_admin_transfer(env: &Env) -> Option<Address> {
+/// Get the pending admin transfer proposal (struct), if any (Issue #18).
+pub fn get_pending_admin_transfer_proposal(env: &Env) -> Option<PendingAdminTransferProposal> {
     let key = DataKey::PendingAdminTransfer;
     env.storage().persistent().get(&key)
 }
 
-/// Clear any pending admin transfer target.
+/// Get only the target address of a pending admin transfer, if any.
+///
+/// Convenience wrapper that preserves the prior `Option<Address>` shape
+/// for callers that don't need the timestamps.
+pub fn get_pending_admin_transfer(env: &Env) -> Option<Address> {
+    get_pending_admin_transfer_proposal(env).map(|p| p.new_admin)
+}
+
+/// Clear any pending admin transfer proposal.
 pub fn clear_pending_admin_transfer(env: &Env) {
     env.storage()
         .persistent()
         .remove(&DataKey::PendingAdminTransfer);
+}
+
+/// Set the configured admin transfer window in seconds.
+pub fn set_pending_admin_transfer_window(env: &Env, window_secs: u64) {
+    let key = DataKey::PendingAdminTransferWindow;
+    env.storage().persistent().set(&key, &window_secs);
+}
+
+/// Get the configured admin transfer window in seconds.
+///
+/// Falls back to [`DEFAULT_ADMIN_TRANSFER_WINDOW_SECS`] when no window
+/// has been explicitly configured.
+pub fn get_pending_admin_transfer_window(env: &Env) -> u64 {
+    let key = DataKey::PendingAdminTransferWindow;
+    env.storage()
+        .persistent()
+        .get(&key)
+        .unwrap_or(DEFAULT_ADMIN_TRANSFER_WINDOW_SECS)
 }
 
 // -----------------------------------------------------------------------------

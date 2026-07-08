@@ -23,6 +23,8 @@ pub enum RustAcademyError {
     InvalidRoleState = 203,
     /// No pending admin transfer is available to accept or cancel.
     NoPendingAdminTransfer = 204,
+    /// The pending admin transfer has passed its `expires_at` deadline.
+    AdminTransferExpired = 205,
     // State, escrow, and commitment violations (300-399)
     ContractPaused = 300,
     PrivacyAlreadySet = 301,
