@@ -51,10 +51,10 @@ mod upgrade_test;
 use errors::RustAcademyError;
 use storage::*;
 use types::{
-    ContractHealth, DeploymentMetadata, DisputeExpiryAction, EscrowEntry,
-    EscrowOperationEstimate, EscrowOperationLimits, EscrowStatus, FeatureFlags, FeeConfig,
-    OracleFeeConfig, PerAssetFeeConfig, PrivacyAwareEscrowView, Role, SchemaCompatibility,
-    StealthDepositParams, SupportedVersions, UpgradeState,
+    ContractHealth, DeploymentMetadata, DisputeExpiryAction, EscrowEntry, EscrowOperationEstimate,
+    EscrowOperationLimits, EscrowStatus, FeatureFlags, FeeConfig, OracleFeeConfig,
+    PerAssetFeeConfig, PrivacyAwareEscrowView, Role, SchemaCompatibility, StealthDepositParams,
+    SupportedVersions, UpgradeState,
 };
 
 pub use types::FeeRatio;
@@ -503,7 +503,16 @@ impl RustAcademyContract {
         threshold: u32,
     ) -> Result<BytesN<32>, RustAcademyError> {
         admin::guard_deposit(&env, PauseFlag::Deposit)?;
-        escrow::deposit_with_arbiters(&env, token, amount, owner, salt, timeout_secs, arbiters, threshold)
+        escrow::deposit_with_arbiters(
+            &env,
+            token,
+            amount,
+            owner,
+            salt,
+            timeout_secs,
+            arbiters,
+            threshold,
+        )
     }
 
     /// Make a partial payment towards an existing escrow.
@@ -949,6 +958,22 @@ impl RustAcademyContract {
     /// Cancel a pending admin transfer (**Admin only**).
     pub fn cancel_admin_transfer(env: Env, caller: Address) -> Result<(), RustAcademyError> {
         admin::cancel_admin_transfer(&env, caller)
+    }
+
+    /// Set the pending admin transfer window (**Admin only**).
+    ///
+    /// Defines how long, in seconds, a pending admin transfer remains
+    /// valid before it is auto-cleared (Issue #18). Default is 7 days.
+    /// `window_secs` must be greater than zero; subsequent
+    /// `propose_admin_transfer` calls snapshot this value into the new
+    /// proposal's `expires_at`.
+    pub fn set_admin_transfer_window(
+        env: Env,
+        caller: Address,
+        window_secs: u64,
+    ) -> Result<(), RustAcademyError> {
+        admin::guard_admin_config(&env)?;
+        admin::set_admin_transfer_window(&env, &caller, window_secs)
     }
 
     /// Check if the contract is currently paused.
@@ -1429,10 +1454,7 @@ impl RustAcademyContract {
     /// Execute a proposal that has reached the approval threshold.
     ///
     /// Any caller can trigger execution — no additional auth required.
-    pub fn execute_proposal(
-        env: Env,
-        proposal_id: BytesN<32>,
-    ) -> Result<(), RustAcademyError> {
+    pub fn execute_proposal(env: Env, proposal_id: BytesN<32>) -> Result<(), RustAcademyError> {
         governance::execute_proposal(&env, proposal_id)
     }
 

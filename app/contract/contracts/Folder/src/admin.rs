@@ -186,6 +186,11 @@ pub fn set_admin(env: &Env, caller: Address, new_admin: Address) -> Result<(), R
 }
 
 /// Propose an admin transfer that must later be accepted by the target.
+///
+/// Issue #18: the proposal is recorded with `proposed_at` / `expires_at`
+/// (derived from the configured pending-transfer window) so stale
+/// transfers can be detected and auto-cleared instead of persisting
+/// indefinitely.
 pub fn propose_admin_transfer(
     env: &Env,
     caller: Address,
@@ -199,17 +204,38 @@ pub fn propose_admin_transfer(
         return Ok(());
     }
 
-    storage::set_pending_admin_transfer(env, &new_admin);
+    let now = env.ledger().timestamp();
+    let window_secs = storage::get_pending_admin_transfer_window(env);
+    let proposal = crate::types::PendingAdminTransferProposal {
+        new_admin: new_admin.clone(),
+        proposed_at: now,
+        expires_at: now.saturating_add(window_secs),
+    };
+    storage::set_pending_admin_transfer(env, &proposal);
     Ok(())
 }
 
 /// Accept the currently pending admin transfer.
+///
+/// Issue #18: if the proposal's `expires_at` has passed, the proposal is
+/// auto-cleared from storage and [`AdminTransferExpired`] is returned.
+/// This prevents a stale proposal (typo'd address, lost key, etc.) from
+/// being accepted long after it was filed.
 pub fn accept_admin_transfer(env: &Env, caller: Address) -> Result<(), RustAcademyError> {
     caller.require_auth();
-    let new_admin =
-        storage::get_pending_admin_transfer(env).ok_or(RustAcademyError::NoPendingAdminTransfer)?;
+    let proposal = storage::get_pending_admin_transfer_proposal(env)
+        .ok_or(RustAcademyError::NoPendingAdminTransfer)?;
+    let new_admin = proposal.new_admin;
+
     if caller != new_admin {
         return Err(RustAcademyError::InsufficientRole);
+    }
+
+    if env.ledger().timestamp() >= proposal.expires_at {
+        // Auto-clear the stale proposal so it does not occupy storage rent
+        // and so the admin can file a fresh one without an explicit cancel.
+        storage::clear_pending_admin_transfer(env);
+        return Err(RustAcademyError::AdminTransferExpired);
     }
 
     let old_admin = current_admin(env)?;
@@ -219,6 +245,22 @@ pub fn accept_admin_transfer(env: &Env, caller: Address) -> Result<(), RustAcade
     }
 
     apply_admin_transfer(env, &old_admin, &new_admin);
+    Ok(())
+}
+
+/// Set the window (seconds) during which a pending admin transfer remains
+/// valid. Issue #18: any subsequent `propose_admin_transfer` snapshots
+/// this value into the new proposal's `expires_at`.
+pub fn set_admin_transfer_window(
+    env: &Env,
+    caller: &Address,
+    window_secs: u64,
+) -> Result<(), RustAcademyError> {
+    require_admin(env, caller)?;
+    if window_secs == 0 {
+        return Err(RustAcademyError::InvalidTimeout);
+    }
+    storage::set_pending_admin_transfer_window(env, window_secs);
     Ok(())
 }
 
@@ -543,7 +585,10 @@ pub fn require_not_paused_global(env: &Env) -> Result<(), RustAcademyError> {
 /// Require that a specific feature is not paused.
 ///
 /// Checks the granular pause flags for specific operations.
-pub fn require_feature_not_paused(env: &Env, flag: crate::storage::PauseFlag) -> Result<(), RustAcademyError> {
+pub fn require_feature_not_paused(
+    env: &Env,
+    flag: crate::storage::PauseFlag,
+) -> Result<(), RustAcademyError> {
     if storage::is_feature_paused(env, flag) {
         return Err(RustAcademyError::OperationPaused);
     }
@@ -553,7 +598,10 @@ pub fn require_feature_not_paused(env: &Env, flag: crate::storage::PauseFlag) ->
 /// Standard guard for user-initiated deposit operations.
 ///
 /// Checks: emergency mode, global pause, feature pause, reentrancy.
-pub fn guard_deposit(env: &Env, pause_flag: crate::storage::PauseFlag) -> Result<(), RustAcademyError> {
+pub fn guard_deposit(
+    env: &Env,
+    pause_flag: crate::storage::PauseFlag,
+) -> Result<(), RustAcademyError> {
     require_not_emergency_mode(env)?;
     require_not_paused_global(env)?;
     require_feature_not_paused(env, pause_flag)?;
@@ -565,7 +613,10 @@ pub fn guard_deposit(env: &Env, pause_flag: crate::storage::PauseFlag) -> Result
 ///
 /// Checks: global pause, feature pause, reentrancy.
 /// Note: Emergency mode does NOT block withdrawals (users need to access funds).
-pub fn guard_withdraw(env: &Env, pause_flag: crate::storage::PauseFlag) -> Result<(), RustAcademyError> {
+pub fn guard_withdraw(
+    env: &Env,
+    pause_flag: crate::storage::PauseFlag,
+) -> Result<(), RustAcademyError> {
     require_not_paused_global(env)?;
     require_feature_not_paused(env, pause_flag)?;
     crate::hook::assert_not_reentrant(env)?;
@@ -575,7 +626,10 @@ pub fn guard_withdraw(env: &Env, pause_flag: crate::storage::PauseFlag) -> Resul
 /// Standard guard for refund operations.
 ///
 /// Checks: global pause, feature pause, reentrancy.
-pub fn guard_refund(env: &Env, pause_flag: crate::storage::PauseFlag) -> Result<(), RustAcademyError> {
+pub fn guard_refund(
+    env: &Env,
+    pause_flag: crate::storage::PauseFlag,
+) -> Result<(), RustAcademyError> {
     require_not_paused_global(env)?;
     require_feature_not_paused(env, pause_flag)?;
     crate::hook::assert_not_reentrant(env)?;
@@ -612,7 +666,10 @@ pub fn guard_initialized(env: &Env) -> Result<(), RustAcademyError> {
 /// Standard guard for stealth address operations.
 ///
 /// Checks: global pause, feature pause, reentrancy.
-pub fn guard_stealth(env: &Env, pause_flag: crate::storage::PauseFlag) -> Result<(), RustAcademyError> {
+pub fn guard_stealth(
+    env: &Env,
+    pause_flag: crate::storage::PauseFlag,
+) -> Result<(), RustAcademyError> {
     require_not_paused_global(env)?;
     require_feature_not_paused(env, pause_flag)?;
     crate::hook::assert_not_reentrant(env)?;
@@ -629,7 +686,12 @@ pub fn set_pause_flags(
     require_any_role(env, caller, &[Role::Admin, Role::Operator])?;
 
     storage::set_pause_flags(env, caller, flags_to_enable, flags_to_disable);
-    crate::events::publish_pause_flags_changed(env, caller.clone(), flags_to_enable, flags_to_disable);
+    crate::events::publish_pause_flags_changed(
+        env,
+        caller.clone(),
+        flags_to_enable,
+        flags_to_disable,
+    );
     Ok(())
 }
 

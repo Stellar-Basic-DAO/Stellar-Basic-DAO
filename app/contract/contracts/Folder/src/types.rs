@@ -182,6 +182,25 @@ pub struct DisputeExpiry {
     pub action: DisputeExpiryAction,
 }
 
+/// Snapshot of a proposed admin handover, recorded when an admin calls
+/// `propose_admin_transfer` and consumed by `accept_admin_transfer`.
+///
+/// The `expires_at` field bounds how long a pending handover can sit in
+/// storage before it is auto-cleared. Without an expiry, a stale
+/// transfer (typo in the new admin address, lost key, etc.) would persist
+/// indefinitely and could allow a stale proposal to be accepted by a
+/// caller who later obtains the proposed address.
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PendingAdminTransferProposal {
+    /// Address that will take over admin role on `accept_admin_transfer`.
+    pub new_admin: Address,
+    /// Ledger timestamp when the proposal was created.
+    pub proposed_at: u64,
+    /// Ledger timestamp after which the proposal is considered expired.
+    pub expires_at: u64,
+}
+
 /// Parameters for registering an ephemeral key (stealth deposit).
 ///
 /// Bundles the 8 arguments of `register_ephemeral_key` into a single struct
