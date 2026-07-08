@@ -75,7 +75,7 @@ mod tests {
         let env = setup_env();
         let signers = vec![&env];
         let err = initialize_governance(&env, signers, 1).unwrap_err();
-        assert_eq!(err, crate::errors::RustAcademyError::InvalidSignerSet);
+        assert_eq!(err, crate::governance::GovernanceError::InvalidSignerSet);
     }
 
     #[test]
@@ -83,7 +83,7 @@ mod tests {
         let env = setup_env();
         let signers = make_signers(&env, 3);
         let err = initialize_governance(&env, signers, 0).unwrap_err();
-        assert_eq!(err, crate::errors::RustAcademyError::InvalidThreshold);
+        assert_eq!(err, crate::governance::GovernanceError::InvalidGovernanceThreshold);
     }
 
     #[test]
@@ -91,7 +91,7 @@ mod tests {
         let env = setup_env();
         let signers = make_signers(&env, 3);
         let err = initialize_governance(&env, signers, 4).unwrap_err();
-        assert_eq!(err, crate::errors::RustAcademyError::InvalidThreshold);
+        assert_eq!(err, crate::governance::GovernanceError::InvalidGovernanceThreshold);
     }
 
     #[test]
@@ -99,7 +99,7 @@ mod tests {
         let env = setup_env();
         let signers = make_signers(&env, 11); // MAX is 10
         let err = initialize_governance(&env, signers, 6).unwrap_err();
-        assert_eq!(err, crate::errors::RustAcademyError::InvalidSignerSet);
+        assert_eq!(err, crate::governance::GovernanceError::InvalidSignerSet);
     }
 
     // -----------------------------------------------------------------------
@@ -114,7 +114,7 @@ mod tests {
         initialize_governance(&env, signers, 1).unwrap();
 
         let valid_until = 1_000_000 + 86_400; // 1 day from now
-        let action = ProposalAction::SetPaused { paused: true };
+        let action = ProposalAction::SetPaused(true);
 
         let proposal_id = create_proposal(&env, signer.clone(), action.clone(), 1u64, valid_until).unwrap();
 
@@ -135,12 +135,12 @@ mod tests {
         let err = create_proposal(
             &env,
             stranger,
-            ProposalAction::SetPaused { paused: true },
+            ProposalAction::SetPaused(true),
             1u64,
             valid_until,
         )
         .unwrap_err();
-        assert_eq!(err, crate::errors::RustAcademyError::NotASigner);
+        assert_eq!(err, crate::governance::GovernanceError::NotASigner);
     }
 
     #[test]
@@ -153,12 +153,12 @@ mod tests {
         let err = create_proposal(
             &env,
             signer,
-            ProposalAction::SetPaused { paused: false },
+            ProposalAction::SetPaused(false),
             1u64,
             valid_until,
         )
         .unwrap_err();
-        assert_eq!(err, crate::errors::RustAcademyError::SignatureExpired);
+        assert_eq!(err, crate::governance::GovernanceError::InvalidProposalState);
     }
 
     #[test]
@@ -171,12 +171,12 @@ mod tests {
         let err = create_proposal(
             &env,
             signer,
-            ProposalAction::SetPaused { paused: false },
+            ProposalAction::SetPaused(false),
             1u64,
             valid_until,
         )
         .unwrap_err();
-        assert_eq!(err, crate::errors::RustAcademyError::ExpiryTooFar);
+        assert_eq!(err, crate::governance::GovernanceError::ExpiryTooFar);
     }
 
     // -----------------------------------------------------------------------
@@ -193,7 +193,7 @@ mod tests {
         let proposal_id = create_proposal(
             &env,
             signer,
-            ProposalAction::SetPaused { paused: true },
+            ProposalAction::SetPaused(true),
             1u64,
             valid_until,
         )
@@ -217,7 +217,7 @@ mod tests {
         let proposal_id = create_proposal(
             &env,
             s1.clone(),
-            ProposalAction::SetPaused { paused: false },
+            ProposalAction::SetPaused(false),
             42u64,
             valid_until,
         )
@@ -245,12 +245,12 @@ mod tests {
 
         let valid_until = 1_000_000 + 86_400;
         let proposal_id = create_proposal(
-            &env, s1.clone(), ProposalAction::SetPaused { paused: true }, 1u64, valid_until,
+            &env, s1.clone(), ProposalAction::SetPaused(true), 1u64, valid_until,
         ).unwrap();
 
         approve_proposal(&env, s2.clone(), proposal_id.clone()).unwrap();
         let err = approve_proposal(&env, s2.clone(), proposal_id.clone()).unwrap_err();
-        assert_eq!(err, crate::errors::RustAcademyError::AlreadyApproved);
+        assert_eq!(err, crate::governance::GovernanceError::AlreadyApproved);
     }
 
     // -----------------------------------------------------------------------
@@ -266,12 +266,12 @@ mod tests {
 
         let valid_until = 1_000_000 + 86_400;
         let proposal_id = create_proposal(
-            &env, s1, ProposalAction::SetPaused { paused: true }, 1u64, valid_until,
+            &env, s1, ProposalAction::SetPaused(true), 1u64, valid_until,
         ).unwrap();
 
         // Only 1 approval, threshold is 3
         let err = execute_proposal(&env, proposal_id).unwrap_err();
-        assert_eq!(err, crate::errors::RustAcademyError::InsufficientApprovals);
+        assert_eq!(err, crate::governance::GovernanceError::InsufficientApprovals);
     }
 
     // -----------------------------------------------------------------------
@@ -288,7 +288,7 @@ mod tests {
 
         let valid_until = 1_000_000 + 86_400;
         let proposal_id = create_proposal(
-            &env, s1.clone(), ProposalAction::SetPaused { paused: false }, 1u64, valid_until,
+            &env, s1.clone(), ProposalAction::SetPaused(false), 1u64, valid_until,
         ).unwrap();
 
         cancel_proposal(&env, s2.clone(), proposal_id.clone()).unwrap();
@@ -306,10 +306,10 @@ mod tests {
 
         let valid_until = 1_000_000 + 86_400;
         let proposal_id = create_proposal(
-            &env, signer, ProposalAction::SetPaused { paused: true }, 1u64, valid_until,
+            &env, signer, ProposalAction::SetPaused(true), 1u64, valid_until,
         ).unwrap();
 
         let err = cancel_proposal(&env, stranger, proposal_id).unwrap_err();
-        assert_eq!(err, crate::errors::RustAcademyError::NotASigner);
+        assert_eq!(err, crate::governance::GovernanceError::NotASigner);
     }
 }

@@ -46,14 +46,19 @@
 
 use soroban_sdk::{xdr::ToXdr, Address, Bytes, BytesN, Env};
 
-use crate::errors:: RustAcademyError;
+use crate::errors::RustAcademyError;
 
 /// Domain separation tag for escrow-id derivation.
 ///
 /// Bump the version suffix (`v1` → `v2`) if the canonical encoding ever
 /// changes; this guarantees that clients and storage from different
 /// versions cannot collide.
-pub const ESCROW_ID_DOMAIN_TAG: &[u8] = b" RustAcademy::ESCROW_ID::v1";
+///
+/// As of v2 (Issue #19) the payload also commits to the contract
+/// address and the network identifier, so two distinct deployments
+/// — or two different Stellar networks — can never derive the same
+/// `escrow_id` for what would otherwise be the same logical input.
+pub const ESCROW_ID_DOMAIN_TAG: &[u8] = b"RustAcademy::ESCROW_ID::v2";
 
 /// Arbiter presence tag for canonical serialization.
 const ARBITER_TAG_NONE: u8 = 0;
@@ -89,18 +94,32 @@ pub fn derive_escrow_id(
     salt: &Bytes,
     timeout_secs: u64,
     arbiter: &Option<Address>,
-) -> Result<BytesN<32>,  RustAcademyError> {
+) -> Result<BytesN<32>, RustAcademyError> {
     if amount < 0 {
-        return Err( RustAcademyError::InvalidAmount);
+        return Err(RustAcademyError::InvalidAmount);
     }
     if salt.len() > MAX_SALT_LEN {
-        return Err( RustAcademyError::InvalidSalt);
+        return Err(RustAcademyError::InvalidSalt);
     }
 
     let mut payload = Bytes::new(env);
 
-    // 1. Domain-separation tag.
+    // 1. Domain-separation tag (v2: see ESCROW_ID_DOMAIN_TAG for the
+    //    contract-address + network-id cross-domain separation, Issue #19).
     payload.append(&Bytes::from_slice(env, ESCROW_ID_DOMAIN_TAG));
+
+    // 1a. Contract address (length-prefixed XDR) — binds the id to a
+    //     specific contract deployment so two different contracts cannot
+    //     accidentally collide (Issue #19).
+    let contract_xdr = env.current_contract_address().to_xdr(env);
+    append_len_prefixed(env, &mut payload, &contract_xdr);
+
+    // 1b. Network identifier (32 bytes) — binds the id to a specific
+    //     Stellar network so testnet and mainnet cannot collide
+    //     (Issue #19).
+    let net_id: BytesN<32> = env.ledger().network_id();
+    let net_id_bytes: [u8; 32] = net_id.into();
+    payload.append(&Bytes::from_array(env, &net_id_bytes));
 
     // 2. Token address (length-prefixed XDR).
     let token_xdr = token.to_xdr(env);
@@ -140,7 +159,7 @@ pub fn derive_escrow_id(
 ///
 /// Distinct from [`ESCROW_ID_DOMAIN_TAG`] to prevent cross-protocol collisions
 /// between full-payment and partial-payment escrow IDs.
-pub const PARTIAL_ESCROW_ID_DOMAIN_TAG: &[u8] = b" RustAcademy::PARTIAL_ESCROW_ID::v1";
+pub const PARTIAL_ESCROW_ID_DOMAIN_TAG: &[u8] = b"RustAcademy::PARTIAL_ESCROW_ID::v2";
 
 /// Derive a deterministic 32-byte escrow id for a partial-payment deposit.
 ///
@@ -161,17 +180,29 @@ pub fn derive_partial_escrow_id(
     salt: &Bytes,
     timeout_secs: u64,
     arbiter: &Option<Address>,
-) -> Result<BytesN<32>,  RustAcademyError> {
+) -> Result<BytesN<32>, RustAcademyError> {
     if amount_due < 0 || initial_payment < 0 {
-        return Err( RustAcademyError::InvalidAmount);
+        return Err(RustAcademyError::InvalidAmount);
     }
     if salt.len() > MAX_SALT_LEN {
-        return Err( RustAcademyError::InvalidSalt);
+        return Err(RustAcademyError::InvalidSalt);
     }
 
     let mut payload = Bytes::new(env);
 
+    // Partial-payment variant shares the v2 cross-domain separation:
+    // contract address + network id are committed alongside the tag
+    // (Issue #19).
     payload.append(&Bytes::from_slice(env, PARTIAL_ESCROW_ID_DOMAIN_TAG));
+
+    // Contract address (length-prefixed XDR).
+    let contract_xdr = env.current_contract_address().to_xdr(env);
+    append_len_prefixed(env, &mut payload, &contract_xdr);
+
+    // Network identifier (32 bytes).
+    let net_id: BytesN<32> = env.ledger().network_id();
+    let net_id_bytes: [u8; 32] = net_id.into();
+    payload.append(&Bytes::from_array(env, &net_id_bytes));
 
     let token_xdr = token.to_xdr(env);
     append_len_prefixed(env, &mut payload, &token_xdr);

@@ -104,26 +104,7 @@ pub enum RustAcademyError {
     UpgradeAlreadyInProgress = 503,
     /// No upgrade is currently in progress; upgrade or complete_upgrade cannot proceed.
     UpgradeNotInProgress = 504,
-    // Governance multisig (505-511, governance-model-v1)
-    /// Caller is not a member of the governance signer set.
-    NotASigner = 505,
-    /// A proposal with the derived proposal_id already exists in storage.
-    ProposalAlreadyExists = 506,
-    /// No proposal found for the given proposal_id.
-    ProposalNotFound = 507,
-    /// Proposal is not in the expected state for this operation.
-    InvalidProposalState = 508,
-    /// Signer has already approved this proposal.
-    AlreadyApproved = 509,
-    /// Insufficient approvals to execute the proposal.
-    InsufficientApprovals = 510,
-    /// valid_until is more than 30 days in the future.
-    ExpiryTooFar = 511,
-    // Governance signer set validation (512-514)
-    /// The proposed signer set is empty, exceeds 10 members, or contains zero-addresses.
-    InvalidSignerSet = 512,
-    /// The governance threshold is 0 or exceeds the signer count.
-    InvalidGovernanceThreshold = 513,
-    /// The signer set contains duplicate addresses.
-    DuplicateSigner = 514,
+    // Governance multisig errors moved to `governance::GovernanceError`
+    // because the Stellar XDR ABI hardcaps a single `#[contracterror]` enum to
+    // 50 cases, and this enum was at 60.
 }
