@@ -7,12 +7,17 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app/backend
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
+        with:
+          run_install: false
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -26,7 +31,5 @@ jobs:
 
       # Task 1: Runs your pipeline checks consistently using Turbo
       - name: Build and validate workspace change
-        run: |
-          cd app/backend
-          npx tsc --noEmit || echo "::warning::Bypassing existing codebase compilation warning cleanly."
+        run: pnpm run type-check
 
