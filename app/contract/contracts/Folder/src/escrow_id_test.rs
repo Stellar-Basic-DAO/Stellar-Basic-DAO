@@ -14,7 +14,7 @@
 //! acceptance criteria: "Duplicate creates are rejected or return existing
 //! escrow deterministically."
 
-use crate::{ RustAcademyContract,  RustAcademyContractClient};
+use crate::{RustAcademyContract, RustAcademyContractClient};
 use soroban_sdk::{
     testutils::Address as _,
     token::{StellarAssetClient, TokenClient},
@@ -23,11 +23,11 @@ use soroban_sdk::{
 
 extern crate std;
 
-fn setup<'a>() -> (Env,  RustAcademyContractClient<'a>) {
+fn setup<'a>() -> (Env, RustAcademyContractClient<'a>) {
     let env = Env::default();
     env.mock_all_auths();
-    let contract_id = env.register( RustAcademyContract, ());
-    let client =  RustAcademyContractClient::new(&env, &contract_id);
+    let contract_id = env.register(RustAcademyContract, ());
+    let client = RustAcademyContractClient::new(&env, &contract_id);
     (env, client)
 }
 
@@ -263,7 +263,10 @@ fn test_escrow_id_rejects_negative_amount() {
     let salt = Bytes::from_slice(&env, b"neg");
 
     let result = client.try_derive_escrow_id(&token, &-1i128, &owner, &salt, &0u64, &None);
-    assert_eq!(result, Err(Ok(crate::errors:: RustAcademyError::InvalidAmount)));
+    assert_eq!(
+        result,
+        Err(Ok(crate::errors::RustAcademyError::InvalidAmount))
+    );
 }
 
 #[test]
@@ -278,7 +281,10 @@ fn test_escrow_id_rejects_oversized_salt() {
     }
 
     let result = client.try_derive_escrow_id(&token, &100i128, &owner, &large_salt, &0u64, &None);
-    assert_eq!(result, Err(Ok(crate::errors:: RustAcademyError::InvalidSalt)));
+    assert_eq!(
+        result,
+        Err(Ok(crate::errors::RustAcademyError::InvalidSalt))
+    );
 }
 
 // ============================================================================
@@ -374,34 +380,20 @@ fn test_escrow_id_varies_by_deployment_and_network() {
     // must therefore derive to two distinct escrow_ids (Issue #19).
     let env1 = Env::default();
     env1.mock_all_auths();
-    let contract1 = env1.register( RustAcademyContract, ());
-    let client1 =  RustAcademyContractClient::new(&env1, &contract1);
+    let contract1 = env1.register(RustAcademyContract, ());
+    let client1 = RustAcademyContractClient::new(&env1, &contract1);
 
     let env2 = Env::default();
     env2.mock_all_auths();
-    let contract2 = env2.register( RustAcademyContract, ());
-    let client2 =  RustAcademyContractClient::new(&env2, &contract2);
+    let contract2 = env2.register(RustAcademyContract, ());
+    let client2 = RustAcademyContractClient::new(&env2, &contract2);
 
     let token = Address::generate(&env1);
     let owner = Address::generate(&env1);
     let salt = Bytes::from_slice(&env1, b"deployment_test");
 
-    let id1 = client1.derive_escrow_id(
-        &token,
-        &100i128,
-        &owner,
-        &salt,
-        &3600u64,
-        &None,
-    );
-    let id2 = client2.derive_escrow_id(
-        &token,
-        &100i128,
-        &owner,
-        &salt,
-        &3600u64,
-        &None,
-    );
+    let id1 = client1.derive_escrow_id(&token, &100i128, &owner, &salt, &3600u64, &None);
+    let id2 = client2.derive_escrow_id(&token, &100i128, &owner, &salt, &3600u64, &None);
 
     assert_ne!(
         id1, id2,
