@@ -362,3 +362,49 @@ fn test_deposit_different_params_yield_different_ids() {
     );
     assert_ne!(id1, id2);
 }
+
+// ============================================================================
+// Cross-deployment / cross-network domain separation (Issue #19)
+// ============================================================================
+
+#[test]
+fn test_escrow_id_varies_by_deployment_and_network() {
+    // Two fresh Env instances have different network_ids, and the contract
+    // is registered at a different address in each. The same logical input
+    // must therefore derive to two distinct escrow_ids (Issue #19).
+    let env1 = Env::default();
+    env1.mock_all_auths();
+    let contract1 = env1.register( RustAcademyContract, ());
+    let client1 =  RustAcademyContractClient::new(&env1, &contract1);
+
+    let env2 = Env::default();
+    env2.mock_all_auths();
+    let contract2 = env2.register( RustAcademyContract, ());
+    let client2 =  RustAcademyContractClient::new(&env2, &contract2);
+
+    let token = Address::generate(&env1);
+    let owner = Address::generate(&env1);
+    let salt = Bytes::from_slice(&env1, b"deployment_test");
+
+    let id1 = client1.derive_escrow_id(
+        &token,
+        &100i128,
+        &owner,
+        &salt,
+        &3600u64,
+        &None,
+    );
+    let id2 = client2.derive_escrow_id(
+        &token,
+        &100i128,
+        &owner,
+        &salt,
+        &3600u64,
+        &None,
+    );
+
+    assert_ne!(
+        id1, id2,
+        "Different deployments / networks must produce different escrow_ids"
+    );
+}
