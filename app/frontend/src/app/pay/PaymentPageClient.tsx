@@ -9,7 +9,7 @@ import { PaidPaymentState } from "@/components/payment-states/PaidPaymentState";
 import { RefundedPaymentState } from "@/components/payment-states/RefundedPaymentState";
 import { LoadingState } from "@/components/payment-states/LoadingState";
 import { ErrorState } from "@/components/payment-states/ErrorState";
-import { getRustAcademyApiBase } from "@/lib/api";
+import { getStellarBasicDaoApiBase } from "@/lib/api";
 
 type LinkState = "ACTIVE" | "EXPIRED" | "PAID" | "REFUNDED" | "DRAFT";
 
@@ -64,7 +64,7 @@ function PaymentPageContent() {
     setError(null);
 
     try {
-      const apiBase = getRustAcademyApiBase();
+      const apiBase = getStellarBasicDaoApiBase();
       const params = new URLSearchParams({
         username,
         amount,

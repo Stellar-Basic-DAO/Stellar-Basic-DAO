@@ -1,5 +1,5 @@
 import i18n from "i18next";
-import { getRustAcademyApiBase } from "@/lib/api";
+import { getStellarBasicDaoApiBase } from "@/lib/api";
 
 export type DateRange = "24h" | "7d" | "30d" | "all";
 
@@ -204,7 +204,7 @@ export async function fetchAnalytics(range: DateRange): Promise<AnalyticsData> {
 
   const publicKey = resolveAnalyticsPublicKey();
   const { startDate, endDate, interval } = rangeToWindow(range);
-  const url = new URL(`${getRustAcademyApiBase()}/analytics/report`);
+  const url = new URL(`${getStellarBasicDaoApiBase()}/analytics/report`);
   url.searchParams.set("publicKey", publicKey);
   url.searchParams.set("startDate", startDate);
   url.searchParams.set("endDate", endDate);
@@ -234,7 +234,7 @@ export async function exportAnalyticsReport(
 ): Promise<void> {
   const publicKey = resolveAnalyticsPublicKey();
   const { startDate, endDate, interval } = rangeToWindow(range);
-  const url = new URL(`${getRustAcademyApiBase()}/analytics/export`);
+  const url = new URL(`${getStellarBasicDaoApiBase()}/analytics/export`);
   url.searchParams.set("publicKey", publicKey);
   url.searchParams.set("startDate", startDate);
   url.searchParams.set("endDate", endDate);

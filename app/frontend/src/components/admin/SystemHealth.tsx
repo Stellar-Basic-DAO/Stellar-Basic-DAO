@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Activity, DatabaseZap, ShieldAlert } from "lucide-react";
 
-import { getRustAcademyApiBase } from "@/lib/api";
+import { getStellarBasicDaoApiBase } from "@/lib/api";
 
 type HealthResponse = {
   status: string;
@@ -17,7 +17,7 @@ type FlagHealthResponse = {
 };
 
 export function SystemHealth() {
-  const apiBase = useMemo(() => getRustAcademyApiBase(), []);
+  const apiBase = useMemo(() => getStellarBasicDaoApiBase(), []);
   const [apiStatus, setApiStatus] = useState("Checking");
   const [uptime, setUptime] = useState("--");
   const [flagStore, setFlagStore] = useState("Checking");
