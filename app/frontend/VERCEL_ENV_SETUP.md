@@ -15,7 +15,7 @@ This document outlines the environment variables required for deploying the Rust
 | `NEXT_PUBLIC_APP_VERSION`                       | Application version            | `1.0.0-preview`                       | `1.0.0`                       |
 | `NEXT_PUBLIC_ERROR_REPORTING_URL`               | Error reporting endpoint       | Optional                              | Optional                      |
 | `NEXT_PUBLIC_ RustAcademy_ANALYTICS_PUBLIC_KEY` | Analytics public key           | Optional                              | Optional                      |
-| ` RustAcademy_INTERNAL_API_URL`                 | Internal API URL (server-side) | Optional                              | Optional                      |
+| `RustAcademy_INTERNAL_API_URL`                 | Internal API URL (server-side) | Optional                              | Optional                      |
 
 ### Network Configuration
 
