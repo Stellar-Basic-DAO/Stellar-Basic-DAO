@@ -3,7 +3,7 @@
 version = 4
 
 [[package]]
-name = "RustAcademy"
+name = "stellar_basic_dao"
 version = "0.1.0"
 dependencies = [
  "blake3",

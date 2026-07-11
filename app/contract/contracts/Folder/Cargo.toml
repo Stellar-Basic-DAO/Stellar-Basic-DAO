@@ -1,11 +1,11 @@
 [package]
-name = "rust_academy"
+name = "stellar_basic_dao"
 version = "0.1.0"
 edition = "2021"
-description = "X-Ray privacy Soroban contract for  RustAcademy"
+description = "X-Ray privacy Soroban contract for Stellar Basic DAO"
 license = "MIT OR Apache-2.0"
-authors = ["RustAcademy Team"]
-repository = "https://github.com/ RustAcademy/app"
+authors = ["Stellar Basic DAO Team"]
+repository = "https://github.com/Stellar-Basic-DAO/Stellar-Basic-DAO"
 readme = "README.md"
 build = "build.rs"
 
