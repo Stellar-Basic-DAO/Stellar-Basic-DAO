@@ -152,7 +152,7 @@ export class ContractViewsService {
 
   private async fetchFeeConfig(): Promise<FeeConfigView> {
     // Simulate a read-only `get_fee_config` contract call.
-    // When  Stellar Basic DAO_CONTRACT_ID is not set (e.g. local dev) we return safe
+    // When  RustAcademy_CONTRACT_ID is not set (e.g. local dev) we return safe
     // defaults so the frontend can still render.
     const contractId =
       this.configService.get<string>("RustAcademy_CONTRACT_ID") ??
@@ -160,7 +160,7 @@ export class ContractViewsService {
 
     if (!contractId) {
       this.logger.warn(
-        " Stellar Basic DAO_CONTRACT_ID not set — returning default fee config",
+        " RustAcademy_CONTRACT_ID not set — returning default fee config",
       );
       return { feeBps: 50, feeRecipient: "", minFeeStroops: "100" };
     }
@@ -531,7 +531,7 @@ export class ContractViewsService {
     if (!id) {
       throw new NotFoundException({
         error: "CONTRACT_NOT_CONFIGURED",
-        message: " Stellar Basic DAO_CONTRACT_ID is not configured.",
+        message: " RustAcademy_CONTRACT_ID is not configured.",
       });
     }
     return id;

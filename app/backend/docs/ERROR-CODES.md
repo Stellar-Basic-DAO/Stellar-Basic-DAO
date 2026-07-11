@@ -123,7 +123,7 @@ request header. The resolved value is echoed back in:
 
 | Code                      | HTTP Status | Description                                      |
 | ------------------------- | ----------- | ------------------------------------------------ |
-| `CONTRACT_NOT_CONFIGURED` | 503         | Stellar Basic DAO_CONTRACT_ID is not set on the server |
+| `CONTRACT_NOT_CONFIGURED` | 503         | RustAcademy_CONTRACT_ID is not set on the server |
 | `SIMULATION_FAILED`       | 422         | Soroban transaction simulation failed            |
 
 ---
@@ -539,11 +539,11 @@ const response = await fetch("http://localhost:3000/api-keys", {
 
 **Resolution:**
 
-1. The `Stellar Basic DAO_CONTRACT_ID` environment variable is not set on the server.
+1. The `RustAcademy_CONTRACT_ID` environment variable is not set on the server.
 2. This is a server-side configuration issue — contact the Stellar Basic DAO team.
 3. In development, set it in your `.env` file:
    ```env
-    Stellar Basic DAO_CONTRACT_ID=CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM
+    RustAcademy_CONTRACT_ID=CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM
    ```
 
 ---

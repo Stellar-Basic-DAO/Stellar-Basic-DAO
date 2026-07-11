@@ -31,32 +31,32 @@ Use one named identity per environment and one network profile per chain. The ex
 Recommended operator shell variables:
 
 ```bash
-export  Stellar Basic DAO_TESTNET_RPC_URL="https://soroban-testnet.stellar.org"
-export  Stellar Basic DAO_TESTNET_PASSPHRASE="Test SDF Network ; September 2015"
-export  Stellar Basic DAO_TESTNET_IDENTITY=" Stellar Basic DAO-testnet"
+export  RustAcademy_TESTNET_RPC_URL="https://soroban-testnet.stellar.org"
+export  RustAcademy_TESTNET_PASSPHRASE="Test SDF Network ; September 2015"
+export  RustAcademy_TESTNET_IDENTITY=" Stellar Basic DAO-testnet"
 
-export  Stellar Basic DAO_MAINNET_RPC_URL="https://mainnet.stellar.org"
-export  Stellar Basic DAO_MAINNET_PASSPHRASE="Public Global Stellar Network ; September 2015"
-export  Stellar Basic DAO_MAINNET_IDENTITY=" Stellar Basic DAO-mainnet"
+export  RustAcademy_MAINNET_RPC_URL="https://mainnet.stellar.org"
+export  RustAcademy_MAINNET_PASSPHRASE="Public Global Stellar Network ; September 2015"
+export  RustAcademy_MAINNET_IDENTITY=" Stellar Basic DAO-mainnet"
 ```
 
 Suggested network bootstrap flow:
 
 ```bash
 soroban config network add testnet \
-  --rpc-url "$ Stellar Basic DAO_TESTNET_RPC_URL" \
-  --network-passphrase "$ Stellar Basic DAO_TESTNET_PASSPHRASE"
+  --rpc-url "$ RustAcademy_TESTNET_RPC_URL" \
+  --network-passphrase "$ RustAcademy_TESTNET_PASSPHRASE"
 
 soroban config network add mainnet \
-  --rpc-url "$ Stellar Basic DAO_MAINNET_RPC_URL" \
-  --network-passphrase "$ Stellar Basic DAO_MAINNET_PASSPHRASE"
+  --rpc-url "$ RustAcademy_MAINNET_RPC_URL" \
+  --network-passphrase "$ RustAcademy_MAINNET_PASSPHRASE"
 ```
 
 Suggested identity bootstrap flow:
 
 ```bash
-soroban config identity generate "$ Stellar Basic DAO_TESTNET_IDENTITY"
-soroban config identity generate "$ Stellar Basic DAO_MAINNET_IDENTITY"
+soroban config identity generate "$ RustAcademy_TESTNET_IDENTITY"
+soroban config identity generate "$ RustAcademy_MAINNET_IDENTITY"
 ```
 
 Use the identity names consistently in deploy scripts, release notes, and the environment registry.
@@ -104,12 +104,12 @@ cargo build --target wasm32v1-none --release
 # Deploy only when the registry entry is missing or the release hash changed.
 stellar contract deploy \
   --wasm target/wasm32v1-none/release/ Stellar Basic DAO.wasm \
-  --source "$ Stellar Basic DAO_TESTNET_IDENTITY" \
+  --source "$ RustAcademy_TESTNET_IDENTITY" \
   --network testnet
 
 stellar contract invoke \
   --id <CONTRACT_ID> \
-  --source "$ Stellar Basic DAO_TESTNET_IDENTITY" \
+  --source "$ RustAcademy_TESTNET_IDENTITY" \
   --network testnet \
   -- \
   get_deployment_metadata

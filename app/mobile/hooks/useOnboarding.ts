@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const ONBOARDING_STORAGE_KEY = " Stellar Basic DAO_onboarding_completed";
-const ANALYTICS_STORAGE_KEY = " Stellar Basic DAO_onboarding_events";
+const ONBOARDING_STORAGE_KEY = " RustAcademy_onboarding_completed";
+const ANALYTICS_STORAGE_KEY = " RustAcademy_onboarding_events";
 
 interface OnboardingEvent {
   event_name: string;
@@ -96,7 +96,7 @@ export function useOnboarding() {
   };
 
   const getOrCreateSessionId = async (): Promise<string> => {
-    const SESSION_ID_KEY = " Stellar Basic DAO_session_id";
+    const SESSION_ID_KEY = " RustAcademy_session_id";
     try {
       let sessionId = await AsyncStorage.getItem(SESSION_ID_KEY);
       if (!sessionId) {

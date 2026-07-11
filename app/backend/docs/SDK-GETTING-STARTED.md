@@ -56,12 +56,12 @@ The Stellar Basic DAO API is a standard REST API. You can use `fetch` directly:
 
 ```typescript
 //  Stellar Basic DAO.config.ts
-export const Stellar Basic DAO_CONFIG = {
+export const RustAcademy_CONFIG = {
   // Base URL — change to https://api. Stellar Basic DAO.example.com for production
-  baseUrl: process.env.Stellar Basic DAO_BASE_URL || "http://localhost:3000",
+  baseUrl: process.env.RustAcademy_BASE_URL || "http://localhost:3000",
 
   // Optional API key for higher rate limits
-  apiKey: process.env.Stellar Basic DAO_API_KEY || "",
+  apiKey: process.env.RustAcademy_API_KEY || "",
 
   // Network — 'testnet' or 'mainnet'
   network: process.env.STELLAR_NETWORK || "testnet",
@@ -72,8 +72,8 @@ export const Stellar Basic DAO_CONFIG = {
 
 | Variable                | Required | Default                 | Description                    |
 | ----------------------- | -------- | ----------------------- | ------------------------------ |
-| `Stellar Basic DAO_BASE_URL` | No       | `http://localhost:3000` | API base URL                   |
-| `Stellar Basic DAO_API_KEY`  | No       | —                       | API key for higher rate limits |
+| `RustAcademy_BASE_URL` | No       | `http://localhost:3000` | API base URL                   |
+| `RustAcademy_API_KEY`  | No       | —                       | API key for higher rate limits |
 | `STELLAR_NETWORK`       | No       | `testnet`               | Stellar network to use         |
 
 ---
@@ -662,7 +662,7 @@ function verifyWebhookSignature(
 app.post("/webhooks/ Stellar Basic DAO", (req, res) => {
   const signature = req.headers["x- Stellar Basic DAO-signature"] as string;
   const raw = JSON.stringify(req.body); // use raw body parser in production
-  const secret = process.env.Stellar Basic DAO_WEBHOOK_SECRET!;
+  const secret = process.env.RustAcademy_WEBHOOK_SECRET!;
 
   if (!verifyWebhookSignature(raw, signature, secret)) {
     return res.status(401).json({ error: "Invalid signature" });

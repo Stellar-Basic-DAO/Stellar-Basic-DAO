@@ -114,7 +114,7 @@ function resolveAnalyticsPublicKey(): string {
     }
   }
 
-  const fromEnv = process.env.NEXT_PUBLIC_Stellar Basic DAO_ANALYTICS_PUBLIC_KEY?.trim();
+  const fromEnv = process.env.NEXT_PUBLIC_RustAcademy_ANALYTICS_PUBLIC_KEY?.trim();
   if (fromEnv && PUBLIC_KEY_REGEX.test(fromEnv)) {
     return fromEnv;
   }

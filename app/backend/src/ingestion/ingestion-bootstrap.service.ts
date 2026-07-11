@@ -3,7 +3,7 @@ import { StellarIngestionService } from "./stellar-ingestion.service";
 import { ContractRegistryService } from "../contracts/contract-registry.service";
 
 /**
- * Reads the  Stellar Basic DAO_CONTRACT_ID environment variable and starts streaming
+ * Reads the  RustAcademy_CONTRACT_ID environment variable and starts streaming
  * once the NestJS application is ready, with optional dual-read support.
  *
  * If no contract ID is configured the service logs a warning and skips.
@@ -22,7 +22,7 @@ export class IngestionBootstrapService implements OnModuleInit {
 
     if (!contractId) {
       this.logger.warn(
-        " Stellar Basic DAO_CONTRACT_ID is not set; Stellar ingestion will NOT start. " +
+        " RustAcademy_CONTRACT_ID is not set; Stellar ingestion will NOT start. " +
           "Set this env var to enable event streaming.",
       );
       return;

@@ -232,7 +232,7 @@ app.use("/webhooks", express.raw({ type: "application/json" }));
 
 app.post("/webhooks/ Stellar Basic DAO", (req, res) => {
   const signature = req.headers["x- Stellar Basic DAO-signature"] as string;
-  const secret = process.env.Stellar Basic DAO_WEBHOOK_SECRET!;
+  const secret = process.env.RustAcademy_WEBHOOK_SECRET!;
   const rawBody = req.body.toString();
 
   // Verify signature
@@ -310,7 +310,7 @@ import { createHmac } from "crypto";
 export async function POST(request: NextRequest) {
   const rawBody = await request.text();
   const signature = request.headers.get("x- Stellar Basic DAO-signature") || "";
-  const secret = process.env.Stellar Basic DAO_WEBHOOK_SECRET!;
+  const secret = process.env.RustAcademy_WEBHOOK_SECRET!;
 
   // Verify signature
   const expected = createHmac("sha256", secret).update(rawBody).digest("hex");

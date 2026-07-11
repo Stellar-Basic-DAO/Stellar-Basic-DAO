@@ -167,7 +167,7 @@ export class AnalyticsService {
     reportType: ReportType,
   ): string {
     const lines: string[] = [];
-    lines.push(` Stellar Basic DAO_analytics_report_type,${reportType}`);
+    lines.push(` RustAcademy_analytics_report_type,${reportType}`);
     lines.push(`start_date,${report.window.startDate}`);
     lines.push(`end_date,${report.window.endDate}`);
     lines.push("");
@@ -298,19 +298,19 @@ export class AnalyticsService {
   ): Promise<AnalyticsReport | null> {
     const client = this.supabase.getClient();
     const [summaryResult, assetsResult, timeSeriesResult] = await Promise.all([
-      client.rpc(" Stellar Basic DAO_analytics_summary", {
+      client.rpc(" RustAcademy_analytics_summary", {
         p_public_key: publicKey,
         p_start_date: startIso,
         p_end_date: endIso,
         p_organization_id: organizationId ?? null,
       }),
-      client.rpc(" Stellar Basic DAO_analytics_asset_distribution", {
+      client.rpc(" RustAcademy_analytics_asset_distribution", {
         p_public_key: publicKey,
         p_start_date: startIso,
         p_end_date: endIso,
         p_organization_id: organizationId ?? null,
       }),
-      client.rpc(" Stellar Basic DAO_analytics_time_series", {
+      client.rpc(" RustAcademy_analytics_time_series", {
         p_public_key: publicKey,
         p_start_date: startIso,
         p_end_date: endIso,

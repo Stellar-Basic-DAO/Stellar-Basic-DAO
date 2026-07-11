@@ -203,7 +203,7 @@ export class AppConfigService {
    *  Stellar Basic DAO Soroban contract id (optional). Used for ingestion and soroban preflight.
    */
   get stellarBasicDaoContractId(): string | undefined {
-    return this.configService.get("Stellar Basic DAO_CONTRACT_ID", { infer: true });
+    return this.configService.get("RustAcademy_CONTRACT_ID", { infer: true });
   }
 
   /**

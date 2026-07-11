@@ -141,7 +141,7 @@ export const envSchema = Joi.object({
     ),
 
   // Stellar ingestion (optional; omit to disable)
-  Stellar Basic DAO_CONTRACT_ID: Joi.string()
+  RustAcademy_CONTRACT_ID: Joi.string()
     .empty("")
     .optional()
     .description(
@@ -401,7 +401,7 @@ export interface EnvConfig {
   CACHE_TTL_MS: number;
   FEATURE_FLAGS_CACHE_TTL_MS: number;
   FEATURE_FLAGS_BOOTSTRAP_JSON?: string;
-  Stellar Basic DAO_CONTRACT_ID?: string;
+  RustAcademy_CONTRACT_ID?: string;
   SENDGRID_API_KEY?: string;
   SENDGRID_FROM_EMAIL?: string;
   EXPO_ACCESS_TOKEN?: string;

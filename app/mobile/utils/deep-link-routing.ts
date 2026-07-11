@@ -1,7 +1,7 @@
 import { parsePaymentLink } from './parse-payment-link';
 
-const Stellar Basic DAO_HOSTS = ["STELLAR_BASIC_DAO.to", "www. Stellar Basic DAO.to"];
-const Stellar Basic DAO_SCHEME = " Stellar Basic DAO";
+const RustAcademy_HOSTS = ["STELLAR_BASIC_DAO.to", "www. Stellar Basic DAO.to"];
+const RustAcademy_SCHEME = " Stellar Basic DAO";
 
 export interface DeepLinkRoute {
   pathname: string;
@@ -19,7 +19,7 @@ export function parseTransactionDeepLink(
   try {
     const url = new URL(raw);
 
-    if (url.protocol === `${Stellar Basic DAO_SCHEME}:`) {
+    if (url.protocol === `${RustAcademy_SCHEME}:`) {
       const segments = url.pathname
         .replace(/^\/+/, '')
         .split('/')
@@ -35,7 +35,7 @@ export function parseTransactionDeepLink(
 
     if (
       (url.protocol === 'https:' || url.protocol === 'http:') &&
-      Stellar Basic DAO_HOSTS.includes(url.hostname)
+      RustAcademy_HOSTS.includes(url.hostname)
     ) {
       const segments = url.pathname
         .replace(/^\/+/, '')
@@ -59,9 +59,9 @@ export function isStellarBasicDaoLink(raw: string): boolean {
   try {
     const url = new URL(raw);
     return (
-      url.protocol === `${Stellar Basic DAO_SCHEME}:` ||
+      url.protocol === `${RustAcademy_SCHEME}:` ||
       ((url.protocol === 'https:' || url.protocol === 'http:') &&
-        Stellar Basic DAO_HOSTS.includes(url.hostname))
+        RustAcademy_HOSTS.includes(url.hostname))
     );
   } catch {
     return false;
@@ -72,12 +72,12 @@ function looksLikePaymentLink(raw: string): boolean {
   try {
     const url = new URL(raw);
 
-    if (url.protocol === `${Stellar Basic DAO_SCHEME}:`) {
+    if (url.protocol === `${RustAcademy_SCHEME}:`) {
       const segments = url.pathname.replace(/^\/+/, '').split('/').filter(Boolean);
       return segments.length === 0 || segments[0] !== 'transaction';
     }
 
-    if ((url.protocol === 'https:' || url.protocol === 'http:') && Stellar Basic DAO_HOSTS.includes(url.hostname)) {
+    if ((url.protocol === 'https:' || url.protocol === 'http:') && RustAcademy_HOSTS.includes(url.hostname)) {
       const segments = url.pathname.replace(/^\/+/, '').split('/').filter(Boolean);
       return segments.length === 0 || segments[0] !== 'transaction';
     }

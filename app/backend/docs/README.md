@@ -76,7 +76,7 @@ SUPABASE_URL=http://127.0.0.1:54321
 SUPABASE_ANON_KEY=your_supabase_anon_key
 
 # Optional: enables ingestion stream when provided
- Stellar Basic DAO_CONTRACT_ID=your_contract_id
+ RustAcademy_CONTRACT_ID=your_contract_id
 
 # Optional: Sentry monitoring
 SENTRY_DSN=https://example@o0.ingest.sentry.io/0
