@@ -11,6 +11,8 @@ interface ErrorStateProps {
   icon?: keyof typeof Ionicons.glyphMap;
   onRetry?: () => void;
   retryLabel?: string;
+  actionLabel?: string;
+  onAction?: () => void;
 }
 
 /**
@@ -22,6 +24,8 @@ export function ErrorState({
   icon = "alert-circle-outline",
   onRetry,
   retryLabel = "Try Again",
+  actionLabel,
+  onAction,
 }: ErrorStateProps) {
   const { theme } = useTheme();
 
@@ -40,6 +44,16 @@ export function ErrorState({
           activeOpacity={0.7}
         >
           <ThemedText style={[styles.buttonText, { color: theme.buttonPrimaryText }]}>{retryLabel}</ThemedText>
+        </TouchableOpacity>
+      )}
+
+      {onAction && actionLabel && (
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: theme.tint }]}
+          onPress={onAction}
+          activeOpacity={0.7}
+        >
+          <ThemedText style={[styles.buttonText, { color: theme.buttonPrimaryText }]}>{actionLabel}</ThemedText>
         </TouchableOpacity>
       )}
     </ThemedView>

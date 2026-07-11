@@ -17,14 +17,14 @@ import {
 } from "react-native";
 
 import { useTranslation } from "react-i18next";
-import { useTheme } from "../../src/theme/ThemeContext";
+import { useTheme } from "../src/theme/ThemeContext";
 import {
     type ThemeMode,
     type ThemeTokens,
     BrandThemes,
     DarkTheme,
     LightTheme,
-} from "../../src/theme/tokens";
+} from "../src/theme/tokens";
 
 type BrandTheme = (typeof BrandThemes)[number];
 
