@@ -195,14 +195,14 @@ describe("Theme System v2", () => {
       expect(Object.keys(ThemeRegistry)).toHaveLength(4);
       expect(ThemeRegistry["light"]).toBe(LightTheme);
       expect(ThemeRegistry["dark"]).toBe(DarkTheme);
-      expect(ThemeRegistry[" RustAcademy-blue"]).toBe(RustAcademyBlueTheme);
+      expect(ThemeRegistry[" Stellar Basic DAO-blue"]).toBe(RustAcademyBlueTheme);
       expect(ThemeRegistry["pulsefy-purple"]).toBe(PulsefyPurpleTheme);
     });
   });
 
   describe("ThemeProvider snapshots", () => {
     it("renders Light theme correctly", async () => {
-      let tree: ReturnType<typeof create>;
+      let tree!: ReturnType<typeof create>;
       await act(async () => {
         tree = create(
           <RustAcademyThemeProvider>
@@ -218,7 +218,7 @@ describe("Theme System v2", () => {
     });
 
     it("renders with wrapped provider", async () => {
-      let tree: ReturnType<typeof create>;
+      let tree!: ReturnType<typeof create>;
       await act(async () => {
         tree = create(
           <RustAcademyThemeProvider profileId="test-user">
