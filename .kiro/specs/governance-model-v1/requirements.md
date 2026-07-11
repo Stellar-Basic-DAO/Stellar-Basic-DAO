@@ -192,6 +192,6 @@ The system must be suitable for testnet deployment and designed to support futur
 
 #### Acceptance Criteria
 
-1. THE Governance_Module SHALL define the following new error codes in ` RustAcademyError`: `InvalidThreshold = 502`, `InvalidSignerSet = 503`, `DuplicateSigner = 504`, `NotASigner = 505`, `ProposalAlreadyExists = 506`, `ProposalNotFound = 507`, `InvalidProposalState = 508`, `AlreadyApproved = 509`, `InsufficientApprovals = 510`, `ExpiryTooFar = 511`.
+1. THE Governance_Module SHALL define the following new error codes in `RustAcademyError`: `InvalidThreshold = 502`, `InvalidSignerSet = 503`, `DuplicateSigner = 504`, `NotASigner = 505`, `ProposalAlreadyExists = 506`, `ProposalNotFound = 507`, `InvalidProposalState = 508`, `AlreadyApproved = 509`, `InsufficientApprovals = 510`, `ExpiryTooFar = 511`.
 2. THE Governance_Module SHALL reuse existing error codes `NonceAlreadyUsed = 500` and `SignatureExpired = 501` for replay and expiry violations respectively.
 3. THE Governance_Module SHALL reuse `Unauthorized = 200` when a direct privileged entrypoint is called outside the governance execution path.
