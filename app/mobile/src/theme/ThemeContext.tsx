@@ -129,7 +129,7 @@ export interface ThemeProviderProps {
   children: React.ReactNode;
 }
 
-export function Stellar Basic DAOThemeProvider({
+export function RustAcademyThemeProvider({
   profileId = "default",
   children,
 }: ThemeProviderProps) {
@@ -220,7 +220,7 @@ export function useTheme(): ThemeContextValue {
   const ctx = useContext(ThemeContext);
   if (!ctx) {
     throw new Error(
-      "useTheme must be used within a < Stellar Basic DAOThemeProvider>",
+      "useTheme must be used within a < RustAcademyThemeProvider>",
     );
   }
   return ctx;

@@ -27,7 +27,7 @@ export class FundingPreflightDto {
 }
 
 export class DeployContractSpecDto {
-  @ApiProperty({ example: " Stellar Basic DAO" })
+  @ApiProperty({ example: "RustAcademy" })
   @IsString()
   @IsNotEmpty()
   name: string;

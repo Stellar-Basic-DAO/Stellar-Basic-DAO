@@ -76,7 +76,7 @@ export class RefundJobHandler implements JobHandler<RefundJobPayload> {
       }
 
       const registry = await this.contractRegistry.getRegistry();
-      const contractId = registry.data.Stellar Basic DAO?.id;
+      const contractId = registry.data.RustAcademy?.id;
 
       if (!contractId) {
         throw new Error('Stellar Basic DAO contract not found in registry');

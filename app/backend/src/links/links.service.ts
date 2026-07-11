@@ -235,7 +235,7 @@ export class LinksService {
       "admin",
       "system",
       "root",
-      " Stellar Basic DAO",
+      "RustAcademy",
       "null",
       "undefined",
     ];

@@ -9,7 +9,7 @@ export class NetworkConfigDto {
 }
 
 export class ContractRegistryEntryDto {
-  @ApiProperty({ example: " Stellar Basic DAO" })
+  @ApiProperty({ example: "RustAcademy" })
   name: string;
 
   @ApiProperty({ example: "CD2J6K7T3YJ77QXZP3EXAMPLE" })

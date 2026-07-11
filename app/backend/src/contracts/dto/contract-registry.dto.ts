@@ -18,7 +18,7 @@ import {
 import { Type } from "class-transformer";
 
 export class ContractRegistryEntryDto {
-  @ApiProperty({ example: " Stellar Basic DAO" })
+  @ApiProperty({ example: "RustAcademy" })
   @IsString()
   @IsNotEmpty()
   @Matches(/^[a-z0-9_-]+$/i)
@@ -104,7 +104,7 @@ export class PublishContractRegistryDto {
 }
 
 export class RollbackContractRegistryDto {
-  @ApiProperty({ example: " Stellar Basic DAO" })
+  @ApiProperty({ example: "RustAcademy" })
   @IsString()
   @IsNotEmpty()
   name: string;
@@ -131,7 +131,7 @@ export class ContractRegistryResponseDto {
 
   @ApiProperty({
     example: {
-      Stellar Basic DAO: {
+      RustAcademy: {
         id: "CD2J6K7T3YJ77QXZP3EXAMPLE",
         wasmHash: "abcdef1234567890",
         version: 1,

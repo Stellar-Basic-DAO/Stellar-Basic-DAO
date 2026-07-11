@@ -1,7 +1,7 @@
 import { parsePaymentLink } from './parse-payment-link';
 
 const RustAcademy_HOSTS = ["STELLAR_BASIC_DAO.to", "www. Stellar Basic DAO.to"];
-const RustAcademy_SCHEME = " Stellar Basic DAO";
+const RustAcademy_SCHEME = "RustAcademy";
 
 export interface DeepLinkRoute {
   pathname: string;

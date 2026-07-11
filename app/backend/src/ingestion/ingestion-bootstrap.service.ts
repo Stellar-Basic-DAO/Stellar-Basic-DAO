@@ -32,19 +32,19 @@ export class IngestionBootstrapService implements OnModuleInit {
 
     try {
       const registryData = await this.registry.getRegistry();
-      const Stellar Basic DAOEntry = registryData.data.Stellar Basic DAO as Record<
+      const RustAcademyEntry = registryData.data.RustAcademy as Record<
         string,
         unknown
       >;
 
-      if (Stellar Basic DAOEntry && Stellar Basic DAOEntry.previousContractId) {
+      if (RustAcademyEntry && RustAcademyEntry.previousContractId) {
         this.logger.log(
-          `Contract registry has dual-read config; starting with previous contract ${Stellar Basic DAOEntry.previousContractId}`,
+          `Contract registry has dual-read config; starting with previous contract ${RustAcademyEntry.previousContractId}`,
         );
         await this.ingestion.startStreamingWithDualRead({
           contractId,
-          previousContractId: Stellar Basic DAOEntry.previousContractId as string,
-          effectiveLedger: Stellar Basic DAOEntry.effectiveLedger as
+          previousContractId: RustAcademyEntry.previousContractId as string,
+          effectiveLedger: RustAcademyEntry.effectiveLedger as
             | number
             | undefined,
         });

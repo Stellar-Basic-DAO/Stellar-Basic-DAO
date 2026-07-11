@@ -15,7 +15,7 @@ const buildTag = process.env.GIT_TAG ?? process.env.GITHUB_REF_NAME ?? "";
 function appName(env: string): string {
   switch (env) {
     case "production":
-      return " Stellar Basic DAO";
+      return "RustAcademy";
     case "staging":
       return " Stellar Basic DAO Staging";
     default:

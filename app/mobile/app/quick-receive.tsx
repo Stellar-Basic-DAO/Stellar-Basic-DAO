@@ -37,7 +37,7 @@ export default function QuickReceiveScreen() {
     if (!receiveLink) return;
 
     await Share.share({
-      message: `Send me payment via  Stellar Basic DAO:\n${receiveLink}`,
+      message: `Send me payment via  RustAcademy:\n${receiveLink}`,
     });
   };
 

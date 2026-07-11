@@ -11,17 +11,17 @@ const siteUrl =
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: " Stellar Basic DAO",
+    default: "RustAcademy",
     template: "%s |  Stellar Basic DAO",
   },
   description: "Privacy-focused payments on Stellar",
-  applicationName: " Stellar Basic DAO",
+  applicationName: "RustAcademy",
   keywords: ["Stellar", "payments", "crypto", "XLM", "USDC", "payment link"],
   authors: [{ name: "Pulsefy" }],
   creator: "Pulsefy",
   openGraph: {
     type: "website",
-    siteName: " Stellar Basic DAO",
+    siteName: "RustAcademy",
     title: " Stellar Basic DAO — Privacy-focused payments on Stellar",
     description: "Privacy-focused payments on Stellar",
     url: siteUrl,

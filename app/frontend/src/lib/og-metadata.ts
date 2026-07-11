@@ -9,7 +9,7 @@
  *  - memo                  → only included when it is a short, non-sensitive label
  */
 
-export const SITE_NAME = " Stellar Basic DAO";
+export const SITE_NAME = "RustAcademy";
 export const SITE_DESCRIPTION = "Privacy-focused payments on Stellar";
 
 /** Resolved at build/request time from the environment. Falls back to a relative path. */

@@ -85,7 +85,7 @@ i18n.use(initReactI18next).init({
         noNotifications: "No notifications",
 
         // Home screen
-        appTitle: " Stellar Basic DAO",
+        appTitle: "RustAcademy",
         appSubtitle: "Your global payment companion",
         payAgain: "Pay Again",
         payNew: "Pay New",
@@ -173,7 +173,7 @@ i18n.use(initReactI18next).init({
         noNotifications: "Sin notificaciones",
 
         // Home screen
-        appTitle: " Stellar Basic DAO",
+        appTitle: "RustAcademy",
         appSubtitle: "Tu compañero de pagos globales",
         payAgain: "Pagar de Nuevo",
         payNew: "Pagar Nuevo",
@@ -244,7 +244,7 @@ i18n.use(initReactI18next).init({
         requestFailed: "Échec de la demande",
 
         // Home screen
-        appTitle: " Stellar Basic DAO",
+        appTitle: "RustAcademy",
         appSubtitle: "Votre compagnon de paiement mondial",
         payAgain: "Payer Encore",
         payNew: "Nouveau Paiement",

@@ -63,7 +63,7 @@ describe('RefundJobHandler', () => {
 
     const mockRegistry = {
       data: {
-        Stellar Basic DAO: { id: 'CAAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQC526' },
+        RustAcademy: { id: 'CAAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQC526' },
       },
     };
 

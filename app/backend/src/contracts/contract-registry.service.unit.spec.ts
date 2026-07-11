@@ -83,7 +83,7 @@ describe("ContractRegistryService", () => {
       deploymentId: "deploy-1",
       contracts: [
         {
-          name: " Stellar Basic DAO",
+          name: "RustAcademy",
           contractId: "C123",
           wasmHash: "abc123",
           contractVersion: 1,
@@ -109,7 +109,7 @@ describe("ContractRegistryService", () => {
         networkPassphrase: "Public Global Stellar Network ; September 2015",
         contracts: [
           {
-            name: " Stellar Basic DAO",
+            name: "RustAcademy",
             contractId: "C123",
             wasmHash: "abc123",
           },
@@ -130,7 +130,7 @@ describe("ContractRegistryService", () => {
       deploymentId: "deploy-1",
       contracts: [
         {
-          name: " Stellar Basic DAO",
+          name: "RustAcademy",
           contractId: "C123",
           wasmHash: "abc123",
           contractVersion: 1,
@@ -148,7 +148,7 @@ describe("ContractRegistryService", () => {
       deploymentId: "deploy-2",
       contracts: [
         {
-          name: " Stellar Basic DAO",
+          name: "RustAcademy",
           contractId: "C456",
           wasmHash: "def456",
           contractVersion: 2,
@@ -168,7 +168,7 @@ describe("ContractRegistryService", () => {
       error: null,
     });
 
-    const result = await service.rollback({ name: " Stellar Basic DAO", version: 1 });
+    const result = await service.rollback({ name: "RustAcademy", version: 1 });
     expect(result.data.rustacademy).toEqual(
       expect.objectContaining({ id: "C123", wasmHash: "abc123", version: 1 }),
     );
@@ -182,7 +182,7 @@ describe("ContractRegistryService", () => {
     });
 
     await expect(
-      service.rollback({ name: " Stellar Basic DAO", version: 99 }),
+      service.rollback({ name: "RustAcademy", version: 99 }),
     ).rejects.toThrow("Database error: No registry entry found for rustacademy version 99");
   });
 
@@ -200,7 +200,7 @@ describe("ContractRegistryService", () => {
         deploymentId: "deploy-1",
         contracts: [
           {
-            name: " Stellar Basic DAO",
+            name: "RustAcademy",
             contractId: "C123",
             wasmHash: "abc123",
             contractVersion: 1,
@@ -218,13 +218,13 @@ describe("ContractRegistryService", () => {
         error: null,
       });
 
-      const result = await service.finalizeDualRead(" Stellar Basic DAO");
+      const result = await service.finalizeDualRead("RustAcademy");
 
       // Should have removed dual-read config
       expect(mockAuditService.log).toHaveBeenCalledWith(
         "contract_registry",
         "registry.finalize_dual_read",
-        " Stellar Basic DAO",
+        "RustAcademy",
         expect.objectContaining({ actor: "deployment_automation" }),
       );
 
@@ -253,7 +253,7 @@ describe("ContractRegistryService", () => {
         },
       });
 
-      await expect(service.finalizeDualRead(" Stellar Basic DAO")).rejects.toThrow(
+      await expect(service.finalizeDualRead("RustAcademy")).rejects.toThrow(
         "Registry entry for rustacademy is not in a dual-read transition window",
       );
     });
@@ -273,7 +273,7 @@ describe("ContractRegistryService", () => {
           deploymentId: "deploy-1",
           contracts: [
             {
-              name: " Stellar Basic DAO",
+              name: "RustAcademy",
               contractId: "C123",
               wasmHash: "abc123",
               contractVersion: 1,
@@ -306,7 +306,7 @@ describe("ContractRegistryService", () => {
         deploymentId: "deploy-1",
         contracts: [
           {
-            name: " Stellar Basic DAO",
+            name: "RustAcademy",
             contractId: "C123",
             wasmHash: "abc123",
             contractVersion: 1,
@@ -328,7 +328,7 @@ describe("ContractRegistryService", () => {
           deploymentId: "deploy-2",
           contracts: [
             {
-              name: " Stellar Basic DAO",
+              name: "RustAcademy",
               contractId: "C456",
               wasmHash: "def456",
               contractVersion: 2,
@@ -350,7 +350,7 @@ describe("ContractRegistryService", () => {
         deploymentId: "deploy-1",
         contracts: [
           {
-            name: " Stellar Basic DAO",
+            name: "RustAcademy",
             contractId: "C123",
             wasmHash: "abc123",
             contractVersion: 1,
@@ -386,7 +386,7 @@ describe("ContractRegistryService", () => {
         deploymentId: "deploy-1",
         contracts: [
           {
-            name: " Stellar Basic DAO",
+            name: "RustAcademy",
             contractId: "C123",
             wasmHash: "abc123",
             contractVersion: 1,
@@ -401,7 +401,7 @@ describe("ContractRegistryService", () => {
           deploymentId: "deploy-2",
           contracts: [
             {
-              name: " Stellar Basic DAO",
+              name: "RustAcademy",
               contractId: "C456",
               wasmHash: "def456",
               contractVersion: 2,

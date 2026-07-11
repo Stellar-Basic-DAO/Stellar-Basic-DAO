@@ -98,7 +98,7 @@ describe("ContractRegistryService Integration", () => {
         deploymentId: "deploy-1",
         contracts: [
           {
-            name: " Stellar Basic DAO",
+            name: "RustAcademy",
             contractId: "C123",
             wasmHash: "abc123",
             contractVersion: 1,
@@ -123,7 +123,7 @@ describe("ContractRegistryService Integration", () => {
           deploymentId: "deploy-1",
           contracts: [
             {
-              name: " Stellar Basic DAO",
+              name: "RustAcademy",
               contractId: "C123",
               wasmHash: "abc123",
               contractVersion: 1,
@@ -151,7 +151,7 @@ describe("ContractRegistryService Integration", () => {
           deploymentId: "deploy-1",
           contracts: [
             {
-              name: " Stellar Basic DAO",
+              name: "RustAcademy",
               contractId: "C123",
               wasmHash: "abc123",
               contractVersion: 1,
@@ -180,7 +180,7 @@ describe("ContractRegistryService Integration", () => {
           deploymentId: "deploy-1",
           contracts: [
             {
-              name: " Stellar Basic DAO",
+              name: "RustAcademy",
               contractId: "C123",
               wasmHash: "abc123",
               contractVersion: 1,
@@ -205,7 +205,7 @@ describe("ContractRegistryService Integration", () => {
           deploymentId: "deploy-1",
           contracts: [
             {
-              name: " Stellar Basic DAO",
+              name: "RustAcademy",
               contractId: "C123",
               wasmHash: "abc123",
               contractVersion: 1,
@@ -228,7 +228,7 @@ describe("ContractRegistryService Integration", () => {
           deploymentId: "deploy-1",
           contracts: [
             {
-              name: " Stellar Basic DAO",
+              name: "RustAcademy",
               contractId: "C123",
               wasmHash: "abc123",
               contractVersion: 1,
@@ -253,7 +253,7 @@ describe("ContractRegistryService Integration", () => {
         expectedVersion: 1,
         contracts: [
           {
-            name: " Stellar Basic DAO",
+            name: "RustAcademy",
             contractId: "C123",
             wasmHash: "abc123",
             contractVersion: 1,
@@ -281,7 +281,7 @@ describe("ContractRegistryService Integration", () => {
         deploymentId: "deploy-1",
         contracts: [
           {
-            name: " Stellar Basic DAO",
+            name: "RustAcademy",
             contractId: "C123",
             wasmHash: "abc123",
             contractVersion: 1,
@@ -321,7 +321,7 @@ describe("ContractRegistryService Integration", () => {
         };
       });
 
-      await service.rollback({ name: " Stellar Basic DAO", version: 1 });
+      await service.rollback({ name: "RustAcademy", version: 1 });
 
       expect(attempts).toBe(2);
     });
@@ -336,7 +336,7 @@ describe("ContractRegistryService Integration", () => {
       });
 
       await expect(
-        service.rollback({ name: " Stellar Basic DAO", version: 1 }),
+        service.rollback({ name: "RustAcademy", version: 1 }),
       ).rejects.toThrow(ConflictException);
     });
   });
@@ -361,7 +361,7 @@ describe("ContractRegistryService Integration", () => {
         };
       });
 
-      await service.finalizeDualRead(" Stellar Basic DAO");
+      await service.finalizeDualRead("RustAcademy");
 
       expect(attempts).toBe(2);
     });
@@ -394,7 +394,7 @@ describe("ContractRegistryService Integration", () => {
         deploymentId: "deploy-1",
         contracts: [
           {
-            name: " Stellar Basic DAO",
+            name: "RustAcademy",
             contractId: "C123",
             wasmHash: "abc123",
             contractVersion: 1,
@@ -412,7 +412,7 @@ describe("ContractRegistryService Integration", () => {
         error: null,
       });
 
-      await service.finalizeDualRead(" Stellar Basic DAO");
+      await service.finalizeDualRead("RustAcademy");
 
       // Rollback
       mockClient.rpc.mockResolvedValueOnce({
@@ -427,7 +427,7 @@ describe("ContractRegistryService Integration", () => {
         error: null,
       });
 
-      await service.rollback({ name: " Stellar Basic DAO", version: 1 });
+      await service.rollback({ name: "RustAcademy", version: 1 });
 
       expect(mockAuditService.log).toHaveBeenCalledTimes(3);
       expect(mockEventEmitter.emit).toHaveBeenCalledTimes(2); // publish and rollback
@@ -447,7 +447,7 @@ describe("ContractRegistryService Integration", () => {
         deploymentId: "deploy-1",
         contracts: [
           {
-            name: " Stellar Basic DAO",
+            name: "RustAcademy",
             contractId: "C123",
             wasmHash: "abc123",
             contractVersion: 1,
@@ -469,7 +469,7 @@ describe("ContractRegistryService Integration", () => {
           deploymentId: "deploy-2",
           contracts: [
             {
-              name: " Stellar Basic DAO",
+              name: "RustAcademy",
               contractId: "C456",
               wasmHash: "def456",
               contractVersion: 2,

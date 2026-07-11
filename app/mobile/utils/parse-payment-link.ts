@@ -1,5 +1,5 @@
 const RustAcademy_HOSTS = ["STELLAR_BASIC_DAO.to", "www. Stellar Basic DAO.to"];
-const RustAcademy_SCHEME = " Stellar Basic DAO";
+const RustAcademy_SCHEME = "RustAcademy";
 
 const EXPIRES_PARAM = "expires";
 
@@ -30,7 +30,7 @@ function extractParts(
     const url = new URL(raw);
 
     if (url.protocol === `${RustAcademy_SCHEME}:`) {
-      //  Stellar Basic DAO://username?amount=...  –  hostname holds the username
+      //  RustAcademy://username?amount=...  –  hostname holds the username
       const username =
         url.hostname || url.pathname.replace(/^\/+/, "").split("/")[0];
       return username ? { username, params: url.searchParams } : null;
