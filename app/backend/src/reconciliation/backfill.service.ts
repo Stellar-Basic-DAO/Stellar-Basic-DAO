@@ -11,7 +11,7 @@ import { CursorRepository } from "../ingestion/cursor.repository";
 import type { RawHorizonContractEvent } from "../ingestion/soroban-event.parser";
 import type {
   EscrowEvent,
-  RustAcademyContractEvent,
+  StellarBasicDaoContractEvent,
 } from "../ingestion/types/contract-event.types";
 
 export interface BackfillConfig {
@@ -323,7 +323,7 @@ export class BackfillService {
   /**
    * Persist an event to the database.
    */
-  private async persistEvent(event: RustAcademyContractEvent): Promise<void> {
+  private async persistEvent(event: StellarBasicDaoContractEvent): Promise<void> {
     switch (event.eventType) {
       case "EscrowDeposited":
       case "EscrowWithdrawn":

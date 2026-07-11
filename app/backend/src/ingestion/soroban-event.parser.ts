@@ -2,7 +2,7 @@ import { Logger } from "@nestjs/common";
 import { xdr, scValToNative, Address } from "@stellar/stellar-sdk";
 
 import type {
-  RustAcademyContractEvent,
+  StellarBasicDaoContractEvent,
   SorobanEventType,
   EscrowDepositedEvent,
   EscrowWithdrawnEvent,
@@ -38,8 +38,8 @@ import type {
 } from "./types/contract-event.types";
 import {
   RustAcademy_EVENT_SCHEMA_CONTRACTS,
-  RustAcademy_EVENT_TOPICS,
-  type RustAcademyEventTopic,
+  STELLAR_BASIC_DAO_EVENT_TOPICS,
+  type StellarBasicDaoEventTopic,
 } from "./event-schema";
 import { SchemaDriftDetector } from "./schema-drift-detector";
 
@@ -114,7 +114,7 @@ export interface RawHorizonContractEvent {
 
 interface TopicLayout {
   eventName: SorobanEventType;
-  topicNamespace: RustAcademyEventTopic | "LEGACY";
+  topicNamespace: StellarBasicDaoEventTopic | "LEGACY";
   indexedOffset: number;
 }
 
@@ -145,7 +145,7 @@ export class SorobanEventParser {
    * Returns null when the event is unrecognised, malformed, or carries an
    * unsupported schema version.
    */
-  parse(raw: RawHorizonContractEvent): RustAcademyContractEvent | null {
+  parse(raw: RawHorizonContractEvent): StellarBasicDaoContractEvent | null {
     try {
       const topics = raw.topic.map((t) => xdr.ScVal.fromXDR(t, "base64"));
       const dataVal = xdr.ScVal.fromXDR(raw.value.xdr, "base64");
@@ -903,7 +903,7 @@ export class SorobanEventParser {
     if (!first) return null;
 
     const canonicalTopics = new Set<string>(
-      Object.values(RustAcademy_EVENT_TOPICS),
+      Object.values(STELLAR_BASIC_DAO_EVENT_TOPICS),
     );
     if (canonicalTopics.has(first)) {
       const second = topics[1] ? this.decodeSymbol(topics[1]) : null;
@@ -918,7 +918,7 @@ export class SorobanEventParser {
 
       return {
         eventName: second as SorobanEventType,
-        topicNamespace: first as RustAcademyEventTopic,
+        topicNamespace: first as StellarBasicDaoEventTopic,
         indexedOffset: 2,
       };
     }

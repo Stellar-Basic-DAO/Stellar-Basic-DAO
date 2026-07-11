@@ -53,10 +53,10 @@ export class IndexerLagService implements OnModuleInit {
       this.logger.error("Failed to fetch current network ledger", error);
     }
 
-    if (this.config.RustAcademyContractId) {
+    if (this.config.stellarBasicDaoContractId) {
       try {
         const lastIndexed = await this.checkpointRepo.getLastLedger(
-          this.config.RustAcademyContractId,
+          this.config.stellarBasicDaoContractId,
         );
         if (lastIndexed !== null) {
           this.lastIndexedLedger = lastIndexed;

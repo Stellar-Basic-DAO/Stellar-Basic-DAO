@@ -291,7 +291,7 @@ export interface UpgradeWindowSetEvent extends BaseContractEvent {
 
 // ── Union types ───────────────────────────────────────────────────────────────
 
-export type RustAcademyContractEvent =
+export type StellarBasicDaoContractEvent =
   | EscrowDepositedEvent
   | EscrowWithdrawnEvent
   | EscrowRefundedEvent

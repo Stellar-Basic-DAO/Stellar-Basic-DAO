@@ -20,7 +20,7 @@ import { JobType } from "../job-queue/types";
 import { StellarReconnectPayload } from "../job-queue/types/job-payloads.types";
 import type {
   EscrowEvent,
-  RustAcademyContractEvent,
+  StellarBasicDaoContractEvent,
 } from "./types/contract-event.types";
 
 /** Milliseconds between reconnect attempts (doubles each retry, capped at MAX_BACKOFF_MS). */
@@ -392,7 +392,7 @@ export class StellarIngestionService implements OnModuleInit, OnModuleDestroy {
     this.eventEmitter.emit(`stellar.${event.eventType}`, event);
   }
 
-  private async persistEvent(event: RustAcademyContractEvent): Promise<void> {
+  private async persistEvent(event: StellarBasicDaoContractEvent): Promise<void> {
     switch (event.eventType) {
       case "EscrowDeposited":
       case "EscrowWithdrawn":

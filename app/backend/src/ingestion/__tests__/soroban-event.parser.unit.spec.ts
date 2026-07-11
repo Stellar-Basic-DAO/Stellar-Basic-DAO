@@ -5,8 +5,8 @@ import {
 } from "../soroban-event.parser";
 import {
   RustAcademy_EVENT_SCHEMA_CONTRACTS,
-  RustAcademy_EVENT_SCHEMA_VERSION,
-  RustAcademy_EVENT_TOPICS,
+  STELLAR_BASIC_DAO_EVENT_SCHEMA_VERSION,
+  STELLAR_BASIC_DAO_EVENT_TOPICS,
 } from "../event-schema";
 
 function symVal(s: string): xdr.ScVal {
@@ -61,7 +61,7 @@ describe("SorobanEventParser", () => {
   describe("EscrowDeposited", () => {
     it("parses canonical testnet topics with schema versioned payload", () => {
       const topics = [
-        symVal(RustAcademy_EVENT_TOPICS.escrow),
+        symVal(STELLAR_BASIC_DAO_EVENT_TOPICS.escrow),
         symVal("EscrowDeposited"),
         bytesVal(COMMITMENT_HEX),
         addressVal(OWNER),
@@ -70,7 +70,7 @@ describe("SorobanEventParser", () => {
         amount_due: nativeToScVal(5_000_000n, { type: "i128" }),
         amount_paid: nativeToScVal(2_500_000n, { type: "i128" }),
         expires_at: nativeToScVal(1800000000n, { type: "u64" }),
-        schema_version: nativeToScVal(RustAcademy_EVENT_SCHEMA_VERSION, {
+        schema_version: nativeToScVal(STELLAR_BASIC_DAO_EVENT_SCHEMA_VERSION, {
           type: "u32",
         }),
         timestamp: nativeToScVal(1700000000n, { type: "u64" }),
@@ -81,8 +81,8 @@ describe("SorobanEventParser", () => {
 
       expect(result?.eventType).toBe("EscrowDeposited");
       if (result?.eventType !== "EscrowDeposited") return;
-      expect(result.topicNamespace).toBe(RustAcademy_EVENT_TOPICS.escrow);
-      expect(result.schemaVersion).toBe(RustAcademy_EVENT_SCHEMA_VERSION);
+      expect(result.topicNamespace).toBe(STELLAR_BASIC_DAO_EVENT_TOPICS.escrow);
+      expect(result.schemaVersion).toBe(STELLAR_BASIC_DAO_EVENT_SCHEMA_VERSION);
       expect(result.commitment).toBe(COMMITMENT_HEX);
       expect(result.owner).toBe(OWNER);
       expect(result.amount).toBe(5_000_000n);
@@ -93,7 +93,7 @@ describe("SorobanEventParser", () => {
 
     it("parses a valid EscrowDeposited event", () => {
       const topics = [
-        symVal(RustAcademy_EVENT_TOPICS.escrow),
+        symVal(STELLAR_BASIC_DAO_EVENT_TOPICS.escrow),
         symVal("EscrowDeposited"),
         bytesVal(COMMITMENT_HEX),
         addressVal(OWNER),
@@ -113,7 +113,7 @@ describe("SorobanEventParser", () => {
       expect(result.commitment).toBe(COMMITMENT_HEX);
       expect(result.owner).toBe(OWNER);
       expect(result.schemaVersion).toBe(1);
-      expect(result.topicNamespace).toBe(RustAcademy_EVENT_TOPICS.escrow);
+      expect(result.topicNamespace).toBe(STELLAR_BASIC_DAO_EVENT_TOPICS.escrow);
       expect(result.amount).toBe(5_000_000n);
       expect(result.amountPaid).toBe(5_000_000n);
       expect(result.expiresAt).toBe(1800000000n);
@@ -124,7 +124,7 @@ describe("SorobanEventParser", () => {
   describe("EscrowWithdrawn", () => {
     it("parses a valid EscrowWithdrawn event", () => {
       const topics = [
-        symVal(RustAcademy_EVENT_TOPICS.escrow),
+        symVal(STELLAR_BASIC_DAO_EVENT_TOPICS.escrow),
         symVal("EscrowWithdrawn"),
         bytesVal(COMMITMENT_HEX),
         addressVal(OWNER),
@@ -132,7 +132,7 @@ describe("SorobanEventParser", () => {
       const data = mapVal({
         amount: nativeToScVal(5_000_000n, { type: "i128" }),
         fee: nativeToScVal(100n, { type: "i128" }),
-        schema_version: nativeToScVal(RustAcademy_EVENT_SCHEMA_VERSION, { type: "u32" }),
+        schema_version: nativeToScVal(STELLAR_BASIC_DAO_EVENT_SCHEMA_VERSION, { type: "u32" }),
         timestamp: nativeToScVal(1700001000n, { type: "u64" }),
         token: addressVal(TOKEN),
       });
@@ -205,7 +205,7 @@ describe("SorobanEventParser", () => {
 
     it("returns null for unsupported schema versions", () => {
       const topics = [
-        symVal(RustAcademy_EVENT_TOPICS.privacy),
+        symVal(STELLAR_BASIC_DAO_EVENT_TOPICS.privacy),
         symVal("PrivacyToggled"),
         addressVal(OWNER),
       ];
@@ -230,7 +230,7 @@ describe("SorobanEventParser", () => {
   describe("event schema contracts", () => {
     it("locks canonical topics and deterministic payload key order", () => {
       expect(RustAcademy_EVENT_SCHEMA_CONTRACTS.EscrowDeposited).toEqual({
-        topic: RustAcademy_EVENT_TOPICS.escrow,
+        topic: STELLAR_BASIC_DAO_EVENT_TOPICS.escrow,
         eventName: "EscrowDeposited",
         indexedFields: ["escrow_id", "owner"],
         payloadKeys: [
@@ -242,8 +242,8 @@ describe("SorobanEventParser", () => {
           "timestamp",
           "token",
         ],
-        schemaVersion: RustAcademy_EVENT_SCHEMA_VERSION,
-        compatibleVersions: [1, RustAcademy_EVENT_SCHEMA_VERSION],
+        schemaVersion: STELLAR_BASIC_DAO_EVENT_SCHEMA_VERSION,
+        compatibleVersions: [1, STELLAR_BASIC_DAO_EVENT_SCHEMA_VERSION],
       });
 
       for (const contract of Object.values(
@@ -260,7 +260,7 @@ describe("SorobanEventParser", () => {
   describe("replay metadata extraction", () => {
     it("extracts contractLedgerSequence when ledger_sequence is in payload", () => {
       const topics = [
-        symVal(RustAcademy_EVENT_TOPICS.escrow),
+        symVal(STELLAR_BASIC_DAO_EVENT_TOPICS.escrow),
         symVal("EscrowDeposited"),
         bytesVal(COMMITMENT_HEX),
         addressVal(OWNER),
@@ -270,7 +270,7 @@ describe("SorobanEventParser", () => {
         amount_paid: nativeToScVal(5_000_000n, { type: "i128" }),
         expires_at: nativeToScVal(1800000000n, { type: "u64" }),
         ledger_sequence: nativeToScVal(42, { type: "u32" }),
-        schema_version: nativeToScVal(RustAcademy_EVENT_SCHEMA_VERSION, { type: "u32" }),
+        schema_version: nativeToScVal(STELLAR_BASIC_DAO_EVENT_SCHEMA_VERSION, { type: "u32" }),
         timestamp: nativeToScVal(1700000000n, { type: "u64" }),
         token: addressVal(TOKEN),
       });
@@ -282,7 +282,7 @@ describe("SorobanEventParser", () => {
 
     it("sets contractLedgerSequence to undefined for legacy events without the field", () => {
       const topics = [
-        symVal(RustAcademy_EVENT_TOPICS.escrow),
+        symVal(STELLAR_BASIC_DAO_EVENT_TOPICS.escrow),
         symVal("EscrowDeposited"),
         bytesVal(COMMITMENT_HEX),
         addressVal(OWNER),
@@ -309,7 +309,7 @@ describe("SorobanEventParser", () => {
       );
 
       const topics = [
-        symVal(RustAcademy_EVENT_TOPICS.escrow),
+        symVal(STELLAR_BASIC_DAO_EVENT_TOPICS.escrow),
         symVal("EscrowDeposited"),
         bytesVal(COMMITMENT_HEX),
         addressVal(OWNER),
@@ -320,7 +320,7 @@ describe("SorobanEventParser", () => {
         expires_at: nativeToScVal(9999999n, { type: "u64" }),
         // contract says ledger 99 but Horizon reports ledger 100 (mismatch)
         ledger_sequence: nativeToScVal(99, { type: "u32" }),
-        schema_version: nativeToScVal(RustAcademy_EVENT_SCHEMA_VERSION, { type: "u32" }),
+        schema_version: nativeToScVal(STELLAR_BASIC_DAO_EVENT_SCHEMA_VERSION, { type: "u32" }),
         timestamp: nativeToScVal(1700000000n, { type: "u64" }),
         token: addressVal(TOKEN),
       });

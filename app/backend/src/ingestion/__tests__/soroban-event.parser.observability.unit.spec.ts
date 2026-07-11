@@ -8,8 +8,8 @@ import {
   RawHorizonContractEvent,
 } from "../soroban-event.parser";
 import {
-  RustAcademy_EVENT_TOPICS,
-  RustAcademy_EVENT_SCHEMA_VERSION,
+  STELLAR_BASIC_DAO_EVENT_TOPICS,
+  STELLAR_BASIC_DAO_EVENT_SCHEMA_VERSION,
 } from "../event-schema";
 
 function symVal(s: string): xdr.ScVal {
@@ -71,7 +71,7 @@ describe("SorobanEventParser – observability callbacks", () => {
       const parser = new SorobanEventParser(undefined, { onUnknownEvent });
 
       const topics = [
-        symVal(RustAcademy_EVENT_TOPICS.escrow),
+        symVal(STELLAR_BASIC_DAO_EVENT_TOPICS.escrow),
         symVal("EscrowDeposited"),
         bytesVal(COMMITMENT_HEX),
         addressVal(OWNER),
@@ -81,7 +81,7 @@ describe("SorobanEventParser – observability callbacks", () => {
         amount_paid: nativeToScVal(1_000n, { type: "i128" }),
         expires_at: nativeToScVal(9999999n, { type: "u64" }),
         ledger_sequence: nativeToScVal(100, { type: "u32" }),
-        schema_version: nativeToScVal(RustAcademy_EVENT_SCHEMA_VERSION, { type: "u32" }),
+        schema_version: nativeToScVal(STELLAR_BASIC_DAO_EVENT_SCHEMA_VERSION, { type: "u32" }),
         timestamp: nativeToScVal(1700000000n, { type: "u64" }),
         token: addressVal(TOKEN),
       });
@@ -97,7 +97,7 @@ describe("SorobanEventParser – observability callbacks", () => {
       const parser = new SorobanEventParser(undefined, { onFieldMismatch });
 
       const topics = [
-        symVal(RustAcademy_EVENT_TOPICS.escrow),
+        symVal(STELLAR_BASIC_DAO_EVENT_TOPICS.escrow),
         symVal("EscrowDeposited"),
         bytesVal(COMMITMENT_HEX),
         addressVal(OWNER),
@@ -107,7 +107,7 @@ describe("SorobanEventParser – observability callbacks", () => {
         amount_due: nativeToScVal(1_000n, { type: "i128" }),
         amount_paid: nativeToScVal(1_000n, { type: "i128" }),
         expires_at: nativeToScVal(9999999n, { type: "u64" }),
-        schema_version: nativeToScVal(RustAcademy_EVENT_SCHEMA_VERSION, { type: "u32" }),
+        schema_version: nativeToScVal(STELLAR_BASIC_DAO_EVENT_SCHEMA_VERSION, { type: "u32" }),
         timestamp: nativeToScVal(1700000000n, { type: "u64" }),
         // token absent
       });
@@ -117,7 +117,7 @@ describe("SorobanEventParser – observability callbacks", () => {
       expect(result).toBeNull();
       expect(onFieldMismatch).toHaveBeenCalledWith(
         "EscrowDeposited",
-        RustAcademy_EVENT_SCHEMA_VERSION,
+        STELLAR_BASIC_DAO_EVENT_SCHEMA_VERSION,
         expect.objectContaining({ paging_token: "100-1" }),
         expect.arrayContaining(["token"]),
         expect.any(Array),
@@ -131,7 +131,7 @@ describe("SorobanEventParser – observability callbacks", () => {
       const parser = new SorobanEventParser(undefined, { onUnexpectedFields });
 
       const topics = [
-        symVal(RustAcademy_EVENT_TOPICS.escrow),
+        symVal(STELLAR_BASIC_DAO_EVENT_TOPICS.escrow),
         symVal("EscrowDeposited"),
         bytesVal(COMMITMENT_HEX),
         addressVal(OWNER),
@@ -141,7 +141,7 @@ describe("SorobanEventParser – observability callbacks", () => {
         amount_paid: nativeToScVal(1_000n, { type: "i128" }),
         expires_at: nativeToScVal(9999999n, { type: "u64" }),
         ledger_sequence: nativeToScVal(100, { type: "u32" }),
-        schema_version: nativeToScVal(RustAcademy_EVENT_SCHEMA_VERSION, { type: "u32" }),
+        schema_version: nativeToScVal(STELLAR_BASIC_DAO_EVENT_SCHEMA_VERSION, { type: "u32" }),
         timestamp: nativeToScVal(1700000000n, { type: "u64" }),
         token: addressVal(TOKEN),
         future_extra_field: nativeToScVal("some_value", { type: "string" }),
@@ -154,7 +154,7 @@ describe("SorobanEventParser – observability callbacks", () => {
       // But the unexpected-fields callback fires
       expect(onUnexpectedFields).toHaveBeenCalledWith(
         "EscrowDeposited",
-        RustAcademy_EVENT_SCHEMA_VERSION,
+        STELLAR_BASIC_DAO_EVENT_SCHEMA_VERSION,
         expect.objectContaining({ paging_token: "100-1" }),
         expect.arrayContaining(["future_extra_field"]),
       );
@@ -168,7 +168,7 @@ describe("SorobanEventParser – observability callbacks", () => {
 
       // ContractPaused only supports [2], so version 1 is incompatible
       const topics = [
-        symVal(RustAcademy_EVENT_TOPICS.admin),
+        symVal(STELLAR_BASIC_DAO_EVENT_TOPICS.admin),
         symVal("ContractPaused"),
         addressVal(OWNER),
       ];
@@ -212,7 +212,7 @@ describe("SorobanEventParser – observability callbacks", () => {
       const parser = new SorobanEventParser(legacyHandler);
 
       const topics = [
-        symVal(RustAcademy_EVENT_TOPICS.escrow),
+        symVal(STELLAR_BASIC_DAO_EVENT_TOPICS.escrow),
         symVal("EscrowDeposited"),
         bytesVal(COMMITMENT_HEX),
         addressVal(OWNER),

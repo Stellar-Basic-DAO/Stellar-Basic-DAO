@@ -103,7 +103,7 @@ export class StellarController {
       "Uses the same pipeline as POST /transactions/compose against  RustAcademy_CONTRACT_ID.",
   })
   async sorobanPreflight(@Body() body: SorobanPreflightDto) {
-    const contractId = this.appConfig.RustAcademyContractId;
+    const contractId = this.appConfig.stellarBasicDaoContractId;
     if (!contractId?.trim()) {
       throw new ServiceUnavailableException({
         code: "CONTRACT_NOT_CONFIGURED",

@@ -11,7 +11,7 @@
 
 import { xdr, nativeToScVal } from "@stellar/stellar-sdk";
 import { SorobanEventParser, RawHorizonContractEvent } from "../soroban-event.parser";
-import { RustAcademy_EVENT_SCHEMA_VERSION, RustAcademy_EVENT_TOPICS } from "../event-schema";
+import { STELLAR_BASIC_DAO_EVENT_SCHEMA_VERSION, STELLAR_BASIC_DAO_EVENT_TOPICS } from "../event-schema";
 import type { EscrowDepositedEvent } from "../types/contract-event.types";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -42,7 +42,7 @@ function makeEscrowDepositedRaw(
   contractLedger?: number,
 ): RawHorizonContractEvent {
   const topics = [
-    symVal(RustAcademy_EVENT_TOPICS.escrow),
+    symVal(STELLAR_BASIC_DAO_EVENT_TOPICS.escrow),
     symVal("EscrowDeposited"),
     bytesVal("deadbeef".repeat(8)),
     addressVal("GDQERHRWJYV7JHRP5V7DWJVI6Y5ABZP3YRH7DKYJRBEGJQKE6IQEOSY2"),
@@ -52,7 +52,7 @@ function makeEscrowDepositedRaw(
     amount_paid: nativeToScVal(5_000_000n, { type: "i128" }),
     expires_at: nativeToScVal(1800000000n, { type: "u64" }),
     ledger_sequence: nativeToScVal(contractLedger ?? ledger, { type: "u32" }),
-    schema_version: nativeToScVal(RustAcademy_EVENT_SCHEMA_VERSION, { type: "u32" }),
+    schema_version: nativeToScVal(STELLAR_BASIC_DAO_EVENT_SCHEMA_VERSION, { type: "u32" }),
     timestamp: nativeToScVal(1700000000n, { type: "u64" }),
     token: addressVal("CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"),
   });

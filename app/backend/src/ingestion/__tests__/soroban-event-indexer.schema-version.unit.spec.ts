@@ -5,7 +5,7 @@ import {
   MAX_SUPPORTED_SCHEMA_VERSION,
   UnknownSchemaVersionHandler,
 } from "../soroban-event.parser";
-import { RustAcademy_EVENT_TOPICS } from "../event-schema";
+import { STELLAR_BASIC_DAO_EVENT_TOPICS } from "../event-schema";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -56,7 +56,7 @@ const COMMITMENT_HEX = "deadbeef".repeat(8);
 describe("SorobanEventParser – schema version handling", () => {
   it("treats absent schema_version as v1", () => {
     const parser = new SorobanEventParser();
-    const topics = [symVal(RustAcademy_EVENT_TOPICS.escrow), symVal("EscrowDeposited"), bytesVal(COMMITMENT_HEX), addressVal(OWNER)];
+    const topics = [symVal(STELLAR_BASIC_DAO_EVENT_TOPICS.escrow), symVal("EscrowDeposited"), bytesVal(COMMITMENT_HEX), addressVal(OWNER)];
     const data = mapVal({
       amount_due: nativeToScVal(1_000n, { type: "i128" }),
       amount_paid: nativeToScVal(1_000n, { type: "i128" }),
@@ -73,7 +73,7 @@ describe("SorobanEventParser – schema version handling", () => {
 
   it("accepts schema_version == 2", () => {
     const parser = new SorobanEventParser();
-    const topics = [symVal(RustAcademy_EVENT_TOPICS.escrow), symVal("EscrowDeposited"), bytesVal(COMMITMENT_HEX), addressVal(OWNER)];
+    const topics = [symVal(STELLAR_BASIC_DAO_EVENT_TOPICS.escrow), symVal("EscrowDeposited"), bytesVal(COMMITMENT_HEX), addressVal(OWNER)];
     const data = mapVal({
       amount_due: nativeToScVal(1_000n, { type: "i128" }),
       amount_paid: nativeToScVal(1_000n, { type: "i128" }),
@@ -149,7 +149,7 @@ describe("SorobanEventParser – EphemeralKeyRegistered", () => {
   it("parses EphemeralKeyRegistered", () => {
     const parser = new SorobanEventParser();
     const topics = [
-      symVal(RustAcademy_EVENT_TOPICS.stealth),
+      symVal(STELLAR_BASIC_DAO_EVENT_TOPICS.stealth),
       symVal("EphemeralKeyRegistered"),
       bytesVal(STEALTH_HEX),
       bytesVal(EPH_PUB_HEX),

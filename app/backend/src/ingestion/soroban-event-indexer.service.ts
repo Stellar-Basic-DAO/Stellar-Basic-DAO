@@ -14,7 +14,7 @@ import { PrivacyEventRepository } from "./privacy-event.repository";
 import { AdminEventRepository } from "./admin-event.repository";
 import { StealthEventRepository } from "./stealth-event.repository";
 import { SchemaObservabilityService } from "./schema-observability.service";
-import type { RustAcademyContractEvent } from "./types/contract-event.types";
+import type { StellarBasicDaoContractEvent } from "./types/contract-event.types";
 
 const PAGE_LIMIT = 200;
 const MAX_RETRIES = 5;
@@ -300,7 +300,7 @@ export class SorobanEventIndexerService {
     return currentLedger < config.effectiveLedger;
   }
 
-private async persistEvent(event: RustAcademyContractEvent): Promise<void> {
+private async persistEvent(event: StellarBasicDaoContractEvent): Promise<void> {
     // Cast to an unknown dictionary first to safely extract the runtime eventType string
     const dynamicEvent = event as unknown as Record<string, unknown>;
     const eventType = dynamicEvent.eventType as string;
