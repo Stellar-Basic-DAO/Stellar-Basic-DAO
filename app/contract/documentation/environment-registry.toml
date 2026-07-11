@@ -4,7 +4,7 @@
 # services (backend/frontend) to discover deployed contract coordinates.
 
 version = 1
-application = " RustAcademy"
+application = "stellar_basic_dao"
 
 [environments.testnet]
 network = "testnet"
@@ -14,7 +14,7 @@ identity = "seyi"
 mainnet_gated = false
 
 [[environments.testnet.contracts]]
-name = " RustAcademy"
+name = "stellar_basic_dao"
 contract_id = "CCM5LR3XVTSDDNVEK7U4QQUN663TU4LZGDTMP3H4QIPIZO2WJOAJS2JH"
 wasm_hash = "0x57025c36c2dca81767dfbe03e78e7abc383e138ef9fe44b61f327e2cac83ed92"
 admin_addresses = ["GA5TBSBGERHVMEFBJGEM3KYMRLWO73Y2QRAV6P66GPEBOJ5ZMJUT7LLY"]

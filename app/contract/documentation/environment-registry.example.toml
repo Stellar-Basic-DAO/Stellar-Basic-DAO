@@ -5,7 +5,7 @@
 # upgrade changes the contract address, hash, or initialization parameters.
 
 version = 1
-application = " RustAcademy"
+application = "stellar_basic_dao"
 
 [environments.testnet]
 network = "testnet"
@@ -15,7 +15,7 @@ identity = " RustAcademy-testnet"
 mainnet_gated = false
 
 [[environments.testnet.contracts]]
-name = " RustAcademy"
+name = "stellar_basic_dao"
 contract_id = "CXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 wasm_hash = "0x0000000000000000000000000000000000000000000000000000000000000000"
 admin_addresses = ["GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"]
@@ -32,7 +32,7 @@ identity = " RustAcademy-mainnet"
 mainnet_gated = true
 
 [[environments.mainnet.contracts]]
-name = " RustAcademy"
+name = "stellar_basic_dao"
 contract_id = "CXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 wasm_hash = "0x0000000000000000000000000000000000000000000000000000000000000000"
 admin_addresses = ["GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"]
