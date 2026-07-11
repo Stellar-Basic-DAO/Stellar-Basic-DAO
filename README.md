@@ -1,4 +1,4 @@
-# 🌟 Stellar Basic DAO — Stellar Basic DAO
+# 🌟 Stellar Basic DAO
 
 > **A fully decentralized, learn-to-earn Rust programming academy on the Stellar blockchain. Learners earn XLM by completing tasks, tutors earn for teaching, and all rewards, credentials, and governance are trustlessly enforced by Soroban smart contracts.**
 
@@ -99,7 +99,7 @@ Stellar Basic DAO is unique on Stellar: no other project combines Rust education
                                │ Stellar SDK + Soroban RPC
 ┌──────────────────────────────▼──────────────────────────────────────┐
 │                    STELLAR BLOCKCHAIN LAYER                          │
-│   Stellar Basic DAOContract (Soroban) — single monolithic WASM contract   │
+│   RustAcademyContract (Soroban WASM) — single monolithic contract     │
 │   Escrow · Fee Router · Privacy · Stealth · Dispute · Governance    │
 └─────────────────────────────────────────────────────────────────────┘
                                │ Horizon API
@@ -167,9 +167,9 @@ Stellar Basic DAO is unique on Stellar: no other project combines Rust education
 
 ---
 
-## ⚡ Soroban Smart Contract — `Stellar Basic DAOContract`
+## ⚡ Soroban Smart Contract — `RustAcademyContract`
 
-The entire on-chain logic is deployed as a single monolithic Soroban contract (`Stellar Basic DAOContract`). This minimizes cross-contract call overhead and simplifies upgrades.
+The entire on-chain logic is deployed as a single monolithic Soroban contract (`RustAcademyContract`). This minimizes cross-contract call overhead and simplifies upgrades.
 
 ### Escrow State Machine
 
@@ -463,7 +463,6 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 <div align="center">
   <strong>Built with 🦀 Rust, 💙 Stellar, and ❤️ for developers everywhere</strong><br/>
-  <a href="https://github.com/Stellar-Basic-DAO/Stellar-Basic-DAO">GitHub</a> •
-  <a href="https://discord.gg/Stellar Basic DAO">Discord</a> •
-  <a href="https://twitter.com/Stellar Basic DAO">Twitter</a>
+  <a href="https://github.com/Stellar-Basic-DAO/Stellar-Basic-DAO">GitHub</a> •  <a href="https://discord.gg/stellar-basic-dao">Discord</a> •
+  <a href="https://twitter.com/stellar_basic_dao">Twitter</a>
 </div>
