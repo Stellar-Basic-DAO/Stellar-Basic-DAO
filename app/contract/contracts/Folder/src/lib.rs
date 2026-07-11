@@ -48,7 +48,7 @@ mod types;
 #[cfg(test)]
 mod upgrade_test;
 
-use errors::RustAcademyError;
+use errors::StellarBasicDAOError;
 use storage::*;
 use types::{
     ContractHealth, DeploymentMetadata, DisputeExpiryAction, EscrowEntry,
@@ -59,10 +59,10 @@ use types::{
 
 pub use types::FeeRatio;
 
-///  RustAcademy Privacy Contract
+///  Stellar Basic DAO Privacy Contract
 ///
 /// Soroban smart contract providing escrow, privacy controls, and X-Ray-style amount
-/// commitments for the  RustAcademy platform. See the contract README for main flows.
+/// commitments for the  Stellar Basic DAO platform. See the contract README for main flows.
 ///
 /// ## Asset Support
 ///
@@ -78,7 +78,7 @@ pub use types::FeeRatio;
 /// ## Supported Escrow Limits
 ///
 /// The contract publishes bounded escrow limits through
-/// [`RustAcademyContract::get_escrow_operation_limits`]. The current supported
+/// [`StellarBasicDAOContract::get_escrow_operation_limits`]. The current supported
 /// envelopes are:
 /// - deposit token transfers: 1
 /// - deposit arbiters: up to 10
@@ -118,19 +118,19 @@ pub use types::FeeRatio;
 ///
 /// - **Global pause** (`is_paused`) and **per-feature pause** ([`PauseFlag`])
 ///   block the corresponding state-mutating operations with
-///   [`OperationPaused`](errors::RustAcademyError::OperationPaused) /
-///   [`ContractPaused`](errors::RustAcademyError::ContractPaused).
+///   [`OperationPaused`](errors::StellarBasicDAOError::OperationPaused) /
+///   [`ContractPaused`](errors::StellarBasicDAOError::ContractPaused).
 /// - **Emergency mode** blocks deposits and freezes admin/pause configuration
 ///   changes once activated (it is irreversible).
 /// - **Upgrade in progress** restricts the upgrade lifecycle methods.
 ///
 /// Read-only getters remain callable in every mode by design.
 #[contract]
-pub struct RustAcademyContract;
+pub struct StellarBasicDAOContract;
 
 #[contractimpl]
 #[allow(clippy::too_many_arguments)]
-impl RustAcademyContract {
+impl StellarBasicDAOContract {
     /// Withdraw escrowed funds by proving commitment ownership.
     ///
     /// The caller (`to`) must authorize; the commitment is recomputed from `to`, `amount`, and `salt`
@@ -159,7 +159,7 @@ impl RustAcademyContract {
         _commitment: BytesN<32>,
         to: Address,
         salt: Bytes,
-    ) -> Result<bool, RustAcademyError> {
+    ) -> Result<bool, StellarBasicDAOError> {
         admin::guard_withdraw(&env, PauseFlag::Withdrawal)?;
         escrow::withdraw(&env, amount, to, salt)
     }
@@ -167,7 +167,7 @@ impl RustAcademyContract {
     /// Set a numeric privacy level for an account (legacy/level-based API).
     ///
     /// Records the level in storage and appends it to the account's privacy history.
-    /// For boolean on/off privacy, prefer [`set_privacy`]( RustAcademyContract::set_privacy).
+    /// For boolean on/off privacy, prefer [`set_privacy`]( StellarBasicDAOContract::set_privacy).
     ///
     /// Access: **owner** — `account` must authorize the call. Gated by the
     /// [`PauseFlag::SetPrivacy`] feature flag.
@@ -183,13 +183,13 @@ impl RustAcademyContract {
         env: Env,
         account: Address,
         privacy_level: u32,
-    ) -> Result<bool, RustAcademyError> {
+    ) -> Result<bool, StellarBasicDAOError> {
         // Owner-gated: only the account itself may change its privacy level.
         // Previously this method had no authorization, letting any caller write
         // another account's privacy level and history (Issue #53).
         account.require_auth();
         if is_feature_paused(&env, PauseFlag::SetPrivacy) {
-            return Err(RustAcademyError::OperationPaused);
+            return Err(StellarBasicDAOError::OperationPaused);
         }
         set_privacy_level(&env, &account, privacy_level);
         add_privacy_history(&env, &account, privacy_level);
@@ -228,10 +228,10 @@ impl RustAcademyContract {
     /// # Errors
     /// * `ContractPaused` - Contract is currently paused
     /// * `PrivacyAlreadySet` - Privacy state is already at the requested value
-    pub fn set_privacy(env: Env, owner: Address, enabled: bool) -> Result<(), RustAcademyError> {
+    pub fn set_privacy(env: Env, owner: Address, enabled: bool) -> Result<(), StellarBasicDAOError> {
         admin::guard_initialized(&env)?;
         if is_feature_paused(&env, PauseFlag::SetPrivacy) {
-            return Err(RustAcademyError::OperationPaused);
+            return Err(StellarBasicDAOError::OperationPaused);
         }
         privacy::set_privacy(&env, owner, enabled)
     }
@@ -274,7 +274,7 @@ impl RustAcademyContract {
         salt: Bytes,
         timeout_secs: u64,
         arbiter: Option<Address>,
-    ) -> Result<BytesN<32>, RustAcademyError> {
+    ) -> Result<BytesN<32>, StellarBasicDAOError> {
         admin::guard_deposit(&env, PauseFlag::Deposit)?;
         escrow::deposit(&env, token, amount, owner, salt, timeout_secs, arbiter)
     }
@@ -297,7 +297,7 @@ impl RustAcademyContract {
         salt: Bytes,
         timeout_secs: u64,
         arbiter: Option<Address>,
-    ) -> Result<BytesN<32>, RustAcademyError> {
+    ) -> Result<BytesN<32>, StellarBasicDAOError> {
         escrow_id::derive_escrow_id(&env, &token, amount, &owner, &salt, timeout_secs, &arbiter)
     }
 
@@ -328,9 +328,9 @@ impl RustAcademyContract {
         owner: Address,
         amount: i128,
         salt: Bytes,
-    ) -> Result<BytesN<32>, RustAcademyError> {
+    ) -> Result<BytesN<32>, StellarBasicDAOError> {
         if is_feature_paused(&env, PauseFlag::CreateAmountCommitment) {
-            return Err(RustAcademyError::OperationPaused);
+            return Err(StellarBasicDAOError::OperationPaused);
         }
         commitment::create_amount_commitment(&env, owner, amount, salt)
     }
@@ -380,7 +380,7 @@ impl RustAcademyContract {
     ///
     /// Transfers `amount` from `from` to the contract and stores an escrow keyed by
     /// `commitment`. The depositor must authorize. Use when the commitment was created
-    /// off-chain or via [`create_amount_commitment`]( RustAcademyContract::create_amount_commitment).
+    /// off-chain or via [`create_amount_commitment`]( StellarBasicDAOContract::create_amount_commitment).
     ///
     /// # Arguments
     /// * `env` - The contract environment
@@ -403,7 +403,7 @@ impl RustAcademyContract {
         commitment: BytesN<32>,
         timeout_secs: u64,
         arbiter: Option<Address>,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         admin::guard_deposit(&env, PauseFlag::DepositWithCommitment)?;
         escrow::deposit_with_commitment(
             &env,
@@ -416,7 +416,7 @@ impl RustAcademyContract {
         )
     }
     /// Activate emergency mode (irreversible). Only admin can call. Emits event.
-    pub fn activate_emergency_mode(env: Env, caller: Address) -> Result<(), RustAcademyError> {
+    pub fn activate_emergency_mode(env: Env, caller: Address) -> Result<(), StellarBasicDAOError> {
         admin::require_admin(&env, &caller)?;
         if storage::is_emergency_mode(&env) {
             return Ok(()); // Already set
@@ -456,7 +456,7 @@ impl RustAcademyContract {
         salt: Bytes,
         timeout_secs: u64,
         arbiter: Option<Address>,
-    ) -> Result<BytesN<32>, RustAcademyError> {
+    ) -> Result<BytesN<32>, StellarBasicDAOError> {
         admin::guard_deposit(&env, PauseFlag::Deposit)?;
         escrow::deposit_partial(
             &env,
@@ -501,7 +501,7 @@ impl RustAcademyContract {
         timeout_secs: u64,
         arbiters: Vec<Address>,
         threshold: u32,
-    ) -> Result<BytesN<32>, RustAcademyError> {
+    ) -> Result<BytesN<32>, StellarBasicDAOError> {
         admin::guard_deposit(&env, PauseFlag::Deposit)?;
         escrow::deposit_with_arbiters(&env, token, amount, owner, salt, timeout_secs, arbiters, threshold)
     }
@@ -529,7 +529,7 @@ impl RustAcademyContract {
         commitment: BytesN<32>,
         payer: Address,
         payment_amount: i128,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         admin::guard_deposit(&env, PauseFlag::Deposit)?;
         escrow::partial_payment(&env, commitment, payer, payment_amount)
     }
@@ -553,7 +553,7 @@ impl RustAcademyContract {
         env: Env,
         commitment: BytesN<32>,
         caller: Address,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         admin::guard_refund(&env, PauseFlag::Refund)?;
         escrow::refund(&env, commitment, caller)
     }
@@ -561,7 +561,7 @@ impl RustAcademyContract {
     /// Cleanup terminal escrow entries to reclaim storage deposits.
     ///
     /// Only escrows in `Spent` or `Refunded` status can be removed.
-    pub fn cleanup_escrow(env: Env, commitment: BytesN<32>) -> Result<(), RustAcademyError> {
+    pub fn cleanup_escrow(env: Env, commitment: BytesN<32>) -> Result<(), StellarBasicDAOError> {
         admin::guard_initialized(&env)?;
         escrow::cleanup_escrow(&env, commitment)
     }
@@ -572,7 +572,7 @@ impl RustAcademyContract {
     pub fn cleanup_stealth_escrow(
         env: Env,
         stealth_address: BytesN<32>,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         admin::require_initialized(&env)?;
         stealth::cleanup_stealth_escrow(&env, stealth_address)
     }
@@ -580,7 +580,7 @@ impl RustAcademyContract {
     /// Extend the storage TTL of an escrow record.
     ///
     /// Any user can call this to keep an escrow from being archived.
-    pub fn extend_escrow_ttl(env: Env, commitment: BytesN<32>) -> Result<(), RustAcademyError> {
+    pub fn extend_escrow_ttl(env: Env, commitment: BytesN<32>) -> Result<(), StellarBasicDAOError> {
         admin::guard_initialized(&env)?;
         escrow::extend_escrow_ttl(&env, commitment)
     }
@@ -598,7 +598,7 @@ impl RustAcademyContract {
     /// * `CommitmentNotFound` - No escrow exists for the commitment
     /// * `NoArbiter` - No arbiter assigned to the escrow
     /// * `InvalidDisputeState` - Escrow is not in `Pending` status
-    pub fn dispute(env: Env, commitment: BytesN<32>) -> Result<(), RustAcademyError> {
+    pub fn dispute(env: Env, commitment: BytesN<32>) -> Result<(), StellarBasicDAOError> {
         admin::guard_dispute(&env)?;
         escrow::dispute(&env, commitment)
     }
@@ -625,7 +625,7 @@ impl RustAcademyContract {
         commitment: BytesN<32>,
         resolve_for_owner: bool,
         recipient: Address,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         admin::guard_dispute(&env)?;
         escrow::resolve_dispute(&env, caller, commitment, resolve_for_owner, recipient)
     }
@@ -651,7 +651,7 @@ impl RustAcademyContract {
         caller: Address,
         commitment: BytesN<32>,
         resolve_for_owner: bool,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         admin::guard_dispute(&env)?;
         escrow::vote_for_dispute(&env, caller, commitment, resolve_for_owner)
     }
@@ -674,7 +674,7 @@ impl RustAcademyContract {
         env: Env,
         commitment: BytesN<32>,
         recipient: Address,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         admin::guard_dispute(&env)?;
         escrow::resolve_dispute_multi_sig(&env, commitment, recipient)
     }
@@ -690,7 +690,7 @@ impl RustAcademyContract {
         env: Env,
         caller: Address,
         timeout_secs: u64,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         hook::assert_not_reentrant(&env)?;
         dispute::set_timeout(&env, caller, timeout_secs)
     }
@@ -707,7 +707,7 @@ impl RustAcademyContract {
         env: Env,
         caller: Address,
         action: DisputeExpiryAction,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         hook::assert_not_reentrant(&env)?;
         dispute::set_expiry_action(&env, caller, action)
     }
@@ -733,7 +733,7 @@ impl RustAcademyContract {
     pub fn resolve_expired_dispute(
         env: Env,
         commitment: BytesN<32>,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         hook::assert_not_reentrant(&env)?;
         dispute::resolve_expired_dispute(&env, commitment)
     }
@@ -748,7 +748,7 @@ impl RustAcademyContract {
     ///
     /// # Errors
     /// * `AlreadyInitialized` - Contract has already been initialized
-    pub fn initialize(env: Env, admin: Address) -> Result<(), RustAcademyError> {
+    pub fn initialize(env: Env, admin: Address) -> Result<(), StellarBasicDAOError> {
         admin::initialize(&env, admin)
     }
 
@@ -837,7 +837,7 @@ impl RustAcademyContract {
         _env: Env,
         salt_bytes: u32,
         arbiter_count: u32,
-    ) -> Result<EscrowOperationEstimate, RustAcademyError> {
+    ) -> Result<EscrowOperationEstimate, StellarBasicDAOError> {
         escrow::estimate_deposit_resources_view(salt_bytes, arbiter_count)
     }
 
@@ -846,7 +846,7 @@ impl RustAcademyContract {
         env: Env,
         token: Address,
         salt_bytes: u32,
-    ) -> Result<EscrowOperationEstimate, RustAcademyError> {
+    ) -> Result<EscrowOperationEstimate, StellarBasicDAOError> {
         escrow::estimate_withdraw_resources_view(&env, token, salt_bytes)
     }
 
@@ -854,7 +854,7 @@ impl RustAcademyContract {
     ///
     /// This entrypoint is intended to be called immediately after upgrading the contract WASM
     /// whenever the new release introduces storage or schema changes.
-    pub fn migrate(env: Env, caller: Address) -> Result<u32, RustAcademyError> {
+    pub fn migrate(env: Env, caller: Address) -> Result<u32, StellarBasicDAOError> {
         admin::migrate(&env, &caller)
     }
 
@@ -869,7 +869,7 @@ impl RustAcademyContract {
     ///
     /// # Errors
     /// * `Unauthorized` - Caller is not the admin, or admin not set
-    pub fn set_paused(env: Env, caller: Address, new_state: bool) -> Result<(), RustAcademyError> {
+    pub fn set_paused(env: Env, caller: Address, new_state: bool) -> Result<(), StellarBasicDAOError> {
         admin::guard_admin_config(&env)?;
         admin::set_paused(&env, caller, new_state)
     }
@@ -892,7 +892,7 @@ impl RustAcademyContract {
     ///
     /// # Errors
     /// * `Unauthorized` - Caller is not the admin, or admin not set
-    pub fn pause_features(env: Env, caller: Address, mask: u64) -> Result<(), RustAcademyError> {
+    pub fn pause_features(env: Env, caller: Address, mask: u64) -> Result<(), StellarBasicDAOError> {
         admin::guard_admin_config(&env)?;
         admin::set_pause_flags(&env, &caller, mask, 0)
     }
@@ -907,7 +907,7 @@ impl RustAcademyContract {
     ///
     /// # Errors
     /// * `Unauthorized` - Caller is not the admin, or admin not set
-    pub fn unpause_features(env: Env, caller: Address, mask: u64) -> Result<(), RustAcademyError> {
+    pub fn unpause_features(env: Env, caller: Address, mask: u64) -> Result<(), StellarBasicDAOError> {
         admin::guard_admin_config(&env)?;
         admin::set_pause_flags(&env, &caller, 0, mask)
     }
@@ -927,7 +927,7 @@ impl RustAcademyContract {
         env: Env,
         caller: Address,
         new_admin: Address,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         admin::guard_admin_config(&env)?;
         admin::set_admin(&env, caller, new_admin)
     }
@@ -937,17 +937,17 @@ impl RustAcademyContract {
         env: Env,
         caller: Address,
         new_admin: Address,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         admin::propose_admin_transfer(&env, caller, new_admin)
     }
 
     /// Accept a pending admin transfer (**pending admin only**).
-    pub fn accept_admin_transfer(env: Env, caller: Address) -> Result<(), RustAcademyError> {
+    pub fn accept_admin_transfer(env: Env, caller: Address) -> Result<(), StellarBasicDAOError> {
         admin::accept_admin_transfer(&env, caller)
     }
 
     /// Cancel a pending admin transfer (**Admin only**).
-    pub fn cancel_admin_transfer(env: Env, caller: Address) -> Result<(), RustAcademyError> {
+    pub fn cancel_admin_transfer(env: Env, caller: Address) -> Result<(), StellarBasicDAOError> {
         admin::cancel_admin_transfer(&env, caller)
     }
 
@@ -971,13 +971,13 @@ impl RustAcademyContract {
     }
 
     /// Register an external hook contract to receive escrow lifecycle callbacks.
-    pub fn register_hook(env: Env, hook_contract: Address) -> Result<(), RustAcademyError> {
+    pub fn register_hook(env: Env, hook_contract: Address) -> Result<(), StellarBasicDAOError> {
         admin::guard_initialized(&env)?;
         hook::register_hook(&env, hook_contract)
     }
 
     /// Unregister a hook contract.
-    pub fn unregister_hook(env: Env, hook_contract: Address) -> Result<(), RustAcademyError> {
+    pub fn unregister_hook(env: Env, hook_contract: Address) -> Result<(), StellarBasicDAOError> {
         admin::guard_initialized(&env)?;
         hook::unregister_hook(&env, hook_contract)
     }
@@ -992,7 +992,7 @@ impl RustAcademyContract {
         env: Env,
         caller: Address,
         config: FeeConfig,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         admin::guard_admin_config(&env)?;
         admin::set_fee_config(&env, &caller, config)
     }
@@ -1003,7 +1003,7 @@ impl RustAcademyContract {
         caller: Address,
         token: Address,
         config: PerAssetFeeConfig,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         admin::guard_admin_config(&env)?;
         admin::set_per_asset_fee(&env, &caller, token, config)
     }
@@ -1018,7 +1018,7 @@ impl RustAcademyContract {
         env: Env,
         caller: Address,
         config: OracleFeeConfig,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         admin::guard_admin_config(&env)?;
         admin::set_oracle_fee_config(&env, &caller, config)
     }
@@ -1038,7 +1038,7 @@ impl RustAcademyContract {
         env: Env,
         caller: Address,
         wallet: Address,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         admin::guard_admin_config(&env)?;
         admin::set_platform_wallet(&env, &caller, wallet)
     }
@@ -1048,7 +1048,7 @@ impl RustAcademyContract {
         env: Env,
         caller: Address,
         new_collector: Address,
-    ) -> Result<u32, RustAcademyError> {
+    ) -> Result<u32, StellarBasicDAOError> {
         admin::guard_admin_config(&env)?;
         admin::rotate_fee_collector(&env, &caller, new_collector)
     }
@@ -1190,7 +1190,7 @@ impl RustAcademyContract {
     pub fn register_ephemeral_key(
         env: Env,
         params: StealthDepositParams,
-    ) -> Result<BytesN<32>, RustAcademyError> {
+    ) -> Result<BytesN<32>, StellarBasicDAOError> {
         admin::guard_stealth(&env, PauseFlag::Deposit)?;
         stealth::register_ephemeral_key(&env, params)
     }
@@ -1222,7 +1222,7 @@ impl RustAcademyContract {
         eph_pub: BytesN<32>,
         spend_pub: BytesN<32>,
         stealth_address: BytesN<32>,
-    ) -> Result<bool, RustAcademyError> {
+    ) -> Result<bool, StellarBasicDAOError> {
         admin::guard_stealth(&env, PauseFlag::Withdrawal)?;
         stealth::stealth_withdraw(&env, recipient, eph_pub, spend_pub, stealth_address)
     }
@@ -1255,13 +1255,13 @@ impl RustAcademyContract {
     /// * `UpgradeWindowNotActive` - upgrade window is not currently active
     ///
     /// # Security
-    /// Updates the contract's executable code. Call [`migrate`]( RustAcademyContract::migrate)
+    /// Updates the contract's executable code. Call [`migrate`]( StellarBasicDAOContract::migrate)
     /// afterwards if the new release requires storage migration.
     pub fn upgrade(
         env: Env,
         caller: Address,
         new_wasm_hash: BytesN<32>,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         admin::upgrade(&env, &caller, new_wasm_hash)
     }
 
@@ -1284,7 +1284,7 @@ impl RustAcademyContract {
         caller: Address,
         start: u64,
         end: u64,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         admin::set_upgrade_window(&env, &caller, start, end)
     }
 
@@ -1316,12 +1316,12 @@ impl RustAcademyContract {
         caller: Address,
         new_version: u32,
         new_wasm_hash: BytesN<32>,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         admin::start_upgrade(&env, &caller, new_version, new_wasm_hash)
     }
 
     /// Cancel a pending upgrade and clear gating state (**Admin only**).
-    pub fn cancel_upgrade(env: Env, caller: Address) -> Result<(), RustAcademyError> {
+    pub fn cancel_upgrade(env: Env, caller: Address) -> Result<(), StellarBasicDAOError> {
         admin::cancel_upgrade(&env, &caller)
     }
 
@@ -1345,7 +1345,7 @@ impl RustAcademyContract {
         env: Env,
         caller: Address,
         new_version: u32,
-    ) -> Result<u32, RustAcademyError> {
+    ) -> Result<u32, StellarBasicDAOError> {
         admin::complete_upgrade(&env, &caller, new_version)
     }
 
@@ -1359,7 +1359,7 @@ impl RustAcademyContract {
         caller: Address,
         target: Address,
         role: Role,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         admin::grant_role(&env, caller, target, role)
     }
 
@@ -1369,12 +1369,12 @@ impl RustAcademyContract {
         caller: Address,
         target: Address,
         role: Role,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         admin::revoke_role(&env, caller, target, role)
     }
 
     /// Remove all roles from an account.
-    pub fn clear_roles(env: Env, caller: Address, target: Address) -> Result<(), RustAcademyError> {
+    pub fn clear_roles(env: Env, caller: Address, target: Address) -> Result<(), StellarBasicDAOError> {
         admin::clear_roles(&env, caller, target)
     }
 
@@ -1411,7 +1411,7 @@ impl RustAcademyContract {
         action: governance::ProposalAction,
         nonce: u64,
         valid_until: u64,
-    ) -> Result<BytesN<32>, RustAcademyError> {
+    ) -> Result<BytesN<32>, StellarBasicDAOError> {
         governance::create_proposal(&env, proposer, action, nonce, valid_until)
     }
 
@@ -1422,7 +1422,7 @@ impl RustAcademyContract {
         env: Env,
         caller: Address,
         proposal_id: BytesN<32>,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         governance::approve_proposal(&env, caller, proposal_id)
     }
 
@@ -1432,7 +1432,7 @@ impl RustAcademyContract {
     pub fn execute_proposal(
         env: Env,
         proposal_id: BytesN<32>,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         governance::execute_proposal(&env, proposal_id)
     }
 
@@ -1443,7 +1443,7 @@ impl RustAcademyContract {
         env: Env,
         caller: Address,
         proposal_id: BytesN<32>,
-    ) -> Result<(), RustAcademyError> {
+    ) -> Result<(), StellarBasicDAOError> {
         governance::cancel_proposal(&env, caller, proposal_id)
     }
 

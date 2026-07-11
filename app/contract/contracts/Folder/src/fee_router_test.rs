@@ -1,19 +1,19 @@
 use crate::{
     types::{FeeRatio, PerAssetFeeConfig},
-    EscrowStatus,  RustAcademyContract,  RustAcademyContractClient,
+    EscrowStatus,  StellarBasicDAOContract,  StellarBasicDAOContractClient,
 };
 use soroban_sdk::{
     testutils::{Address as _, Ledger},
     token, Address, Bytes, Env,
 };
 
-fn setup<'a>() -> (Env,  RustAcademyContractClient<'a>, Address) {
+fn setup<'a>() -> (Env,  StellarBasicDAOContractClient<'a>, Address) {
     let env = Env::default();
     env.mock_all_auths();
     env.ledger().with_mut(|li| li.timestamp = 1_000);
 
-    let contract_id = env.register( RustAcademyContract, ());
-    let client =  RustAcademyContractClient::new(&env, &contract_id);
+    let contract_id = env.register( StellarBasicDAOContract, ());
+    let client =  StellarBasicDAOContractClient::new(&env, &contract_id);
 
     let admin = Address::generate(&env);
     client.initialize(&admin);

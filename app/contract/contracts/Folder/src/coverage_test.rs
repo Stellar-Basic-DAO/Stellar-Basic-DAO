@@ -1,4 +1,4 @@
-//! Coverage-completion tests for  RustAcademy contract modules.
+//! Coverage-completion tests for  Stellar Basic DAO contract modules.
 //!
 //! This module uses [`TestContext`] and [`assert_helpers`] to cover code paths
 //! not reached by the existing integration tests in `test.rs`.
@@ -25,7 +25,7 @@ use crate::{
         assert_commitment_invalid, assert_commitment_valid, assert_escrow_disputed,
         assert_escrow_pending, assert_escrow_refunded, assert_escrow_spent, assert_qx_err,
     },
-    errors:: RustAcademyError,
+    errors:: StellarBasicDAOError,
     test_context::TestContext,
 };
 use soroban_sdk::BytesN;
@@ -116,7 +116,7 @@ fn test_deposit_with_commitment_duplicate_fails() {
             &0,
             &None,
         ),
-         RustAcademyError::CommitmentAlreadyExists,
+         StellarBasicDAOError::CommitmentAlreadyExists,
     );
 }
 
@@ -154,7 +154,7 @@ fn test_deposit_with_commitment_zero_amount_fails() {
     assert_qx_err(
         ctx.client
             .try_deposit_with_commitment(&ctx.alice, &ctx.token, &0, &commitment, &0, &None),
-         RustAcademyError::InvalidAmount,
+         StellarBasicDAOError::InvalidAmount,
     );
 }
 
@@ -178,7 +178,7 @@ fn test_deposit_with_commitment_paused_feature_fails() {
             &0,
             &None,
         ),
-         RustAcademyError::OperationPaused,
+         StellarBasicDAOError::OperationPaused,
     );
 }
 
@@ -195,7 +195,7 @@ fn test_refund_never_expiring_escrow_fails() {
     // expires_at == 0 means the escrow never expires → refund must be rejected
     assert_qx_err(
         ctx.client.try_refund(&commitment, &ctx.alice),
-         RustAcademyError::EscrowNotExpired,
+         StellarBasicDAOError::EscrowNotExpired,
     );
 }
 
@@ -216,7 +216,7 @@ fn test_refund_before_timeout_window_fails() {
     // Time has not advanced — refund is not yet available
     assert_qx_err(
         ctx.client.try_refund(&commitment, &ctx.alice),
-         RustAcademyError::EscrowNotExpired,
+         StellarBasicDAOError::EscrowNotExpired,
     );
 }
 

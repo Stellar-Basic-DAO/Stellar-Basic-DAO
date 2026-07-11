@@ -50,7 +50,7 @@
 use soroban_sdk::{token, Address, Bytes, BytesN, Env};
 
 use crate::{
-    errors::RustAcademyError,
+    errors::StellarBasicDAOError,
     events,
     storage::{
         get_stealth_escrow, get_stealth_total_balance, put_stealth_escrow,
@@ -111,7 +111,7 @@ pub fn derive_stealth_address(
 pub fn register_ephemeral_key(
     env: &Env,
     params: StealthDepositParams,
-) -> Result<BytesN<32>,  RustAcademyError> {
+) -> Result<BytesN<32>,  StellarBasicDAOError> {
     let StealthDepositParams {
         sender,
         token,
@@ -124,11 +124,11 @@ pub fn register_ephemeral_key(
     } = params;
 
     if amount_due <= 0 || amount_paid <= 0 {
-        return Err( RustAcademyError::InvalidAmount);
+        return Err( StellarBasicDAOError::InvalidAmount);
     }
 
     if amount_paid > amount_due {
-        return Err( RustAcademyError::Overpayment);
+        return Err( StellarBasicDAOError::Overpayment);
     }
 
     sender.require_auth();
@@ -140,12 +140,12 @@ pub fn register_ephemeral_key(
     let expected_stealth = derive_stealth_address(env, &spend_pub, &shared_secret);
 
     if expected_stealth != stealth_address {
-        return Err( RustAcademyError::StealthAddressMismatch);
+        return Err( StellarBasicDAOError::StealthAddressMismatch);
     }
 
     // Reject duplicate stealth addresses (replay protection).
     if get_stealth_escrow(env, &stealth_address).is_some() {
-        return Err( RustAcademyError::StealthAddressAlreadyUsed);
+        return Err( StellarBasicDAOError::StealthAddressAlreadyUsed);
     }
 
     // Validate balance invariant before state transition
@@ -223,23 +223,23 @@ pub fn stealth_withdraw(
     eph_pub: BytesN<32>,
     spend_pub: BytesN<32>,
     stealth_address: BytesN<32>,
-) -> Result<bool, RustAcademyError> {
+) -> Result<bool, StellarBasicDAOError> {
     recipient.require_auth();
 
     let entry =
-        get_stealth_escrow(env, &stealth_address).ok_or(RustAcademyError::StealthEscrowNotFound)?;
+        get_stealth_escrow(env, &stealth_address).ok_or(StellarBasicDAOError::StealthEscrowNotFound)?;
 
     if entry.status != EscrowStatus::Pending {
-        return Err(RustAcademyError::AlreadySpent);
+        return Err(StellarBasicDAOError::AlreadySpent);
     }
 
     if entry.expires_at > 0 && env.ledger().timestamp() >= entry.expires_at {
-        return Err(RustAcademyError::EscrowExpired);
+        return Err(StellarBasicDAOError::EscrowExpired);
     }
 
     // Validate the stored amount before proceeding
     if entry.amount_paid <= 0 {
-        return Err(RustAcademyError::InvalidAmount);
+        return Err(StellarBasicDAOError::InvalidAmount);
     }
 
     // Verify the caller knows the correct spend_pub for this stealth address.
@@ -247,7 +247,7 @@ pub fn stealth_withdraw(
     let expected_stealth = derive_stealth_address(env, &spend_pub, &shared_secret);
 
     if expected_stealth != stealth_address {
-        return Err(RustAcademyError::StealthAddressMismatch);
+        return Err(StellarBasicDAOError::StealthAddressMismatch);
     }
 
     // Validate balance invariant before withdrawal
@@ -302,33 +302,33 @@ pub fn get_stealth_status(env: &Env, stealth_address: &BytesN<32>) -> Option<Esc
 /// storage deposit (Issue #51).
 ///
 /// Only entries in `Spent` or `Refunded` status may be removed; an attempt to
-/// clean a still-`Pending` entry returns [`AlreadySpent`](RustAcademyError::AlreadySpent)
+/// clean a still-`Pending` entry returns [`AlreadySpent`](StellarBasicDAOError::AlreadySpent)
 /// and leaves storage untouched. After removal, [`get_stealth_status`] and
 /// [`get_stealth_escrow`](crate::storage::get_stealth_escrow) return `None`, so
 /// no stale lookup can resolve to the cleaned address. O(1) — no state scan.
 ///
 /// # Errors
-/// - [`StealthEscrowNotFound`](RustAcademyError::StealthEscrowNotFound) – no entry for the address.
-/// - [`AlreadySpent`](RustAcademyError::AlreadySpent) – entry is not in a terminal state.
+/// - [`StealthEscrowNotFound`](StellarBasicDAOError::StealthEscrowNotFound) – no entry for the address.
+/// - [`AlreadySpent`](StellarBasicDAOError::AlreadySpent) – entry is not in a terminal state.
 /// - [`InternalError`] – balance invariant check fails for stale entry.
 pub fn cleanup_stealth_escrow(
     env: &Env,
     stealth_address: BytesN<32>,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), StellarBasicDAOError> {
     let entry = get_stealth_escrow(env, &stealth_address)
-        .ok_or(RustAcademyError::StealthEscrowNotFound)?;
+        .ok_or(StellarBasicDAOError::StealthEscrowNotFound)?;
 
     match entry.status {
         EscrowStatus::Spent | EscrowStatus::Refunded => {
             // Validate no orphaned balance before cleanup (INV-S-1)
             if entry.amount_paid != 0 {
                 // This should never happen - indicates corrupted state
-                return Err(RustAcademyError::InternalError);
+                return Err(StellarBasicDAOError::InternalError);
             }
             remove_stealth_escrow(env, &stealth_address);
             events::publish_stealth_escrow_cleaned(env, stealth_address);
             Ok(())
         }
-        _ => Err(RustAcademyError::AlreadySpent),
+        _ => Err(StellarBasicDAOError::AlreadySpent),
     }
 }

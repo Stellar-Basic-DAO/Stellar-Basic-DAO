@@ -1,4 +1,4 @@
-use crate::errors::RustAcademyError;
+use crate::errors::StellarBasicDAOError;
 use crate::events::{
     publish_admin_changed, publish_contract_initialized, publish_contract_migrated,
     publish_contract_paused, publish_fee_collector_rotated, publish_per_asset_fee_set,
@@ -13,9 +13,9 @@ use soroban_sdk::{Address, BytesN, Env, Vec};
 ///
 /// This is a one-time operation; subsequent calls fail with [`AlreadyInitialized`].
 /// The initial admin is assigned the [`Role::Admin`] role.
-pub fn initialize(env: &Env, admin: Address) -> Result<(), RustAcademyError> {
+pub fn initialize(env: &Env, admin: Address) -> Result<(), StellarBasicDAOError> {
     if storage::is_initialized(env) || has_admin(env) {
-        return Err(RustAcademyError::AlreadyInitialized);
+        return Err(StellarBasicDAOError::AlreadyInitialized);
     }
 
     // Set initial admin address (singleton for compatibility).
@@ -49,11 +49,11 @@ pub fn has_admin(env: &Env) -> bool {
 }
 
 /// Require that one-time contract initialization has completed.
-pub fn require_initialized(env: &Env) -> Result<(), RustAcademyError> {
+pub fn require_initialized(env: &Env) -> Result<(), StellarBasicDAOError> {
     if storage::is_initialized(env) {
         Ok(())
     } else {
-        Err(RustAcademyError::Unauthorized)
+        Err(StellarBasicDAOError::Unauthorized)
     }
 }
 
@@ -68,13 +68,13 @@ pub fn has_role(env: &Env, address: &Address, role: Role) -> bool {
     roles.contains(role)
 }
 
-fn current_admin(env: &Env) -> Result<Address, RustAcademyError> {
-    let admin = storage::get_admin(env).ok_or(RustAcademyError::InvalidRoleState)?;
+fn current_admin(env: &Env) -> Result<Address, StellarBasicDAOError> {
+    let admin = storage::get_admin(env).ok_or(StellarBasicDAOError::InvalidRoleState)?;
     let roles = storage::get_roles(env, &admin);
     if roles.contains(Role::Admin) {
         Ok(admin)
     } else {
-        Err(RustAcademyError::InvalidRoleState)
+        Err(StellarBasicDAOError::InvalidRoleState)
     }
 }
 
@@ -105,7 +105,7 @@ pub fn require_any_role(
     env: &Env,
     caller: &Address,
     roles: &[Role],
-) -> Result<(), RustAcademyError> {
+) -> Result<(), StellarBasicDAOError> {
     require_initialized(env)?;
 
     caller.require_auth();
@@ -116,11 +116,11 @@ pub fn require_any_role(
             return Ok(());
         }
     }
-    Err(RustAcademyError::InsufficientRole)
+    Err(StellarBasicDAOError::InsufficientRole)
 }
 
 /// Require that the caller is an Admin.
-pub fn require_admin(env: &Env, caller: &Address) -> Result<(), RustAcademyError> {
+pub fn require_admin(env: &Env, caller: &Address) -> Result<(), StellarBasicDAOError> {
     require_any_role(env, caller, &[Role::Admin])
 }
 
@@ -130,12 +130,12 @@ pub fn grant_role(
     caller: Address,
     target: Address,
     role: Role,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), StellarBasicDAOError> {
     require_admin(env, &caller)?;
     let admin = current_admin(env)?;
 
     if target == admin && role == Role::Admin {
-        return Err(RustAcademyError::InvalidRoleState);
+        return Err(StellarBasicDAOError::InvalidRoleState);
     }
 
     let mut roles = storage::get_roles(env, &target);
@@ -152,12 +152,12 @@ pub fn revoke_role(
     caller: Address,
     target: Address,
     role: Role,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), StellarBasicDAOError> {
     require_admin(env, &caller)?;
     let admin = current_admin(env)?;
 
     if target == admin && role == Role::Admin {
-        return Err(RustAcademyError::InvalidRoleState);
+        return Err(StellarBasicDAOError::InvalidRoleState);
     }
 
     let roles = storage::get_roles(env, &target);
@@ -172,7 +172,7 @@ pub fn revoke_role(
 }
 
 /// Set a new primary admin address (**Admin only**).
-pub fn set_admin(env: &Env, caller: Address, new_admin: Address) -> Result<(), RustAcademyError> {
+pub fn set_admin(env: &Env, caller: Address, new_admin: Address) -> Result<(), StellarBasicDAOError> {
     require_admin(env, &caller)?;
     let old_admin = current_admin(env)?;
 
@@ -190,7 +190,7 @@ pub fn propose_admin_transfer(
     env: &Env,
     caller: Address,
     new_admin: Address,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), StellarBasicDAOError> {
     require_admin(env, &caller)?;
     let admin = current_admin(env)?;
 
@@ -204,12 +204,12 @@ pub fn propose_admin_transfer(
 }
 
 /// Accept the currently pending admin transfer.
-pub fn accept_admin_transfer(env: &Env, caller: Address) -> Result<(), RustAcademyError> {
+pub fn accept_admin_transfer(env: &Env, caller: Address) -> Result<(), StellarBasicDAOError> {
     caller.require_auth();
     let new_admin =
-        storage::get_pending_admin_transfer(env).ok_or(RustAcademyError::NoPendingAdminTransfer)?;
+        storage::get_pending_admin_transfer(env).ok_or(StellarBasicDAOError::NoPendingAdminTransfer)?;
     if caller != new_admin {
-        return Err(RustAcademyError::InsufficientRole);
+        return Err(StellarBasicDAOError::InsufficientRole);
     }
 
     let old_admin = current_admin(env)?;
@@ -223,10 +223,10 @@ pub fn accept_admin_transfer(env: &Env, caller: Address) -> Result<(), RustAcade
 }
 
 /// Cancel the pending admin transfer.
-pub fn cancel_admin_transfer(env: &Env, caller: Address) -> Result<(), RustAcademyError> {
+pub fn cancel_admin_transfer(env: &Env, caller: Address) -> Result<(), StellarBasicDAOError> {
     require_admin(env, &caller)?;
     if storage::get_pending_admin_transfer(env).is_none() {
-        return Err(RustAcademyError::NoPendingAdminTransfer);
+        return Err(StellarBasicDAOError::NoPendingAdminTransfer);
     }
 
     storage::clear_pending_admin_transfer(env);
@@ -234,7 +234,7 @@ pub fn cancel_admin_transfer(env: &Env, caller: Address) -> Result<(), RustAcade
 }
 
 /// Remove all roles from an account.
-pub fn clear_roles(env: &Env, caller: Address, target: Address) -> Result<(), RustAcademyError> {
+pub fn clear_roles(env: &Env, caller: Address, target: Address) -> Result<(), StellarBasicDAOError> {
     require_admin(env, &caller)?;
     let admin = current_admin(env)?;
 
@@ -251,7 +251,7 @@ pub fn clear_roles(env: &Env, caller: Address, target: Address) -> Result<(), Ru
 }
 
 /// Set the paused state (**Admin or Operator only**).
-pub fn set_paused(env: &Env, caller: Address, new_state: bool) -> Result<(), RustAcademyError> {
+pub fn set_paused(env: &Env, caller: Address, new_state: bool) -> Result<(), StellarBasicDAOError> {
     require_any_role(env, &caller, &[Role::Admin, Role::Operator])?;
 
     storage::set_paused(env, new_state);
@@ -268,14 +268,14 @@ pub fn get_version(env: &Env) -> u32 {
     storage::get_contract_version(env).unwrap_or(storage::LEGACY_CONTRACT_VERSION)
 }
 
-pub fn migrate(env: &Env, caller: &Address) -> Result<u32, RustAcademyError> {
+pub fn migrate(env: &Env, caller: &Address) -> Result<u32, StellarBasicDAOError> {
     let from_version = get_version(env);
     if from_version == storage::LEGACY_CONTRACT_VERSION {
         caller.require_auth();
 
-        let admin = storage::get_admin(env).ok_or(RustAcademyError::Unauthorized)?;
+        let admin = storage::get_admin(env).ok_or(StellarBasicDAOError::Unauthorized)?;
         if admin != *caller {
-            return Err(RustAcademyError::InsufficientRole);
+            return Err(StellarBasicDAOError::InsufficientRole);
         }
 
         // Legacy deployments may not have role assignments. Seed Admin role so
@@ -290,14 +290,14 @@ pub fn migrate(env: &Env, caller: &Address) -> Result<u32, RustAcademyError> {
     }
 
     if from_version > storage::CURRENT_CONTRACT_VERSION {
-        return Err(RustAcademyError::InvalidContractVersion);
+        return Err(StellarBasicDAOError::InvalidContractVersion);
     }
 
     let mut version = from_version;
     while version < storage::CURRENT_CONTRACT_VERSION {
         version = match version {
             storage::LEGACY_CONTRACT_VERSION => migrate_legacy_to_v1(env),
-            _ => return Err(RustAcademyError::InvalidContractVersion),
+            _ => return Err(StellarBasicDAOError::InvalidContractVersion),
         };
     }
 
@@ -307,7 +307,7 @@ pub fn migrate(env: &Env, caller: &Address) -> Result<u32, RustAcademyError> {
 
     // Post-upgrade invariant checks (Issue #432)
     if let Err(_msg) = storage::assert_post_upgrade_invariants(env) {
-        env.panic_with_error(RustAcademyError::InternalError);
+        env.panic_with_error(StellarBasicDAOError::InternalError);
     }
 
     Ok(version)
@@ -354,7 +354,7 @@ pub fn set_upgrade_window(
     caller: &Address,
     start: u64,
     end: u64,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), StellarBasicDAOError> {
     require_admin(env, caller)?;
     storage::set_upgrade_window(env, start, end);
     crate::events::publish_upgrade_window_set(env, caller.clone(), start, end);
@@ -370,16 +370,16 @@ pub fn start_upgrade(
     caller: &Address,
     new_version: u32,
     new_wasm_hash: BytesN<32>,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), StellarBasicDAOError> {
     require_admin(env, caller)?;
 
     // Check upgrade window is active (Issue #432 AC1)
     if !storage::is_upgrade_window_active(env) {
-        return Err(RustAcademyError::UpgradeWindowNotActive);
+        return Err(StellarBasicDAOError::UpgradeWindowNotActive);
     }
 
     if storage::is_upgrade_in_progress(env) {
-        return Err(RustAcademyError::UpgradeAlreadyInProgress);
+        return Err(StellarBasicDAOError::UpgradeAlreadyInProgress);
     }
 
     let old_version = get_version(env);
@@ -415,22 +415,22 @@ pub fn upgrade(
     env: &Env,
     caller: &Address,
     new_wasm_hash: BytesN<32>,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), StellarBasicDAOError> {
     require_admin(env, caller)?;
 
     if !storage::is_upgrade_in_progress(env) {
-        return Err(RustAcademyError::UpgradeNotInProgress);
+        return Err(StellarBasicDAOError::UpgradeNotInProgress);
     }
 
     if !storage::is_upgrade_window_active(env) {
-        return Err(RustAcademyError::UpgradeWindowNotActive);
+        return Err(StellarBasicDAOError::UpgradeWindowNotActive);
     }
 
     let pending_hash =
-        storage::get_pending_upgrade_wasm_hash(env).ok_or(RustAcademyError::InternalError)?;
+        storage::get_pending_upgrade_wasm_hash(env).ok_or(StellarBasicDAOError::InternalError)?;
 
     if new_wasm_hash != pending_hash {
-        return Err(RustAcademyError::CommitmentMismatch);
+        return Err(StellarBasicDAOError::CommitmentMismatch);
     }
 
     storage::set_wasm_hash(env, &new_wasm_hash);
@@ -446,7 +446,7 @@ pub fn upgrade(
 }
 
 /// Cancel a pending upgrade and clear gating state (**Admin only**).
-pub fn cancel_upgrade(env: &Env, caller: &Address) -> Result<(), RustAcademyError> {
+pub fn cancel_upgrade(env: &Env, caller: &Address) -> Result<(), StellarBasicDAOError> {
     require_admin(env, caller)?;
     if let Some(rollback_hash) = storage::get_pending_upgrade_rollback_wasm_hash(env) {
         storage::set_wasm_hash(env, &rollback_hash);
@@ -467,27 +467,27 @@ pub fn complete_upgrade(
     env: &Env,
     caller: &Address,
     new_version: u32,
-) -> Result<u32, RustAcademyError> {
+) -> Result<u32, StellarBasicDAOError> {
     if !storage::is_upgrade_in_progress(env) {
-        return Err(RustAcademyError::UpgradeNotInProgress);
+        return Err(StellarBasicDAOError::UpgradeNotInProgress);
     }
 
     // Verify version and hash (Issue #432 AC2)
     let pending_version =
-        storage::get_pending_upgrade_version(env).ok_or(RustAcademyError::InternalError)?;
+        storage::get_pending_upgrade_version(env).ok_or(StellarBasicDAOError::InternalError)?;
     let pending_hash =
-        storage::get_pending_upgrade_wasm_hash(env).ok_or(RustAcademyError::InternalError)?;
+        storage::get_pending_upgrade_wasm_hash(env).ok_or(StellarBasicDAOError::InternalError)?;
 
     if new_version != pending_version && new_version != 0 {
-        return Err(RustAcademyError::InvalidContractVersion);
+        return Err(StellarBasicDAOError::InvalidContractVersion);
     }
 
     // Verify currently running WASM matches pending hash
     // Note: in Soroban, we can't directly check the current WASM hash from within the contract
     // except by checking what we just stored in storage::set_wasm_hash during upgrade().
-    let actual_hash = storage::get_wasm_hash(env).ok_or(RustAcademyError::InternalError)?;
+    let actual_hash = storage::get_wasm_hash(env).ok_or(StellarBasicDAOError::InternalError)?;
     if actual_hash != pending_hash {
-        return Err(RustAcademyError::InternalError);
+        return Err(StellarBasicDAOError::InternalError);
     }
 
     let old_version = get_version(env);
@@ -497,7 +497,7 @@ pub fn complete_upgrade(
 
     // Ensure migrated version matches expected
     if migrated_version != pending_version && pending_version != 0 {
-        return Err(RustAcademyError::InvalidContractVersion);
+        return Err(StellarBasicDAOError::InvalidContractVersion);
     }
 
     storage::clear_pending_upgrade(env);
@@ -508,9 +508,9 @@ pub fn complete_upgrade(
 
 /// Require that the contract is not paused.
 #[allow(dead_code)]
-pub fn require_not_paused(env: &Env) -> Result<(), RustAcademyError> {
+pub fn require_not_paused(env: &Env) -> Result<(), StellarBasicDAOError> {
     if is_paused(env) {
-        return Err(RustAcademyError::ContractPaused);
+        return Err(StellarBasicDAOError::ContractPaused);
     }
     Ok(())
 }
@@ -523,9 +523,9 @@ pub fn require_not_paused(env: &Env) -> Result<(), RustAcademyError> {
 ///
 /// Emergency mode is an irreversible state that blocks most mutating operations.
 /// Only admin can activate it via `activate_emergency_mode`.
-pub fn require_not_emergency_mode(env: &Env) -> Result<(), RustAcademyError> {
+pub fn require_not_emergency_mode(env: &Env) -> Result<(), StellarBasicDAOError> {
     if storage::is_emergency_mode(env) {
-        return Err(RustAcademyError::ContractPaused);
+        return Err(StellarBasicDAOError::ContractPaused);
     }
     Ok(())
 }
@@ -533,9 +533,9 @@ pub fn require_not_emergency_mode(env: &Env) -> Result<(), RustAcademyError> {
 /// Require that the contract is not paused (global pause).
 ///
 /// This is the global pause flag that blocks operations when set.
-pub fn require_not_paused_global(env: &Env) -> Result<(), RustAcademyError> {
+pub fn require_not_paused_global(env: &Env) -> Result<(), StellarBasicDAOError> {
     if is_paused(env) {
-        return Err(RustAcademyError::ContractPaused);
+        return Err(StellarBasicDAOError::ContractPaused);
     }
     Ok(())
 }
@@ -543,9 +543,9 @@ pub fn require_not_paused_global(env: &Env) -> Result<(), RustAcademyError> {
 /// Require that a specific feature is not paused.
 ///
 /// Checks the granular pause flags for specific operations.
-pub fn require_feature_not_paused(env: &Env, flag: crate::storage::PauseFlag) -> Result<(), RustAcademyError> {
+pub fn require_feature_not_paused(env: &Env, flag: crate::storage::PauseFlag) -> Result<(), StellarBasicDAOError> {
     if storage::is_feature_paused(env, flag) {
-        return Err(RustAcademyError::OperationPaused);
+        return Err(StellarBasicDAOError::OperationPaused);
     }
     Ok(())
 }
@@ -553,7 +553,7 @@ pub fn require_feature_not_paused(env: &Env, flag: crate::storage::PauseFlag) ->
 /// Standard guard for user-initiated deposit operations.
 ///
 /// Checks: emergency mode, global pause, feature pause, reentrancy.
-pub fn guard_deposit(env: &Env, pause_flag: crate::storage::PauseFlag) -> Result<(), RustAcademyError> {
+pub fn guard_deposit(env: &Env, pause_flag: crate::storage::PauseFlag) -> Result<(), StellarBasicDAOError> {
     require_not_emergency_mode(env)?;
     require_not_paused_global(env)?;
     require_feature_not_paused(env, pause_flag)?;
@@ -565,7 +565,7 @@ pub fn guard_deposit(env: &Env, pause_flag: crate::storage::PauseFlag) -> Result
 ///
 /// Checks: global pause, feature pause, reentrancy.
 /// Note: Emergency mode does NOT block withdrawals (users need to access funds).
-pub fn guard_withdraw(env: &Env, pause_flag: crate::storage::PauseFlag) -> Result<(), RustAcademyError> {
+pub fn guard_withdraw(env: &Env, pause_flag: crate::storage::PauseFlag) -> Result<(), StellarBasicDAOError> {
     require_not_paused_global(env)?;
     require_feature_not_paused(env, pause_flag)?;
     crate::hook::assert_not_reentrant(env)?;
@@ -575,7 +575,7 @@ pub fn guard_withdraw(env: &Env, pause_flag: crate::storage::PauseFlag) -> Resul
 /// Standard guard for refund operations.
 ///
 /// Checks: global pause, feature pause, reentrancy.
-pub fn guard_refund(env: &Env, pause_flag: crate::storage::PauseFlag) -> Result<(), RustAcademyError> {
+pub fn guard_refund(env: &Env, pause_flag: crate::storage::PauseFlag) -> Result<(), StellarBasicDAOError> {
     require_not_paused_global(env)?;
     require_feature_not_paused(env, pause_flag)?;
     crate::hook::assert_not_reentrant(env)?;
@@ -585,7 +585,7 @@ pub fn guard_refund(env: &Env, pause_flag: crate::storage::PauseFlag) -> Result<
 /// Standard guard for dispute operations.
 ///
 /// Checks: global pause, reentrancy.
-pub fn guard_dispute(env: &Env) -> Result<(), RustAcademyError> {
+pub fn guard_dispute(env: &Env) -> Result<(), StellarBasicDAOError> {
     require_not_paused_global(env)?;
     crate::hook::assert_not_reentrant(env)?;
     Ok(())
@@ -594,7 +594,7 @@ pub fn guard_dispute(env: &Env) -> Result<(), RustAcademyError> {
 /// Standard guard for admin configuration operations.
 ///
 /// Checks: emergency mode, reentrancy.
-pub fn guard_admin_config(env: &Env) -> Result<(), RustAcademyError> {
+pub fn guard_admin_config(env: &Env) -> Result<(), StellarBasicDAOError> {
     require_not_emergency_mode(env)?;
     crate::hook::assert_not_reentrant(env)?;
     Ok(())
@@ -603,7 +603,7 @@ pub fn guard_admin_config(env: &Env) -> Result<(), RustAcademyError> {
 /// Standard guard for operations that require initialization.
 ///
 /// Checks: initialization, reentrancy.
-pub fn guard_initialized(env: &Env) -> Result<(), RustAcademyError> {
+pub fn guard_initialized(env: &Env) -> Result<(), StellarBasicDAOError> {
     require_initialized(env)?;
     crate::hook::assert_not_reentrant(env)?;
     Ok(())
@@ -612,7 +612,7 @@ pub fn guard_initialized(env: &Env) -> Result<(), RustAcademyError> {
 /// Standard guard for stealth address operations.
 ///
 /// Checks: global pause, feature pause, reentrancy.
-pub fn guard_stealth(env: &Env, pause_flag: crate::storage::PauseFlag) -> Result<(), RustAcademyError> {
+pub fn guard_stealth(env: &Env, pause_flag: crate::storage::PauseFlag) -> Result<(), StellarBasicDAOError> {
     require_not_paused_global(env)?;
     require_feature_not_paused(env, pause_flag)?;
     crate::hook::assert_not_reentrant(env)?;
@@ -625,7 +625,7 @@ pub fn set_pause_flags(
     caller: &Address,
     flags_to_enable: u64,
     flags_to_disable: u64,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), StellarBasicDAOError> {
     require_any_role(env, caller, &[Role::Admin, Role::Operator])?;
 
     storage::set_pause_flags(env, caller, flags_to_enable, flags_to_disable);
@@ -638,7 +638,7 @@ pub fn set_fee_config(
     env: &Env,
     caller: &Address,
     config: FeeConfig,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), StellarBasicDAOError> {
     require_any_role(env, caller, &[Role::Admin, Role::Operator])?;
 
     storage::set_fee_config(env, &config);
@@ -652,11 +652,11 @@ pub fn set_per_asset_fee(
     caller: &Address,
     token: Address,
     config: PerAssetFeeConfig,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), StellarBasicDAOError> {
     require_any_role(env, caller, &[Role::Admin, Role::Operator])?;
 
     if config.fee_bps > 10_000 || config.arbiter_bps > 10_000 {
-        return Err(RustAcademyError::InvalidAmount);
+        return Err(StellarBasicDAOError::InvalidAmount);
     }
     config.validate()?;
 
@@ -677,7 +677,7 @@ pub fn set_oracle_fee_config(
     env: &Env,
     caller: &Address,
     config: crate::types::OracleFeeConfig,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), StellarBasicDAOError> {
     require_any_role(env, caller, &[Role::Admin, Role::Operator])?;
 
     storage::set_oracle_fee_config(env, &config);
@@ -689,7 +689,7 @@ pub fn set_platform_wallet(
     env: &Env,
     caller: &Address,
     wallet: Address,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), StellarBasicDAOError> {
     require_admin(env, caller)?;
 
     storage::set_platform_wallet(env, &wallet);
@@ -702,7 +702,7 @@ pub fn rotate_fee_collector(
     env: &Env,
     caller: &Address,
     new_collector: Address,
-) -> Result<u32, RustAcademyError> {
+) -> Result<u32, StellarBasicDAOError> {
     require_admin(env, caller)?;
 
     let next_index = fee_router::rotate_collector(env, &new_collector);

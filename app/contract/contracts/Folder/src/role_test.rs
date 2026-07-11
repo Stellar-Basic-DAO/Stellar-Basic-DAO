@@ -1,4 +1,4 @@
-use crate::{errors::RustAcademyError, storage, test_context::TestContext, types::Role};
+use crate::{errors::StellarBasicDAOError, storage, test_context::TestContext, types::Role};
 use soroban_sdk::{testutils::Address as _, Address, Vec};
 
 #[test]
@@ -42,7 +42,7 @@ fn test_admin_transfer_requires_acceptance_and_can_be_cancelled() {
     let cancelled_accept = ctx.client.try_accept_admin_transfer(&pending_admin);
     assert!(matches!(
         cancelled_accept,
-        Err(Ok(RustAcademyError::NoPendingAdminTransfer))
+        Err(Ok(StellarBasicDAOError::NoPendingAdminTransfer))
     ));
 
     ctx.client
@@ -80,7 +80,7 @@ fn test_cannot_revoke_admin_role_from_current_admin() {
         .try_revoke_role(&ctx.admin, &ctx.admin, &Role::Admin);
     assert!(matches!(
         result,
-        Err(Ok(RustAcademyError::InvalidRoleState))
+        Err(Ok(StellarBasicDAOError::InvalidRoleState))
     ));
 }
 
@@ -96,7 +96,7 @@ fn test_corrupt_admin_role_state_blocks_public_calls() {
     let result = ctx.client.try_set_paused(&ctx.admin, &true);
     assert!(matches!(
         result,
-        Err(Ok(RustAcademyError::InvalidRoleState))
+        Err(Ok(StellarBasicDAOError::InvalidRoleState))
     ));
 }
 
@@ -177,7 +177,7 @@ fn test_insufficient_role_error() {
     );
 
     match res {
-        Err(Ok(RustAcademyError::InsufficientRole)) => (),
+        Err(Ok(StellarBasicDAOError::InsufficientRole)) => (),
         _ => panic!("Expected InsufficientRole error"),
     }
 }

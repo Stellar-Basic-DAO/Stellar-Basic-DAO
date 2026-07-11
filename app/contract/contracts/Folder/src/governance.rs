@@ -20,7 +20,7 @@
 
 use soroban_sdk::{contracttype, vec, Address, BytesN, Env, Symbol, Vec};
 
-use crate::errors::RustAcademyError;
+use crate::errors::StellarBasicDAOError;
 use crate::storage::DataKey;
 
 // ---------------------------------------------------------------------------
@@ -290,7 +290,7 @@ pub fn initialize_governance(
     env: &Env,
     signers: Vec<Address>,
     threshold: u32,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), StellarBasicDAOError> {
     validate_signer_set(env, &signers, threshold)?;
     set_signer_set(env, &signers);
     set_threshold(env, threshold);
@@ -319,24 +319,24 @@ pub fn create_proposal(
     action: ProposalAction,
     nonce: u64,
     valid_until: u64,
-) -> Result<BytesN<32>, RustAcademyError> {
+) -> Result<BytesN<32>, StellarBasicDAOError> {
     proposer.require_auth();
 
     // 1. Signer membership check
     if !is_signer(env, &proposer) {
-        return Err(RustAcademyError::NotASigner);
+        return Err(StellarBasicDAOError::NotASigner);
     }
 
     let now = env.ledger().timestamp();
 
     // 2. Expiry in the past
     if now >= valid_until {
-        return Err(RustAcademyError::SignatureExpired);
+        return Err(StellarBasicDAOError::SignatureExpired);
     }
 
     // 3. Expiry too far
     if valid_until - now > MAX_PROPOSAL_EXPIRY_SECS {
-        return Err(RustAcademyError::ExpiryTooFar);
+        return Err(StellarBasicDAOError::ExpiryTooFar);
     }
 
     // 4. Nonce replay check
@@ -348,7 +348,7 @@ pub fn create_proposal(
 
     // 6. Duplicate proposal_id check
     if get_proposal(env, &proposal_id).is_some() {
-        return Err(RustAcademyError::ProposalAlreadyExists);
+        return Err(StellarBasicDAOError::ProposalAlreadyExists);
     }
 
     // 7. Store proposal + record proposer as first approval
@@ -384,31 +384,31 @@ pub fn approve_proposal(
     env: &Env,
     caller: Address,
     proposal_id: BytesN<32>,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), StellarBasicDAOError> {
     caller.require_auth();
 
     // 1. Signer membership
     if !is_signer(env, &caller) {
-        return Err(RustAcademyError::NotASigner);
+        return Err(StellarBasicDAOError::NotASigner);
     }
 
     // 2. Proposal existence
     let mut proposal = get_proposal(env, &proposal_id)
-        .ok_or(RustAcademyError::ProposalNotFound)?;
+        .ok_or(StellarBasicDAOError::ProposalNotFound)?;
 
     // 3. Expiry
     if env.ledger().timestamp() >= proposal.expires_at {
-        return Err(RustAcademyError::SignatureExpired);
+        return Err(StellarBasicDAOError::SignatureExpired);
     }
 
     // 4. Status must be Pending
     if proposal.status != ProposalStatus::Pending {
-        return Err(RustAcademyError::InvalidProposalState);
+        return Err(StellarBasicDAOError::InvalidProposalState);
     }
 
     // 5. Duplicate approval
     if has_approved(env, &proposal_id, &caller) {
-        return Err(RustAcademyError::AlreadyApproved);
+        return Err(StellarBasicDAOError::AlreadyApproved);
     }
 
     // 6. Record approval
@@ -441,25 +441,25 @@ pub fn approve_proposal(
 pub fn execute_proposal(
     env: &Env,
     proposal_id: BytesN<32>,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), StellarBasicDAOError> {
     // 1. Proposal existence
     let mut proposal = get_proposal(env, &proposal_id)
-        .ok_or(RustAcademyError::ProposalNotFound)?;
+        .ok_or(StellarBasicDAOError::ProposalNotFound)?;
 
     // 2. Expiry
     if env.ledger().timestamp() >= proposal.expires_at {
-        return Err(RustAcademyError::SignatureExpired);
+        return Err(StellarBasicDAOError::SignatureExpired);
     }
 
     // 3. Status
     if proposal.status != ProposalStatus::Pending && proposal.status != ProposalStatus::Executable {
-        return Err(RustAcademyError::InvalidProposalState);
+        return Err(StellarBasicDAOError::InvalidProposalState);
     }
 
     // 4. Approval count
     let threshold = get_threshold(env);
     if proposal.approval_count < threshold {
-        return Err(RustAcademyError::InsufficientApprovals);
+        return Err(StellarBasicDAOError::InsufficientApprovals);
     }
 
     // 5. Apply action
@@ -486,18 +486,18 @@ pub fn cancel_proposal(
     env: &Env,
     caller: Address,
     proposal_id: BytesN<32>,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), StellarBasicDAOError> {
     caller.require_auth();
 
     if !is_signer(env, &caller) {
-        return Err(RustAcademyError::NotASigner);
+        return Err(StellarBasicDAOError::NotASigner);
     }
 
     let mut proposal = get_proposal(env, &proposal_id)
-        .ok_or(RustAcademyError::ProposalNotFound)?;
+        .ok_or(StellarBasicDAOError::ProposalNotFound)?;
 
     if proposal.status != ProposalStatus::Pending {
-        return Err(RustAcademyError::InvalidProposalState);
+        return Err(StellarBasicDAOError::InvalidProposalState);
     }
 
     proposal.status = ProposalStatus::Cancelled;
@@ -517,7 +517,7 @@ pub fn cancel_proposal(
 ///
 /// This function is the central dispatch for all governance-gated privileged
 /// operations. It is called atomically inside `execute_proposal()`.
-fn apply_action(env: &Env, action: &ProposalAction) -> Result<(), RustAcademyError> {
+fn apply_action(env: &Env, action: &ProposalAction) -> Result<(), StellarBasicDAOError> {
     match action {
         ProposalAction::SetPaused { paused } => {
             crate::storage::set_paused(env, *paused);
@@ -583,12 +583,12 @@ fn apply_action(env: &Env, action: &ProposalAction) -> Result<(), RustAcademyErr
 }
 
 /// Convert a u32 role discriminant to a typed `Role` enum.
-fn u32_to_role(role: u32) -> Result<crate::types::Role, RustAcademyError> {
+fn u32_to_role(role: u32) -> Result<crate::types::Role, StellarBasicDAOError> {
     match role {
         1 => Ok(crate::types::Role::Admin),
         2 => Ok(crate::types::Role::Operator),
         3 => Ok(crate::types::Role::Arbiter),
-        _ => Err(RustAcademyError::InternalError),
+        _ => Err(StellarBasicDAOError::InternalError),
     }
 }
 
@@ -606,15 +606,15 @@ fn validate_signer_set(
     env: &Env,
     signers: &Vec<Address>,
     threshold: u32,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), StellarBasicDAOError> {
     let len = signers.len();
 
     if len == 0 || len > MAX_SIGNERS {
-        return Err(RustAcademyError::InvalidSignerSet);
+        return Err(StellarBasicDAOError::InvalidSignerSet);
     }
 
     if threshold == 0 || threshold > len {
-        return Err(RustAcademyError::InvalidThreshold);
+        return Err(StellarBasicDAOError::InvalidThreshold);
     }
 
     // Check for duplicates (O(n²) — acceptable for n ≤ 10)
@@ -623,7 +623,7 @@ fn validate_signer_set(
         for j in (i + 1)..len {
             let b = signers.get(j).unwrap();
             if a == b {
-                return Err(RustAcademyError::DuplicateSigner);
+                return Err(StellarBasicDAOError::DuplicateSigner);
             }
         }
     }

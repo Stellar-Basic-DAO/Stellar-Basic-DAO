@@ -1,7 +1,7 @@
 use crate::{
-    errors::RustAcademyError,
+    errors::StellarBasicDAOError,
     storage::{PauseFlag},
-    RustAcademyContract, RustAcademyContractClient,
+    StellarBasicDAOContract, StellarBasicDAOContractClient,
 };
 
 use soroban_sdk::{
@@ -20,7 +20,7 @@ pub fn get_test_commitment(env: &Env) -> BytesN<32> {
 /// Test case structure for table-driven guard tests
 struct GuardTestCase {
     name: &'static str,
-    test_fn: fn(&Env, &Address) -> Result<(), RustAcademyError>,
+    test_fn: fn(&Env, &Address) -> Result<(), StellarBasicDAOError>,
     should_succeed: bool,
 }
 
@@ -53,18 +53,18 @@ const GUARD_TEST_TABLE: &[GuardTestCase] = &[
     },
 ];
 
-fn setup_initialized_contract(env: &Env) -> (Address, RustAcademyContractClient) {
+fn setup_initialized_contract(env: &Env) -> (Address, StellarBasicDAOContractClient) {
     let admin = Address::generate(env);
-    let contract_id = env.register(RustAcademyContract, ());
-    let client = RustAcademyContractClient::new(env, &contract_id);
+    let contract_id = env.register(StellarBasicDAOContract, ());
+    let client = StellarBasicDAOContractClient::new(env, &contract_id);
     client.initialize(&admin);
     (admin, client)
 }
 
-fn test_initialized_contract_allows_guard_initialized(env: &Env, _caller: &Address) -> Result<(), RustAcademyError> {
+fn test_initialized_contract_allows_guard_initialized(env: &Env, _caller: &Address) -> Result<(), StellarBasicDAOError> {
     let admin = Address::generate(env);
-    let contract_id = env.register(RustAcademyContract, ());
-    let client = RustAcademyContractClient::new(env, &contract_id);
+    let contract_id = env.register(StellarBasicDAOContract, ());
+    let client = StellarBasicDAOContractClient::new(env, &contract_id);
     client.initialize(&admin);
     
     let user = Address::generate(env);
@@ -72,10 +72,10 @@ fn test_initialized_contract_allows_guard_initialized(env: &Env, _caller: &Addre
     Ok(())
 }
 
-fn test_emergency_mode_blocks_deposits(env: &Env, _caller: &Address) -> Result<(), RustAcademyError> {
+fn test_emergency_mode_blocks_deposits(env: &Env, _caller: &Address) -> Result<(), StellarBasicDAOError> {
     let admin = Address::generate(env);
-    let contract_id = env.register(RustAcademyContract, ());
-    let client = RustAcademyContractClient::new(env, &contract_id);
+    let contract_id = env.register(StellarBasicDAOContract, ());
+    let client = StellarBasicDAOContractClient::new(env, &contract_id);
     client.initialize(&admin);
     
     let user = Address::generate(env);
@@ -88,14 +88,14 @@ fn test_emergency_mode_blocks_deposits(env: &Env, _caller: &Address) -> Result<(
     let result = client.try_deposit(&token, &1000, &user, &salt, &0u64, &Option::None);
     match result {
         Err(_) => Ok(()),
-        _ => Err(RustAcademyError::ContractPaused),
+        _ => Err(StellarBasicDAOError::ContractPaused),
     }
 }
 
-fn test_emergency_mode_does_not_block_withdrawals(env: &Env, _caller: &Address) -> Result<(), RustAcademyError> {
+fn test_emergency_mode_does_not_block_withdrawals(env: &Env, _caller: &Address) -> Result<(), StellarBasicDAOError> {
     let admin = Address::generate(env);
-    let contract_id = env.register(RustAcademyContract, ());
-    let client = RustAcademyContractClient::new(env, &contract_id);
+    let contract_id = env.register(StellarBasicDAOContract, ());
+    let client = StellarBasicDAOContractClient::new(env, &contract_id);
     client.initialize(&admin);
     
     let user = Address::generate(env);
@@ -114,14 +114,14 @@ fn test_emergency_mode_does_not_block_withdrawals(env: &Env, _caller: &Address) 
     let result = client.try_withdraw(&token, &1000, &commitment, &user, &salt);
     match result {
         Ok(_) => Ok(()),
-        _ => Err(RustAcademyError::InternalError),
+        _ => Err(StellarBasicDAOError::InternalError),
     }
 }
 
-fn test_emergency_mode_blocks_admin_config(env: &Env, _caller: &Address) -> Result<(), RustAcademyError> {
+fn test_emergency_mode_blocks_admin_config(env: &Env, _caller: &Address) -> Result<(), StellarBasicDAOError> {
     let admin = Address::generate(env);
-    let contract_id = env.register(RustAcademyContract, ());
-    let client = RustAcademyContractClient::new(env, &contract_id);
+    let contract_id = env.register(StellarBasicDAOContract, ());
+    let client = StellarBasicDAOContractClient::new(env, &contract_id);
     client.initialize(&admin);
     
     client.activate_emergency_mode(&admin);
@@ -130,14 +130,14 @@ fn test_emergency_mode_blocks_admin_config(env: &Env, _caller: &Address) -> Resu
     let result = client.try_set_admin(&admin, &new_admin);
     match result {
         Err(_) => Ok(()),
-        _ => Err(RustAcademyError::ContractPaused),
+        _ => Err(StellarBasicDAOError::ContractPaused),
     }
 }
 
-fn test_global_pause_blocks_operations(env: &Env, _caller: &Address) -> Result<(), RustAcademyError> {
+fn test_global_pause_blocks_operations(env: &Env, _caller: &Address) -> Result<(), StellarBasicDAOError> {
     let admin = Address::generate(env);
-    let contract_id = env.register(RustAcademyContract, ());
-    let client = RustAcademyContractClient::new(env, &contract_id);
+    let contract_id = env.register(StellarBasicDAOContract, ());
+    let client = StellarBasicDAOContractClient::new(env, &contract_id);
     client.initialize(&admin);
     
     client.set_paused(&admin, &true);
@@ -150,7 +150,7 @@ fn test_global_pause_blocks_operations(env: &Env, _caller: &Address) -> Result<(
     let result = client.try_deposit(&token, &1000, &user, &salt, &0u64, &Option::None);
     match result {
         Err(_) => Ok(()),
-        _ => Err(RustAcademyError::ContractPaused),
+        _ => Err(StellarBasicDAOError::ContractPaused),
     }
 }
 

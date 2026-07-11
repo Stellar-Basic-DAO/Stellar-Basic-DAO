@@ -23,7 +23,7 @@ use soroban_sdk::{token, Address, Bytes, BytesN, Env};
 
 use crate::{
     admin,
-    errors::RustAcademyError,
+    errors::StellarBasicDAOError,
     events, hook,
     storage::{
         self, clear_dispute_state, get_dispute_expiry, get_dispute_expiry_action,
@@ -46,9 +46,9 @@ pub fn set_timeout(
     env: &Env,
     caller: Address,
     timeout_secs: u64,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), StellarBasicDAOError> {
     if timeout_secs == 0 {
-        return Err(RustAcademyError::InvalidTimeout);
+        return Err(StellarBasicDAOError::InvalidTimeout);
     }
     admin::require_any_role(env, &caller, &[Role::Admin, Role::Operator])?;
 
@@ -68,7 +68,7 @@ pub fn set_expiry_action(
     env: &Env,
     caller: Address,
     action: DisputeExpiryAction,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), StellarBasicDAOError> {
     admin::require_any_role(env, &caller, &[Role::Admin, Role::Operator])?;
 
     storage::set_dispute_expiry_action(env, action);
@@ -113,21 +113,21 @@ pub fn record_dispute_expiry(env: &Env, commitment: BytesN<32>) {
 pub fn resolve_expired_dispute(
     env: &Env,
     commitment: BytesN<32>,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), StellarBasicDAOError> {
     hook::assert_not_reentrant(env)?;
 
     let commitment_bytes: Bytes = commitment.clone().into();
     let entry: EscrowEntry =
-        get_escrow(env, &commitment_bytes).ok_or(RustAcademyError::CommitmentNotFound)?;
+        get_escrow(env, &commitment_bytes).ok_or(StellarBasicDAOError::CommitmentNotFound)?;
 
     if entry.status != EscrowStatus::Disputed {
-        return Err(RustAcademyError::InvalidDisputeState);
+        return Err(StellarBasicDAOError::InvalidDisputeState);
     }
 
-    let expiry = get_dispute_expiry(env, &commitment_bytes).ok_or(RustAcademyError::NoDisputeExpiry)?;
+    let expiry = get_dispute_expiry(env, &commitment_bytes).ok_or(StellarBasicDAOError::NoDisputeExpiry)?;
     let now = env.ledger().timestamp();
     if now < expiry.expires_at {
-        return Err(RustAcademyError::DisputeNotExpired);
+        return Err(StellarBasicDAOError::DisputeNotExpired);
     }
 
     let recipient = resolve_expiry_recipient(&entry, expiry.action)?;
@@ -191,7 +191,7 @@ pub fn resolve_expired_dispute(
 fn resolve_expiry_recipient(
     entry: &EscrowEntry,
     action: DisputeExpiryAction,
-) -> Result<Address, RustAcademyError> {
+) -> Result<Address, StellarBasicDAOError> {
     match action {
         DisputeExpiryAction::RefundOwner => Ok(entry.owner.clone()),
         DisputeExpiryAction::PayArbiter => {

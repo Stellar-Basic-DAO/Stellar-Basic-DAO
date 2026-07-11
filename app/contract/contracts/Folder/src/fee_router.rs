@@ -36,7 +36,7 @@
 //! All transfers use `soroban_sdk::token::Client` which works identically for
 //! native XLM and SAC tokens.
 
-use crate::{errors::RustAcademyError, fee, storage};
+use crate::{errors::StellarBasicDAOError, fee, storage};
 use soroban_sdk::{token, Address, Env};
 
 /// Fee breakdown returned by [`route_payout`].
@@ -130,7 +130,7 @@ pub fn route_payout(
     recipient: &Address,
     amount: i128,
     arbiter: Option<&Address>,
-) -> Result<FeeBreakdown, RustAcademyError> {
+) -> Result<FeeBreakdown, StellarBasicDAOError> {
     if amount <= 0 {
         return Ok(FeeBreakdown {
             net_payout: amount,
@@ -165,10 +165,10 @@ pub fn route_payout(
             let distributed = arbiter_fee
                 .checked_add(platform_fee)
                 .and_then(|value| value.checked_add(collector_fee))
-                .ok_or(RustAcademyError::InvalidFeeConfiguration)?;
+                .ok_or(StellarBasicDAOError::InvalidFeeConfiguration)?;
 
             if distributed > total_fee {
-                return Err(RustAcademyError::FeeSplitExceedsTotal);
+                return Err(StellarBasicDAOError::FeeSplitExceedsTotal);
             }
 
             collector_fee = collector_fee.saturating_add(total_fee - distributed);

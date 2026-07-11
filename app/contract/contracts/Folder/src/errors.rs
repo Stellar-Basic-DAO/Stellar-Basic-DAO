@@ -10,7 +10,7 @@ use soroban_sdk::contracterror;
 #[contracterror]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 #[repr(u32)]
-pub enum RustAcademyError {
+pub enum StellarBasicDAOError {
     // Validation failures (100-199)
     InvalidAmount = 100,
     InvalidSalt = 101,

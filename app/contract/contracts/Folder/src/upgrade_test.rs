@@ -4,7 +4,7 @@
 //! 1. Deploys `LegacyV0Contract` (schema version 0) and populates a "golden state"
 //!    fixture covering escrows in multiple lifecycle states, fee configuration,
 //!    privacy settings, and the escrow counter.
-//! 2. Performs an in-place upgrade to ` RustAcademyContract` (v1) via `env.register_at`,
+//! 2. Performs an in-place upgrade to ` StellarBasicDAOContract` (v1) via `env.register_at`,
 //!    then calls `migrate()`.
 //! 3. Validates all invariants and data integrity after the upgrade.
 //! 4. Provides regression tests for known migration pitfalls.
@@ -26,10 +26,10 @@
 
 
 use crate::{
-    errors:: RustAcademyError,
+    errors:: StellarBasicDAOError,
     storage::{CURRENT_CONTRACT_VERSION, LEGACY_CONTRACT_VERSION, PRIVACY_ENABLED_KEY},
     types::FeeConfig,
-    EscrowStatus,  RustAcademyContract,  RustAcademyContractClient,
+    EscrowStatus,  StellarBasicDAOContract,  StellarBasicDAOContractClient,
 };
 use soroban_sdk::{
     contract, contractimpl,
@@ -43,7 +43,7 @@ use soroban_sdk::{
 
 /// Minimal stub of the legacy v0 contract.
 ///
-/// Key differences from the current ` RustAcademyContract`:
+/// Key differences from the current ` StellarBasicDAOContract`:
 /// - `initialize` omits `set_contract_version` — simulates a deployment that
 ///   pre-dates the versioning mechanism (so `get_version()` returns 0).
 /// - `set_fee_config` bypasses role checks — simulates the legacy simple-admin
@@ -56,9 +56,9 @@ pub struct LegacyV0Contract;
 #[contractimpl]
 impl LegacyV0Contract {
     /// Initialize without writing `ContractVersion` — defining trait of a legacy (v0) deployment.
-    pub fn initialize(env: Env, admin: Address) -> Result<(),  RustAcademyError> {
+    pub fn initialize(env: Env, admin: Address) -> Result<(),  StellarBasicDAOError> {
         if crate::storage::get_admin(&env).is_some() {
-            return Err( RustAcademyError::AlreadyInitialized);
+            return Err( StellarBasicDAOError::AlreadyInitialized);
         }
         crate::storage::set_admin(&env, &admin);
         crate::storage::set_paused(&env, false);
@@ -78,7 +78,7 @@ impl LegacyV0Contract {
         salt: Bytes,
         timeout_secs: u64,
         arbiter: Option<Address>,
-    ) -> Result<BytesN<32>,  RustAcademyError> {
+    ) -> Result<BytesN<32>,  StellarBasicDAOError> {
         crate::escrow::deposit(&env, token, amount, owner, salt, timeout_secs, arbiter)
     }
 
@@ -89,15 +89,15 @@ impl LegacyV0Contract {
         _commitment: BytesN<32>,
         to: Address,
         salt: Bytes,
-    ) -> Result<bool,  RustAcademyError> {
+    ) -> Result<bool,  StellarBasicDAOError> {
         crate::escrow::withdraw(&env, amount, to, salt)
     }
 
-    pub fn dispute(env: Env, commitment: BytesN<32>) -> Result<(),  RustAcademyError> {
+    pub fn dispute(env: Env, commitment: BytesN<32>) -> Result<(),  StellarBasicDAOError> {
         crate::escrow::dispute(&env, commitment)
     }
 
-    pub fn refund(env: Env, commitment: BytesN<32>, caller: Address) -> Result<(),  RustAcademyError> {
+    pub fn refund(env: Env, commitment: BytesN<32>, caller: Address) -> Result<(),  StellarBasicDAOError> {
         crate::escrow::refund(&env, commitment, caller)
     }
 
@@ -106,7 +106,7 @@ impl LegacyV0Contract {
         crate::storage::set_fee_config(&env, &config);
     }
 
-    pub fn set_privacy(env: Env, owner: Address, enabled: bool) -> Result<(),  RustAcademyError> {
+    pub fn set_privacy(env: Env, owner: Address, enabled: bool) -> Result<(),  StellarBasicDAOError> {
         crate::privacy::set_privacy(&env, owner, enabled)
     }
 }
@@ -257,11 +257,11 @@ fn build_golden_state() -> (Env, GoldenState) {
     )
 }
 
-/// Swap the legacy WASM for the current ` RustAcademyContract` on the same address,
+/// Swap the legacy WASM for the current ` StellarBasicDAOContract` on the same address,
 /// returning a ready-to-use client pointing at the upgraded contract.
-fn upgrade_to_current<'a>(env: &'a Env, contract_id: &Address) ->  RustAcademyContractClient<'a> {
-    env.register_at(contract_id,  RustAcademyContract, ());
-     RustAcademyContractClient::new(env, contract_id)
+fn upgrade_to_current<'a>(env: &'a Env, contract_id: &Address) ->  StellarBasicDAOContractClient<'a> {
+    env.register_at(contract_id,  StellarBasicDAOContract, ());
+     StellarBasicDAOContractClient::new(env, contract_id)
 }
 
 // ============================================================================
@@ -514,7 +514,7 @@ fn upgrade_harness_non_admin_migrate_fails() {
     let result = client.try_migrate(&non_admin);
     assert_eq!(
         result,
-        Err(Ok( RustAcademyError::InsufficientRole)),
+        Err(Ok( StellarBasicDAOError::InsufficientRole)),
         "non-admin migrate must fail with InsufficientRole"
     );
 }
@@ -527,8 +527,8 @@ fn upgrade_harness_migrate_without_admin_fails_gracefully() {
     env.mock_all_auths();
 
     // Current contract registered but never initialized — no admin in storage.
-    let contract_id = env.register( RustAcademyContract, ());
-    let client =  RustAcademyContractClient::new(&env, &contract_id);
+    let contract_id = env.register( StellarBasicDAOContract, ());
+    let client =  StellarBasicDAOContractClient::new(&env, &contract_id);
 
     let caller = Address::generate(&env);
     let result = client.try_migrate(&caller);
@@ -565,8 +565,8 @@ fn upgrade_harness_legacy_symbol_privacy_key_readable_after_upgrade() {
     });
 
     // Upgrade + migrate.
-    env.register_at(&contract_id,  RustAcademyContract, ());
-    let client =  RustAcademyContractClient::new(&env, &contract_id);
+    env.register_at(&contract_id,  StellarBasicDAOContract, ());
+    let client =  StellarBasicDAOContractClient::new(&env, &contract_id);
     client.migrate(&admin);
 
     assert!(
@@ -666,7 +666,7 @@ fn seed_admin_role<'a>(
     env: &'a Env,
     contract_id: &Address,
     admin: &Address,
-) ->  RustAcademyContractClient<'a> {
+) ->  StellarBasicDAOContractClient<'a> {
     let client = upgrade_to_current(env, contract_id);
     client.migrate(admin);
     client
@@ -777,7 +777,7 @@ fn upgrade_safety_gate_invariant_failure_deterministic() {
     let result = client.try_complete_upgrade(&gs.admin, &CURRENT_CONTRACT_VERSION);
     assert_eq!(
         result,
-        Err(Ok( RustAcademyError::InternalError)),
+        Err(Ok( StellarBasicDAOError::InternalError)),
         "complete_upgrade must fail with InternalError when invariants are violated"
     );
 

@@ -1,6 +1,6 @@
 //! 플랫폼 fee calculation logic.
 
-use crate::{errors::RustAcademyError, oracle, storage, types::FeeRatio};
+use crate::{errors::StellarBasicDAOError, oracle, storage, types::FeeRatio};
 use soroban_sdk::{Address, Env};
 
 /// Calculate the platform fee for a given amount using the global config.
@@ -62,7 +62,7 @@ pub fn calculate_fee_for_token(env: &Env, token: &Address, amount: i128) -> i128
 }
 
 /// Apply a prescaled ratio to an amount.
-pub fn apply_fee_ratio(amount: i128, ratio: &FeeRatio) -> Result<i128, RustAcademyError> {
+pub fn apply_fee_ratio(amount: i128, ratio: &FeeRatio) -> Result<i128, StellarBasicDAOError> {
     if amount <= 0 || ratio.numerator == 0 {
         return Ok(0);
     }
@@ -71,6 +71,6 @@ pub fn apply_fee_ratio(amount: i128, ratio: &FeeRatio) -> Result<i128, RustAcade
 
     let scaled = amount
         .checked_mul(ratio.numerator as i128)
-        .ok_or(RustAcademyError::InvalidFeeConfiguration)?;
+        .ok_or(StellarBasicDAOError::InvalidFeeConfiguration)?;
     Ok(scaled / ratio.denominator as i128)
 }

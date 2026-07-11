@@ -1,8 +1,8 @@
-//! Types used in the  RustAcademy storage layer and contract logic.
+//! Types used in the  Stellar Basic DAO storage layer and contract logic.
 //!
 //! See [`crate::storage`] for the storage schema and key layout.
 
-use crate::errors::RustAcademyError;
+use crate::errors::StellarBasicDAOError;
 use soroban_sdk::{contracttype, Address, BytesN, Symbol, Vec};
 
 /// Explicit fee ratio used to prescale a payout share.
@@ -23,12 +23,12 @@ impl FeeRatio {
     }
 
     /// Validate that the ratio is usable for fee distribution.
-    pub fn validate(&self) -> Result<(), RustAcademyError> {
+    pub fn validate(&self) -> Result<(), StellarBasicDAOError> {
         if self.numerator == 0 {
             return Ok(());
         }
         if self.denominator == 0 || self.numerator > self.denominator {
-            return Err(RustAcademyError::InvalidFeeConfiguration);
+            return Err(StellarBasicDAOError::InvalidFeeConfiguration);
         }
         Ok(())
     }
@@ -100,7 +100,7 @@ pub struct EscrowEntry {
 
 /// Privacy-aware view of an escrow entry.
 ///
-/// Returned by [` RustAcademyContract::get_escrow_details`] instead of the raw
+/// Returned by [` StellarBasicDAOContract::get_escrow_details`] instead of the raw
 /// [`EscrowEntry`]. Sensitive fields (`amount_due`, `amount_paid`, `owner`) are set to `None`
 /// when the escrow owner has privacy enabled and the caller is not the owner.
 ///
@@ -301,7 +301,7 @@ pub struct PerAssetFeeConfig {
 
 impl PerAssetFeeConfig {
     /// Validate the configuration before persisting it.
-    pub fn validate(&self) -> Result<(), RustAcademyError> {
+    pub fn validate(&self) -> Result<(), StellarBasicDAOError> {
         self.arbiter_fee.validate()?;
         self.platform_fee.validate()?;
         self.collector_fee.validate()?;
@@ -372,7 +372,7 @@ pub struct EscrowOperationEstimate {
     pub estimated_memory_bytes: u64,
 }
 
-/// Deployment metadata returned by [`crate:: RustAcademyContract::get_deployment_metadata`].
+/// Deployment metadata returned by [`crate:: StellarBasicDAOContract::get_deployment_metadata`].
 ///
 /// Clients and indexers can call this view to validate compatibility without
 /// any off-chain coordination.

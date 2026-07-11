@@ -13,7 +13,7 @@ use crate::{
         ContractHealth, DeploymentMetadata, FeatureFlags, SchemaCompatibility,
         SupportedVersions, UpgradeState,
     },
-     PauseFlag, RustAcademyContract, RustAcademyContractClient,
+     PauseFlag, StellarBasicDAOContract, StellarBasicDAOContractClient,
 };
 use soroban_sdk::{testutils::Address as _, testutils::Ledger, Address, BytesN, Env, Symbol};
 
@@ -21,11 +21,11 @@ use soroban_sdk::{testutils::Address as _, testutils::Ledger, Address, BytesN, E
 // Helpers
 // ---------------------------------------------------------------------------
 
-fn setup() -> (Env,  RustAcademyContractClient<'static>) {
+fn setup() -> (Env,  StellarBasicDAOContractClient<'static>) {
     let env = Env::default();
     env.mock_all_auths();
-    let contract_id = env.register( RustAcademyContract, ());
-    let client =  RustAcademyContractClient::new(&env, &contract_id);
+    let contract_id = env.register( StellarBasicDAOContract, ());
+    let client =  StellarBasicDAOContractClient::new(&env, &contract_id);
     (env, client)
 }
 
@@ -103,11 +103,11 @@ fn metadata_contract_id_differs_across_deployments() {
     let env = Env::default();
     env.mock_all_auths();
 
-    let id_a = env.register( RustAcademyContract, ());
-    let id_b = env.register( RustAcademyContract, ());
+    let id_a = env.register( StellarBasicDAOContract, ());
+    let id_b = env.register( StellarBasicDAOContract, ());
 
-    let client_a =  RustAcademyContractClient::new(&env, &id_a);
-    let client_b =  RustAcademyContractClient::new(&env, &id_b);
+    let client_a =  StellarBasicDAOContractClient::new(&env, &id_a);
+    let client_b =  StellarBasicDAOContractClient::new(&env, &id_b);
 
     let admin = Address::generate(&env);
     client_a.initialize(&admin);
@@ -154,8 +154,8 @@ fn metadata_versions_stable_after_migrate() {
 fn golden_deployment_metadata_schema_is_stable() {
     let env = Env::default();
     env.mock_all_auths();
-    let contract_id = env.register( RustAcademyContract, ());
-    let client =  RustAcademyContractClient::new(&env, &contract_id);
+    let contract_id = env.register( StellarBasicDAOContract, ());
+    let client =  StellarBasicDAOContractClient::new(&env, &contract_id);
     let admin = Address::generate(&env);
     client.initialize(&admin);
 
@@ -183,8 +183,8 @@ fn golden_deployment_metadata_schema_is_stable() {
 fn golden_deployment_metadata_no_upgrade_schema_is_stable() {
     let env = Env::default();
     env.mock_all_auths();
-    let contract_id = env.register( RustAcademyContract, ());
-    let client =  RustAcademyContractClient::new(&env, &contract_id);
+    let contract_id = env.register( StellarBasicDAOContract, ());
+    let client =  StellarBasicDAOContractClient::new(&env, &contract_id);
     let admin = Address::generate(&env);
     client.initialize(&admin);
 

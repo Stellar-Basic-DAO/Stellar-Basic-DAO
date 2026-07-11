@@ -78,7 +78,7 @@ pub const ETID_UPGRADE_STARTED: u32 = 53;
 pub const ETID_UPGRADE_COMPLETED: u32 = 54;
 pub const ETID_UPGRADE_WINDOW_SET: u32 = 55;
 
-/// Testnet event topic namespace used as topic[0] for every  RustAcademy event.
+/// Testnet event topic namespace used as topic[0] for every  Stellar Basic DAO event.
 #[allow(dead_code)]
 pub const EVENT_TOPIC_ADMIN: &str = "TOPIC_ADMIN";
 #[allow(dead_code)]

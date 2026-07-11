@@ -1,4 +1,4 @@
-use crate::errors:: RustAcademyError;
+use crate::errors:: StellarBasicDAOError;
 use crate::events::publish_privacy_toggled;
 use crate::storage::{DataKey, PRIVACY_ENABLED_KEY};
 use soroban_sdk::{Address, Env, Symbol};
@@ -25,15 +25,15 @@ fn read_privacy_flag(env: &Env, owner: &Address) -> bool {
 
 /// Enable or disable privacy for an account.
 ///
-/// Reads the current state first and returns [` RustAcademyError::PrivacyAlreadySet`]
+/// Reads the current state first and returns [` StellarBasicDAOError::PrivacyAlreadySet`]
 /// if the requested value matches the current value. Otherwise persists the new
 /// state and publishes a [`crate::events::publish_privacy_toggled`] event.
-pub fn set_privacy(env: &Env, owner: Address, enabled: bool) -> Result<(),  RustAcademyError> {
+pub fn set_privacy(env: &Env, owner: Address, enabled: bool) -> Result<(),  StellarBasicDAOError> {
     owner.require_auth();
 
     let current = read_privacy_flag(env, &owner);
     if current == enabled {
-        return Err( RustAcademyError::PrivacyAlreadySet);
+        return Err( StellarBasicDAOError::PrivacyAlreadySet);
     }
 
     let typed_key = typed_privacy_key(&owner);

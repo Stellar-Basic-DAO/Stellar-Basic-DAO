@@ -1,6 +1,6 @@
-//! #  RustAcademy Storage Schema
+//! #  Stellar Basic DAO Storage Schema
 //!
-//! This module defines the persistent storage layout for the  RustAcademy contract.
+//! This module defines the persistent storage layout for the  Stellar Basic DAO contract.
 //! All long-term data is stored via the [`DataKey`] enum, which centralises key
 //! construction and ensures type-safe storage access.
 //!
@@ -41,7 +41,7 @@
 
 use soroban_sdk::{contracttype, Address, Bytes, BytesN, Env, Vec};
 
-use crate::errors::RustAcademyError;
+use crate::errors::StellarBasicDAOError;
 use crate::types::{
     DisputeExpiry, DisputeExpiryAction, DisputeVote, EscrowEntry, FeeConfig, Role,
     StealthEscrowEntry, PerAssetFeeConfig, OracleFeeConfig,
@@ -794,7 +794,7 @@ pub fn require_stealth_balance_invariant(
     _env: &Env,
     expected_total: i128,
     _is_deposit: bool,
-) -> Result<(), RustAcademyError> {
+) -> Result<(), StellarBasicDAOError> {
     // In a full implementation, this would verify that:
     // 1. For deposits: contract balance + expected_total >= 0
     // 2. For withdrawals: contract balance - expected_total >= 0

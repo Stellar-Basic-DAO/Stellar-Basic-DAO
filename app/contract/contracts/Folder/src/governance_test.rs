@@ -75,7 +75,7 @@ mod tests {
         let env = setup_env();
         let signers = vec![&env];
         let err = initialize_governance(&env, signers, 1).unwrap_err();
-        assert_eq!(err, crate::errors::RustAcademyError::InvalidSignerSet);
+        assert_eq!(err, crate::errors::StellarBasicDAOError::InvalidSignerSet);
     }
 
     #[test]
@@ -83,7 +83,7 @@ mod tests {
         let env = setup_env();
         let signers = make_signers(&env, 3);
         let err = initialize_governance(&env, signers, 0).unwrap_err();
-        assert_eq!(err, crate::errors::RustAcademyError::InvalidThreshold);
+        assert_eq!(err, crate::errors::StellarBasicDAOError::InvalidThreshold);
     }
 
     #[test]
@@ -91,7 +91,7 @@ mod tests {
         let env = setup_env();
         let signers = make_signers(&env, 3);
         let err = initialize_governance(&env, signers, 4).unwrap_err();
-        assert_eq!(err, crate::errors::RustAcademyError::InvalidThreshold);
+        assert_eq!(err, crate::errors::StellarBasicDAOError::InvalidThreshold);
     }
 
     #[test]
@@ -99,7 +99,7 @@ mod tests {
         let env = setup_env();
         let signers = make_signers(&env, 11); // MAX is 10
         let err = initialize_governance(&env, signers, 6).unwrap_err();
-        assert_eq!(err, crate::errors::RustAcademyError::InvalidSignerSet);
+        assert_eq!(err, crate::errors::StellarBasicDAOError::InvalidSignerSet);
     }
 
     // -----------------------------------------------------------------------
@@ -140,7 +140,7 @@ mod tests {
             valid_until,
         )
         .unwrap_err();
-        assert_eq!(err, crate::errors::RustAcademyError::NotASigner);
+        assert_eq!(err, crate::errors::StellarBasicDAOError::NotASigner);
     }
 
     #[test]
@@ -158,7 +158,7 @@ mod tests {
             valid_until,
         )
         .unwrap_err();
-        assert_eq!(err, crate::errors::RustAcademyError::SignatureExpired);
+        assert_eq!(err, crate::errors::StellarBasicDAOError::SignatureExpired);
     }
 
     #[test]
@@ -176,7 +176,7 @@ mod tests {
             valid_until,
         )
         .unwrap_err();
-        assert_eq!(err, crate::errors::RustAcademyError::ExpiryTooFar);
+        assert_eq!(err, crate::errors::StellarBasicDAOError::ExpiryTooFar);
     }
 
     // -----------------------------------------------------------------------
@@ -250,7 +250,7 @@ mod tests {
 
         approve_proposal(&env, s2.clone(), proposal_id.clone()).unwrap();
         let err = approve_proposal(&env, s2.clone(), proposal_id.clone()).unwrap_err();
-        assert_eq!(err, crate::errors::RustAcademyError::AlreadyApproved);
+        assert_eq!(err, crate::errors::StellarBasicDAOError::AlreadyApproved);
     }
 
     // -----------------------------------------------------------------------
@@ -271,7 +271,7 @@ mod tests {
 
         // Only 1 approval, threshold is 3
         let err = execute_proposal(&env, proposal_id).unwrap_err();
-        assert_eq!(err, crate::errors::RustAcademyError::InsufficientApprovals);
+        assert_eq!(err, crate::errors::StellarBasicDAOError::InsufficientApprovals);
     }
 
     // -----------------------------------------------------------------------
@@ -310,6 +310,6 @@ mod tests {
         ).unwrap();
 
         let err = cancel_proposal(&env, stranger, proposal_id).unwrap_err();
-        assert_eq!(err, crate::errors::RustAcademyError::NotASigner);
+        assert_eq!(err, crate::errors::StellarBasicDAOError::NotASigner);
     }
 }

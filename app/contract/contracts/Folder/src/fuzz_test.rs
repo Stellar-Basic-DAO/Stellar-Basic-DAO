@@ -1,4 +1,4 @@
-//! Property-based fuzz tests for  RustAcademy escrow state transitions.
+//! Property-based fuzz tests for  Stellar Basic DAO escrow state transitions.
 //!
 //! # Invariants under test
 //!
