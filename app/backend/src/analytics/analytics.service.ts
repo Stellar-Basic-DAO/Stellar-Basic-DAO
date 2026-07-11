@@ -298,19 +298,19 @@ export class AnalyticsService {
   ): Promise<AnalyticsReport | null> {
     const client = this.supabase.getClient();
     const [summaryResult, assetsResult, timeSeriesResult] = await Promise.all([
-      client.rpc(" RustAcademy_analytics_summary", {
+      client.rpc("stellar_basic_dao_analytics_summary", {
         p_public_key: publicKey,
         p_start_date: startIso,
         p_end_date: endIso,
         p_organization_id: organizationId ?? null,
       }),
-      client.rpc(" RustAcademy_analytics_asset_distribution", {
+      client.rpc("stellar_basic_dao_analytics_asset_distribution", {
         p_public_key: publicKey,
         p_start_date: startIso,
         p_end_date: endIso,
         p_organization_id: organizationId ?? null,
       }),
-      client.rpc(" RustAcademy_analytics_time_series", {
+      client.rpc("stellar_basic_dao_analytics_time_series", {
         p_public_key: publicKey,
         p_start_date: startIso,
         p_end_date: endIso,
