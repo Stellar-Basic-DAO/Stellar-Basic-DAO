@@ -2,7 +2,7 @@
 
 ## High-Level Overview
 
-RustAcademy is a full-stack decentralized application organized as a monorepo with five distinct application layers.
+Stellar Basic DAO is a full-stack decentralized application organized as a monorepo with five distinct application layers.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -41,7 +41,7 @@ RustAcademy is a full-stack decentralized application organized as a monorepo wi
 │                   STELLAR BLOCKCHAIN LAYER                                  │
 │                                                                             │
 │  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │             RustAcademyContract  (Soroban WASM)                     │   │
+│  │             StellarBasicDAOContract  (Soroban WASM)                     │   │
 │  │                                                                     │   │
 │  │  Escrow      Fee Router    Privacy     Stealth     Governance       │   │
 │  │  deposit()   set_fee()     set_priv()  stealth_    create_          │   │
@@ -83,7 +83,7 @@ Frontend resolves link → GET /api/v1/links/:id
 User approves in Freighter wallet
          │
          ▼
-Backend calls RustAcademyContract.deposit()
+Backend calls StellarBasicDAOContract.deposit()
          │
          ├─► Soroban validates: amount, salt, auth
          ├─► Token transferred to contract

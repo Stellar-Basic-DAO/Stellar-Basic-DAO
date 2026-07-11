@@ -1,6 +1,6 @@
 # Authorization Guards Guide
 
-This document describes the normalized authorization guard system for the RustAcademy contract. All mutating entry points must use the shared guard helpers defined in `admin.rs` to ensure consistent security checks.
+This document describes the normalized authorization guard system for the Stellar Basic DAO contract. All mutating entry points must use the shared guard helpers defined in `admin.rs` to ensure consistent security checks.
 
 ## Overview
 
@@ -142,7 +142,7 @@ When adding a new public mutating entry point:
 1. **Select the appropriate guard** from the guard selection guide above.
 2. **Add the guard call** at the beginning of your function:
    ```rust
-   pub fn new_operation(env: Env, caller: Address, ...) -> Result<(), RustAcademyError> {
+   pub fn new_operation(env: Env, caller: Address, ...) -> Result<(), Stellar Basic DAOError> {
        admin::guard_deposit(&env, PauseFlag::YourFeature as u64)?;
        // Your logic here
    }
@@ -159,8 +159,8 @@ When adding a new public mutating entry point:
    ```
 4. **Implement the test function**:
    ```rust
-   fn test_new_operation(env: &Env, caller: &Address) -> Result<(), crate::errors::RustAcademyError> {
-       RustAcademyContract::new_operation(env.clone(), caller.clone(), ...)
+   fn test_new_operation(env: &Env, caller: &Address) -> Result<(), crate::errors::Stellar Basic DAOError> {
+       StellarBasicDAOContract::new_operation(env.clone(), caller.clone(), ...)
    }
    ```
 5. **Run the guard tests** to ensure your entry point is covered:

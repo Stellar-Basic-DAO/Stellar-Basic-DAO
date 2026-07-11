@@ -2,7 +2,7 @@
 
 ## Overview
 
-RustAcademy now supports real-time notifications via Telegram! Users can link their Telegram accounts to receive instant alerts for:
+Stellar Basic DAO now supports real-time notifications via Telegram! Users can link their Telegram accounts to receive instant alerts for:
 
 - 💰 Payments received
 - 🔒 Escrow deposits, withdrawals, and refunds
@@ -66,19 +66,19 @@ Telegram bot started successfully
 
 ### Linking Accounts
 
-Users can link their RustAcademy account to Telegram by:
+Users can link their Stellar Basic DAO account to Telegram by:
 
 1. **Starting a conversation with the bot**
    - Search for your bot on Telegram (use the username you created)
    - Click "Start" or send `/start`
 
 2. **Sending their public key**
-   - The bot will prompt for their RustAcademy public key
+   - The bot will prompt for their Stellar Basic DAO public key
    - User sends their Stellar public key (starts with `G...`)
 
 3. **Verification**
    - The bot generates a verification code
-   - User enters this code in the RustAcademy app/website
+   - User enters this code in the Stellar Basic DAO app/website
    - Once verified, notifications are enabled!
 
 ### Bot Commands
@@ -89,7 +89,7 @@ Users can interact with the bot using these commands:
 | --------------- | ------------------------------------- |
 | `/start`        | Begin linking account or view status  |
 | `/status`       | Check current linkage status          |
-| `/unlink`       | Disconnect Telegram from RustAcademy  |
+| `/unlink`       | Disconnect Telegram from Stellar Basic DAO  |
 | `/settings`     | View notification settings            |
 | `/min <amount>` | Set minimum amount threshold (in XLM) |
 | `/enable`       | Enable notifications                  |
@@ -102,14 +102,14 @@ Users can interact with the bot using these commands:
 ```
 User: /start
 
-Bot: 👋 Welcome to  RustAcademy Notifications Bot!
+Bot: 👋 Welcome to  Stellar Basic DAO Notifications Bot!
 
      I'll send you real-time alerts for:
      • 💰 Payments received
      • 🔒 Escrow deposits, withdrawals, and refunds
 
-     To link your  RustAcademy account:
-     1. Copy your  RustAcademy public key (starts with G...)
+     To link your  Stellar Basic DAO account:
+     1. Copy your  Stellar Basic DAO public key (starts with G...)
      2. Send it to me in the next message
 
      Or use /cancel anytime to abort.
@@ -118,7 +118,7 @@ User: GDQERHRWJYV7JHRP5V7DWJVI6Y5ABZP3YRH7DKYJRBEGJQKE6IQEOSY2
 
 Bot: 🔐 Verification Required
 
-     To confirm you own this  RustAcademy account, please visit:
+     To confirm you own this  Stellar Basic DAO account, please visit:
      `GDQERHRWJYV7JHRP5V7DWJVI6Y5ABZP3YRH7DKYJRBEGJQKE6IQEOSY2`
 
      And enter this verification code:
@@ -126,7 +126,7 @@ Bot: 🔐 Verification Required
 
      Once verified, I'll start sending you notifications!
 
-[User verifies on  RustAcademy platform]
+[User verifies on  Stellar Basic DAO platform]
 
 Bot: ✅ Your account has been verified! You'll now receive
      real-time notifications for all activity.

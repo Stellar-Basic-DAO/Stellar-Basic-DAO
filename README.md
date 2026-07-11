@@ -99,7 +99,7 @@ Stellar Basic DAO is unique on Stellar: no other project combines Rust education
                                │ Stellar SDK + Soroban RPC
 ┌──────────────────────────────▼──────────────────────────────────────┐
 │                    STELLAR BLOCKCHAIN LAYER                          │
-│   RustAcademyContract (Soroban WASM) — single monolithic contract     │
+│   StellarBasicDAOContract (Soroban WASM) — single monolithic contract     │
 │   Escrow · Fee Router · Privacy · Stealth · Dispute · Governance    │
 └─────────────────────────────────────────────────────────────────────┘
                                │ Horizon API
@@ -167,9 +167,9 @@ Stellar Basic DAO is unique on Stellar: no other project combines Rust education
 
 ---
 
-## ⚡ Soroban Smart Contract — `RustAcademyContract`
+## ⚡ Soroban Smart Contract — `StellarBasicDAOContract`
 
-The entire on-chain logic is deployed as a single monolithic Soroban contract (`RustAcademyContract`). This minimizes cross-contract call overhead and simplifies upgrades.
+The entire on-chain logic is deployed as a single monolithic Soroban contract (`StellarBasicDAOContract`). This minimizes cross-contract call overhead and simplifies upgrades.
 
 ### Escrow State Machine
 

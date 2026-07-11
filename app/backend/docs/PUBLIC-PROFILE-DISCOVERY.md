@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document summarizes the implementation of the public profile discovery feature for RustAcademy, enabling users to find public profiles via fuzzy search and discover trending creators based on transaction volume.
+This document summarizes the implementation of the public profile discovery feature for Stellar Basic DAO, enabling users to find public profiles via fuzzy search and discover trending creators based on transaction volume.
 
 ## Features Implemented
 

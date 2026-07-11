@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes how the RustAcademy Soroban contract handles both Native XLM and Stellar Asset Contract (SAC) assets across all flows.
+This document describes how the Stellar Basic DAO Soroban contract handles both Native XLM and Stellar Asset Contract (SAC) assets across all flows.
 
 ## Asset Types Supported
 
@@ -61,7 +61,7 @@ pub fn deposit(
     salt: Bytes,
     timeout_secs: u64,
     arbiter: Option<Address>,
-) -> Result<BytesN<32>,  RustAcademyError>
+) -> Result<BytesN<32>,  Stellar Basic DAOError>
 ```
 
 #### Withdrawal
@@ -75,7 +75,7 @@ pub fn withdraw(
     commitment: BytesN<32>,
     to: Address,
     salt: Bytes,
-) -> Result<bool,  RustAcademyError>
+) -> Result<bool,  Stellar Basic DAOError>
 ```
 
 #### Refund
@@ -86,7 +86,7 @@ pub fn refund(
     env: Env,
     commitment: BytesN<32>,
     caller: Address,
-) -> Result<(),  RustAcademyError>
+) -> Result<(),  Stellar Basic DAOError>
 ```
 
 ## Key Design Decisions
@@ -262,11 +262,11 @@ contract.withdraw(&custom_address, &custom_amount, &custom_commitment, &user, &s
 
 ## Conclusion
 
-The RustAcademy contract successfully handles both Native XLM and SAC tokens through:
+The Stellar Basic DAO contract successfully handles both Native XLM and SAC tokens through:
 
 1. **Standardized Interface**: Using Soroban's token::Client
 2. **Transparent Handling**: No manual wrap/unwrap logic
 3. **Comprehensive Testing**: Full test coverage across asset types
 4. **Future-Proof**: Works with any token implementing the standard interface
 
-This design ensures reliability, simplicity, and extensibility for the RustAcademy platform.
+This design ensures reliability, simplicity, and extensibility for the Stellar Basic DAO platform.

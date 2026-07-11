@@ -174,7 +174,7 @@ if fee_cfg.fee_bps > 10_000 {
 
 // In admin.rs
 if let Err(_msg) = storage::assert_post_upgrade_invariants(env) {
-    env.panic_with_error( RustAcademyError::InternalError);
+    env.panic_with_error( Stellar Basic DAOError::InternalError);
     // ↑ Deterministic panic; all storage rolled back
 }
 ```
@@ -398,9 +398,9 @@ fn build_golden_state() -> (Env, GoldenState) {
 Simulates WASM swap and returns client (line 249–252):
 
 ```rust
-fn upgrade_to_current<'a>(env: &'a Env, contract_id: &Address) ->  RustAcademyContractClient<'a> {
-    env.register_at(contract_id,  RustAcademyContract, ());
-     RustAcademyContractClient::new(env, contract_id)
+fn upgrade_to_current<'a>(env: &'a Env, contract_id: &Address) ->  StellarBasicDAOContractClient<'a> {
+    env.register_at(contract_id,  StellarBasicDAOContract, ());
+     StellarBasicDAOContractClient::new(env, contract_id)
 }
 ```
 
@@ -411,7 +411,7 @@ fn upgrade_to_current<'a>(env: &'a Env, contract_id: &Address) ->  RustAcademyCo
 ### Run All Upgrade Safety Gate Tests
 
 ```bash
-cd app/contract/contracts/ RustAcademy
+cd app/contract/contracts/ Stellar Basic DAO
 cargo test upgrade_safety_gate_ -- --nocapture
 ```
 
@@ -428,7 +428,7 @@ test upgrade_safety_gate_non_admin_blocked ... ok
 
 test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured
 
-   Doc-tests  RustAcademy: 0 passed; 0 failed; 0 ignored; 0 measured
+   Doc-tests  Stellar Basic DAO: 0 passed; 0 failed; 0 ignored; 0 measured
 ```
 
 ### Run Individual Test
@@ -520,8 +520,8 @@ These tests should run in CI/CD pipeline:
 
 ## References
 
-- **Test Code**: `app/contract/contracts/ RustAcademy/src/upgrade_test.rs` (lines 660–820)
-- **Implementation**: `app/contract/contracts/ RustAcademy/src/admin.rs`, `storage.rs`, `events.rs`
+- **Test Code**: `app/contract/contracts/ Stellar Basic DAO/src/upgrade_test.rs` (lines 660–820)
+- **Implementation**: `app/contract/contracts/ Stellar Basic DAO/src/admin.rs`, `storage.rs`, `events.rs`
 - **Full Spec**: `app/contract/docs/UPGRADE_SAFETY_GATE.md`
 - **API Reference**: `app/contract/UPGRADE_SAFETY_GATE_QUICK_REFERENCE.md`
 

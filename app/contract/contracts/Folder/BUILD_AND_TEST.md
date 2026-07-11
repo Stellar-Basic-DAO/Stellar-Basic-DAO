@@ -47,18 +47,18 @@ cd app/contract
 # Clean previous builds (optional, helps with fresh builds)
 cargo clean
 
-# Build the  RustAcademy contract
-cargo build --package  RustAcademy
+# Build the  Stellar Basic DAO contract
+cargo build --package  Stellar Basic DAO
 
 # Build with release optimizations
-cargo build --release --package  RustAcademy
+cargo build --release --package  Stellar Basic DAO
 ```
 
 ### Test Commands
 
 ```bash
 # Run all tests
-cargo test --package  RustAcademy
+cargo test --package  Stellar Basic DAO
 
 # Run only cross-asset tests
 cargo test test_cross_asset
@@ -70,7 +70,7 @@ cargo test test_cross_asset_native_xlm_deposit_withdrawal
 cargo test test_cross_asset -- --nocapture
 
 # Run all tests including ignored/slow tests
-cargo test --package  RustAcademy -- --include-ignored
+cargo test --package  Stellar Basic DAO -- --include-ignored
 ```
 
 ## Supported Escrow Limits
@@ -92,10 +92,10 @@ Clients can preflight these limits with `get_escrow_operation_limits`,
 When the network is working properly, you should see:
 
 ```
-Compiling  RustAcademy v0.1.0 (...)
+Compiling  Stellar Basic DAO v0.1.0 (...)
 Finished `dev` profile [unoptimized + debuginfo] target(s) in XX.XXs
 
-Running unittests src/lib.rs (target/debug/deps/ RustAcademy-xxxxxxxxxxxxxxx)
+Running unittests src/lib.rs (target/debug/deps/ Stellar Basic DAO-xxxxxxxxxxxxxxx)
 
 running XX tests
 test test_cross_asset_native_xlm_deposit_withdrawal ... ok
@@ -270,7 +270,7 @@ cargo test upgrade_harness_ -- --nocapture
 
 ### Upgrade flow
 
-1. `env.register_at(contract_id,  RustAcademyContract, ())` — swaps the WASM in-place on the same address
+1. `env.register_at(contract_id,  StellarBasicDAOContract, ())` — swaps the WASM in-place on the same address
 2. `client.migrate(admin)` — runs the v0→v1 schema migration
 3. All 17 assertions then verify no data was lost or corrupted
 

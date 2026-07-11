@@ -50,10 +50,10 @@ This will show you the migration SQL and instructions for running it.
 
 ```bash
 cd app/backend
-psql -U postgres -d  RustAcademy -f src/crash-reporting/migrations/001_create_crash_reporting_tables.sql
+psql -U postgres -d  Stellar Basic DAO -f src/crash-reporting/migrations/001_create_crash_reporting_tables.sql
 ```
 
-Replace `postgres` with your database username and `RustAcademy` with your database name.
+Replace `postgres` with your database username and `Stellar Basic DAO` with your database name.
 
 ---
 

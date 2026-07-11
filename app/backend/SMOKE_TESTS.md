@@ -2,7 +2,7 @@
 
 ## Overview
 
-This directory contains end-to-end smoke tests that validate the deployment health and critical functionality of the RustAcademy backend API. These tests are designed to run automatically after deployment to ensure the system is functioning correctly.
+This directory contains end-to-end smoke tests that validate the deployment health and critical functionality of the Stellar Basic DAO backend API. These tests are designed to run automatically after deployment to ensure the system is functioning correctly.
 
 ## Purpose
 
@@ -60,10 +60,10 @@ npm run test:smoke:soroban
 
 ```bash
 # Test against production
-SMOKE_TEST_BASE_URL=https://api. RustAcademy.io npm run test:smoke:all
+SMOKE_TEST_BASE_URL=https://api.stellar-basic-dao.io npm run test:smoke:all
 
 # Test against staging
-SMOKE_TEST_BASE_URL=https://api-staging. RustAcademy.io npm run test:smoke:all
+SMOKE_TEST_BASE_URL=https://api-staging.stellar-basic-dao.io npm run test:smoke:all
 ```
 
 ### CI/CD Integration
@@ -85,8 +85,8 @@ The smoke test workflow (`.github/workflows/smoke-tests.yml`):
 
 ### Environment Detection
 
-- **Production**: `https://api. RustAcademy.io`
-- **Staging**: `https://api-staging. RustAcademy.io`
+- **Production**: `https://api.stellar-basic-dao.io`
+- **Staging**: `https://api-staging.stellar-basic-dao.io`
 - **Development**: `http://localhost:3000`
 
 ### Workflow Steps
@@ -191,7 +191,7 @@ import {
 
 const reporter = new SmokeTestReporter(
   "production",
-  "https://api. RustAcademy.io",
+  "https://api.stellar-basic-dao.io",
 );
 reporter.start();
 

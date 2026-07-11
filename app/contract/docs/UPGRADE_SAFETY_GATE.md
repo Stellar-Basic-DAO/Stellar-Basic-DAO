@@ -4,7 +4,7 @@
 
 ## Overview
 
-This document describes the contract-level safeguards and invariant enforcement mechanisms for safe, controlled upgrades in RustAcademy.
+This document describes the contract-level safeguards and invariant enforcement mechanisms for safe, controlled upgrades in Stellar Basic DAO.
 
 ### Key Features
 
@@ -385,6 +385,6 @@ A: Look for `UpgradeStarted` events without a corresponding `UpgradeCompleted` i
 ## References
 
 - [Soroban Contract Upgrade Guide](https://developers.stellar.org/build/guides/soroban-migration)
-- [ RustAcademy Invariant Checks](./UPGRADE_SAFETY_GATE.md) (this file)
-- [`storage.rs::assert_post_upgrade_invariants()`](../contracts/ RustAcademy/src/storage.rs)
-- [`admin.rs::start_upgrade()`, `complete_upgrade()`](../contracts/ RustAcademy/src/admin.rs)
+- [ Stellar Basic DAO Invariant Checks](./UPGRADE_SAFETY_GATE.md) (this file)
+- [`storage.rs::assert_post_upgrade_invariants()`](../contracts/ Stellar Basic DAO/src/storage.rs)
+- [`admin.rs::start_upgrade()`, `complete_upgrade()`](../contracts/ Stellar Basic DAO/src/admin.rs)

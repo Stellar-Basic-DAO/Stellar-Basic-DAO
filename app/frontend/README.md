@@ -1,12 +1,12 @@
 
 
 
-# 🦀 RustAcademy Web
-> Next.js frontend for RustAcademy — Learn Rust, earn XLM, build Web3.
+# 🦀 Stellar Basic DAO Web
+> Next.js frontend for Stellar Basic DAO — Learn Rust, earn XLM, build Web3.
 
 ## Overview
 
-RustAcademy Web provides the learner, tutor, and community experience for the platform.
+Stellar Basic DAO Web provides the learner, tutor, and community experience for the platform.
 
 Users can:
 

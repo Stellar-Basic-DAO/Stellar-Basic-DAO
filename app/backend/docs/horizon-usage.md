@@ -1,6 +1,6 @@
 # Horizon Usage Guidelines
 
-This document outlines how to fetch Stellar transaction data via Horizon in the RustAcademy backend.
+This document outlines how to fetch Stellar transaction data via Horizon in the Stellar Basic DAO backend.
 
 ## Overview
 

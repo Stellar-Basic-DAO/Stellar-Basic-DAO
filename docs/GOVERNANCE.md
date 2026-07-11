@@ -1,12 +1,12 @@
 # On-Chain DAO Governance
 
-> **All privileged contract actions in RustAcademy are controlled by a threshold-based M-of-N multisig governance system deployed on Stellar via Soroban.**
+> **All privileged contract actions in Stellar Basic DAO are controlled by a threshold-based M-of-N multisig governance system deployed on Stellar via Soroban.**
 
 ---
 
 ## Why On-Chain Governance?
 
-A single admin key controlling all protocol actions is a critical centralization risk. The RustAcademy governance module replaces single-admin control with a **proposal → approval → execution** flow that requires `M` of `N` designated signers to agree before any privileged action can take effect.
+A single admin key controlling all protocol actions is a critical centralization risk. The Stellar Basic DAO governance module replaces single-admin control with a **proposal → approval → execution** flow that requires `M` of `N` designated signers to agree before any privileged action can take effect.
 
 This provides:
 - **Censorship resistance** — No single party can unilaterally pause, upgrade, or drain the protocol

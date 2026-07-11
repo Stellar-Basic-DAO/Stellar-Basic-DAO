@@ -1,6 +1,6 @@
-# Contributing to RustAcademy Privacy Contract
+# Contributing to Stellar Basic DAO Privacy Contract
 
-Thank you for your interest in contributing to the RustAcademy privacy contract! This document outlines the development guidelines, code standards, and contribution workflow for this Soroban smart contract.
+Thank you for your interest in contributing to the Stellar Basic DAO privacy contract! This document outlines the development guidelines, code standards, and contribution workflow for this Soroban smart contract.
 
 ## 📋 Development Guidelines
 
@@ -14,7 +14,7 @@ Thank you for your interest in contributing to the RustAcademy privacy contract!
 
 #### Naming Conventions
 
-- **Structs**: `PascalCase` (e.g., `RustAcademyContract`)
+- **Structs**: `PascalCase` (e.g., `StellarBasicDAOContract`)
 - **Functions**: `snake_case` (e.g., `enable_privacy`)
 - **Constants**: `SCREAMING_SNAKE_CASE` (e.g., `MAX_PRIVACY_LEVEL`)
 - **Variables**: `snake_case` (e.g., `account_address`)

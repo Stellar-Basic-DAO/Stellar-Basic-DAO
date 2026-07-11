@@ -1,6 +1,6 @@
 # Frontend Architecture Guide
 
-> **Next.js 15 web application for RustAcademy — the primary user interface for learning, earning, and community.**
+> **Next.js 15 web application for Stellar Basic DAO — the primary user interface for learning, earning, and community.**
 
 ---
 

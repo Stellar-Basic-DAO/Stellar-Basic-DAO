@@ -556,4 +556,4 @@ For issues or questions:
 
 1. Check the [ERROR-CODES.md](../../docs/ERROR-CODES.md) for detailed error descriptions
 2. Review [API-REFERENCE-PUBLIC-PROFILES.md](../../docs/API-REFERENCE-PUBLIC-PROFILES.md) for related auth endpoints
-3. Contact support: api-support@ RustAcademy.to
+3. Contact support: api-support@stellar-basic-dao.to

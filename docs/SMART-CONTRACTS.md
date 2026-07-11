@@ -1,14 +1,14 @@
 # Soroban Smart Contract Reference
 
-> **Complete technical reference for the `RustAcademyContract` Soroban smart contract deployed on Stellar.**
+> **Complete technical reference for the `StellarBasicDAOContract` Soroban smart contract deployed on Stellar.**
 
 ---
 
 ## Overview
 
-RustAcademy uses a single monolithic Soroban contract (`RustAcademyContract`) compiled to a `wasm32-unknown-unknown` WASM artifact. The monolithic design avoids cross-contract call overhead, reduces configuration complexity, and simplifies upgrades — a single `upgrade()` call swaps the entire platform's on-chain logic.
+Stellar Basic DAO uses a single monolithic Soroban contract (`StellarBasicDAOContract`) compiled to a `wasm32-unknown-unknown` WASM artifact. The monolithic design avoids cross-contract call overhead, reduces configuration complexity, and simplifies upgrades — a single `upgrade()` call swaps the entire platform's on-chain logic.
 
-- **Contract name:** `RustAcademyContract`
+- **Contract name:** `StellarBasicDAOContract`
 - **SDK version:** Soroban SDK 23
 - **Rust edition:** 2021
 - **Crate type:** `cdylib` + `rlib`

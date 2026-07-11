@@ -1,8 +1,8 @@
-# MVP Contract Scope Decision: RustAcademy Soroban Smart Contracts
+# MVP Contract Scope Decision: Stellar Basic DAO Soroban Smart Contracts
 
 ## Overview
 
-This document defines the Soroban smart contract scope for the RustAcademy Minimum Viable Product (MVP). It outlines the core candidate modules, separates on-chain enforcement from off-chain validation, details the deployment design, and specifies versioning and operational safety requirements prior to mainnet launch.
+This document defines the Soroban smart contract scope for the Stellar Basic DAO Minimum Viable Product (MVP). It outlines the core candidate modules, separates on-chain enforcement from off-chain validation, details the deployment design, and specifies versioning and operational safety requirements prior to mainnet launch.
 
 ---
 
@@ -26,7 +26,7 @@ The table below outlines the Wave 4 contract scope, evaluates each module's comp
 
 ### Monolithic vs. Multiple Contracts
 
-- **Decision**: Deploy **one monolithic contract** (`RustAcademyContract`).
+- **Decision**: Deploy **one monolithic contract** (`StellarBasicDAOContract`).
 - **Rationale**:
   - **Simplicity**: Single-contract deployment drastically reduces gas costs (no cross-contract calls) and limits configuration complexity.
   - **Easier Upgrades**: Upgrading a single contract is straightforward compared to coordinating migrations across multiple dependent contracts.
@@ -82,7 +82,7 @@ Before deploying to Stellar Mainnet, the following controls must be configured:
 
 Clients must resolve contract IDs dynamically based on the target network. Below is the mapping setup for the MVP:
 
-| Network                 | Horizon RPC Endpoint                    | Native Asset Address   | RustAcademy Escrow Contract ID               |
+| Network                 | Horizon RPC Endpoint                    | Native Asset Address   | Stellar Basic DAO Escrow Contract ID               |
 | :---------------------- | :-------------------------------------- | :--------------------- | :------------------------------------------- |
 | **Local Sandbox (dev)** | `http://localhost:8000`                 | `CDLZFC3SYG3GHI2Dx...` | Determined at local deployment time          |
 | **Stellar Testnet**     | `https://horizon-testnet.stellar.org`   | `CDLZFC3SYG3GHI2D...`  | `CD2J6K7T3YJ77QXZP3...` (Configured via Env) |
@@ -90,4 +90,4 @@ Clients must resolve contract IDs dynamically based on the target network. Below
 | **Stellar Mainnet**     | `https://horizon.stellar.org`           | `CAS3HITBYZ...`        | Set post-audit upon deployment               |
 
 > [!IMPORTANT]
-> To comply with PR FE-31, both frontend and backend clients must consume these contract IDs from a centralized Contract Registry service, or fall back to the environment variable `RustAcademy_CONTRACT_ID` rather than embedding them directly in client source code.
+> To comply with PR FE-31, both frontend and backend clients must consume these contract IDs from a centralized Contract Registry service, or fall back to the environment variable `Stellar Basic DAO_CONTRACT_ID` rather than embedding them directly in client source code.

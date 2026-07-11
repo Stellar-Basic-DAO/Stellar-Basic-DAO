@@ -1,7 +1,7 @@
 
-# 🚀 RustAcademy API
+# 🚀 Stellar Basic DAO API
 
-> Backend powering RustAcademy.
+> Backend powering Stellar Basic DAO.
 
 ---
 

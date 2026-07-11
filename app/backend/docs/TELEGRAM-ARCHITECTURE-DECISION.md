@@ -110,7 +110,7 @@ Parallel telegram_user_mappings table
    - Creates/updates row in telegram_user_mappings
 
 3. User verifies linkage
-   - Enters code in RustAcademy app
+   - Enters code in Stellar Basic DAO app
    - Marks telegram_user_mappings.is_verified = true
 
 4. Notifications flow

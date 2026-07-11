@@ -1,6 +1,6 @@
 # Core Financial Invariants
 
-> **The Stellar Basic DAO Soroban contract (`RustAcademyContract`) must preserve these invariants under every code path. Any change that could violate one of them MUST be reviewed against this document.**
+> **The Stellar Basic DAO Soroban contract (`StellarBasicDAOContract`) must preserve these invariants under every code path. Any change that could violate one of them MUST be reviewed against this document.**
 
 This document is the canonical specification of the 10 financial invariants the protocol enforces. Every Soroban entry point, every off-chain reconciliation, and every test failure referencing "invariant" should be traceable to a specific `INV-NN` entry below.
 

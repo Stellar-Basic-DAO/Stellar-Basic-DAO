@@ -1,6 +1,6 @@
 # Backend Architecture & API Guide
 
-> **NestJS-based backend API powering RustAcademy — integrating Stellar, Soroban smart contracts, Supabase, and AI services.**
+> **NestJS-based backend API powering Stellar Basic DAO — integrating Stellar, Soroban smart contracts, Supabase, and AI services.**
 
 ---
 
@@ -72,8 +72,8 @@ SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=eyJ...
 
 # CORS
-CORS_ALLOWED_ORIGINS=https://rustacademy.to,https://app.rustacademy.to
-CORS_VERCEL_PROJECT=rustacademy-frontend
+CORS_ALLOWED_ORIGINS=https://stellar-basic-dao-academy.to,https://app.stellar-basic-dao-academy.to
+CORS_VERCEL_PROJECT=stellar-basic-dao-frontend
 ```
 
 ### Optional
@@ -82,7 +82,7 @@ CORS_VERCEL_PROJECT=rustacademy-frontend
 # Sentry (error monitoring)
 SENTRY_DSN=https://...@sentry.io/...
 SENTRY_ENVIRONMENT=production
-SENTRY_RELEASE=rustacademy-backend@0.1.0
+SENTRY_RELEASE=stellar-basic-dao-backend@0.1.0
 
 # Metrics
 METRICS_ENDPOINT_PROTECTED=true

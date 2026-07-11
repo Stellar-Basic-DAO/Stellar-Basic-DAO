@@ -1,6 +1,6 @@
-# RustAcademy Contract Events Schema
+# Stellar Basic DAO Contract Events Schema
 
-This document defines the indexer-facing contract event schema for `RustAcademy`.
+This document defines the indexer-facing contract event schema for `Stellar Basic DAO`.
 
 ## Design goals
 

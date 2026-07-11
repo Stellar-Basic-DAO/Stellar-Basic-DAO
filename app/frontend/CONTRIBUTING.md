@@ -1,6 +1,6 @@
-# Contributing to RustAcademy Frontend
+# Contributing toStellar Basic DAO Frontend
 
-Thank you for your interest in contributing to the RustAcademy frontend!
+Thank you for your interest in contributing to the Stellar Basic DAO frontend!
 
 ## Development Workflow
 

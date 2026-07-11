@@ -2,7 +2,7 @@
 
 ## Overview
 
-The RustAcademy backend is a NestJS-based application that provides a comprehensive cryptocurrency trading and notification system. It integrates with Stellar blockchain for transaction processing and includes real-time event ingestion, user management, and notification services.
+The Stellar Basic DAO backend is a NestJS-based application that provides a comprehensive cryptocurrency trading and notification system. It integrates with Stellar blockchain for transaction processing and includes real-time event ingestion, user management, and notification services.
 
 ## Architecture
 
@@ -76,7 +76,7 @@ SUPABASE_URL=http://127.0.0.1:54321
 SUPABASE_ANON_KEY=your_supabase_anon_key
 
 # Optional: enables ingestion stream when provided
- RustAcademy_CONTRACT_ID=your_contract_id
+ Stellar Basic DAO_CONTRACT_ID=your_contract_id
 
 # Optional: Sentry monitoring
 SENTRY_DSN=https://example@o0.ingest.sentry.io/0

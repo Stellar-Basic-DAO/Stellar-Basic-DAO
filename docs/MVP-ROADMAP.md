@@ -1,4 +1,4 @@
-# RustAcademy — MVP Roadmap
+# Stellar Basic DAO — MVP Roadmap
 
 > **8-week plan to launch a production-ready, fully on-chain learn-to-earn Rust academy on Stellar Testnet.**
 
@@ -32,7 +32,7 @@ The MVP focuses on the minimal viable slice: a user can connect their Freighter 
 **Goal:** Local development environment fully operational with contract deployed on testnet.
 
 **Smart Contract:**
-- [ ] Build `RustAcademyContract` WASM (cargo build + tests passing)
+- [ ] Build `StellarBasicDAOContract` WASM (cargo build + tests passing)
 - [ ] Deploy to Stellar Testnet
 - [ ] Initialize contract with admin address
 - [ ] Configure platform fee (100 bps / 1%)
@@ -61,7 +61,7 @@ The MVP focuses on the minimal viable slice: a user can connect their Freighter 
 - [ ] Courses API: CRUD for courses, lessons, tasks
 - [ ] Task submissions API: receive submission, queue for grading
 - [ ] AI grading integration: Claude API grades submitted code
-- [ ] Reward payout: call `RustAcademyContract.withdraw()` on confirmed grade
+- [ ] Reward payout: call `StellarBasicDAOContract.withdraw()` on confirmed grade
 - [ ] Notifications: email/push on payment received
 
 **Contract:**
@@ -129,7 +129,7 @@ The MVP focuses on the minimal viable slice: a user can connect their Freighter 
 
 ## Mainnet Readiness Checklist
 
-Before deploying `RustAcademyContract` to Stellar Mainnet:
+Before deploying `StellarBasicDAOContract` to Stellar Mainnet:
 
 - [ ] External security audit completed
 - [ ] ≥ 90% contract test coverage verified

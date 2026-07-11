@@ -1,6 +1,6 @@
 # Vercel Deployment Guide
 
-This guide covers deploying the RustAcademy frontend to Vercel with Preview Deployments for PRs and Production deployments from the main branch.
+This guide covers deploying the Stellar Basic DAO frontend to Vercel with Preview Deployments for PRs and Production deployments from the main branch.
 
 ## Prerequisites
 
@@ -35,8 +35,8 @@ Add the following environment variables in Vercel project settings:
 **Production (main branch):**
 
 ```
-NEXT_PUBLIC_ RustAcademy_API_URL=https://api. RustAcademy.to
-NEXT_PUBLIC_SITE_URL=https:// RustAcademy.to
+NEXT_PUBLIC_ Stellar Basic DAO_API_URL=https://api.stellar-basic-dao.to
+NEXT_PUBLIC_SITE_URL=https://stellar-basic-dao.to
 NEXT_PUBLIC_STELLAR_NETWORK=mainnet
 NEXT_PUBLIC_ERROR_REPORTING_ENABLED=true
 NEXT_PUBLIC_APP_VERSION=1.0.0
@@ -45,7 +45,7 @@ NEXT_PUBLIC_APP_VERSION=1.0.0
 **Preview (all PRs):**
 
 ```
-NEXT_PUBLIC_ RustAcademy_API_URL=https://api-staging. RustAcademy.to
+NEXT_PUBLIC_ Stellar Basic DAO_API_URL=https://api-staging.stellar-basic-dao.to
 NEXT_PUBLIC_STELLAR_NETWORK=testnet
 NEXT_PUBLIC_ERROR_REPORTING_ENABLED=true
 NEXT_PUBLIC_APP_VERSION=1.0.0-preview
@@ -92,7 +92,7 @@ The `.github/workflows/frontend-ci.yml` workflow runs on every PR and push to ma
 Add these secrets to your GitHub repository settings:
 
 ```
-NEXT_PUBLIC_ RustAcademy_API_URL
+NEXT_PUBLIC_ Stellar Basic DAO_API_URL
 NEXT_PUBLIC_SITE_URL
 NEXT_PUBLIC_STELLAR_NETWORK
 NEXT_PUBLIC_ERROR_REPORTING_ENABLED
@@ -104,7 +104,7 @@ NEXT_PUBLIC_APP_VERSION
 ### Production Domain
 
 1. Go to **Settings** → **Domains**
-2. Add your custom domain (e.g., ` RustAcademy.to`)
+2. Add your custom domain (e.g., `stellar-basic-dao.to`)
 3. Configure DNS records as instructed by Vercel
 4. Enable automatic HTTPS
 

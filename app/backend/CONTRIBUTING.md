@@ -1,6 +1,6 @@
 # Contributing (Backend)
 
-This guide covers contribution standards for the RustAcademy backend.
+This guide covers contribution standards for the Stellar Basic DAO backend.
 
 ## Quick Start
 
@@ -35,7 +35,7 @@ The backend validates environment variables at startup. You must configure:
 ### 3. Run Development Server
 
 ```bash
-pnpm turbo run dev --filter=@ RustAcademy/backend
+pnpm turbo run dev --filter=@ Stellar Basic DAO/backend
 ```
 
 Server starts at `http://localhost:4000` with API docs at `http://localhost:4000/docs`.
@@ -392,7 +392,7 @@ Network configuration:
 ### Run Tests
 
 ```bash
-pnpm turbo run test --filter=@ RustAcademy/backend
+pnpm turbo run test --filter=@ Stellar Basic DAO/backend
 ```
 
 ### Test Requirements
@@ -420,28 +420,28 @@ Before submitting a PR, ensure:
 - [ ] DTO validation added/updated with descriptive messages
 - [ ] Unit/integration tests added and passing
 - [ ] Schema validation tests added for new env vars
-- [ ] `pnpm turbo run type-check --filter=@ RustAcademy/backend` passes
-- [ ] `pnpm turbo run lint --filter=@ RustAcademy/backend` passes
-- [ ] `pnpm turbo run test --filter=@ RustAcademy/backend` passes
+- [ ] `pnpm turbo run type-check --filter=@ Stellar Basic DAO/backend` passes
+- [ ] `pnpm turbo run lint --filter=@ Stellar Basic DAO/backend` passes
+- [ ] `pnpm turbo run test --filter=@ Stellar Basic DAO/backend` passes
 - [ ] API docs updated (verify at `/docs`)
 
 ## Common Commands
 
 ```bash
 # Development
-pnpm turbo run dev --filter=@ RustAcademy/backend
+pnpm turbo run dev --filter=@ Stellar Basic DAO/backend
 
 # Testing
-pnpm turbo run test --filter=@ RustAcademy/backend
+pnpm turbo run test --filter=@ Stellar Basic DAO/backend
 
 # Type checking
-pnpm turbo run type-check --filter=@ RustAcademy/backend
+pnpm turbo run type-check --filter=@ Stellar Basic DAO/backend
 
 # Linting
-pnpm turbo run lint --filter=@ RustAcademy/backend
+pnpm turbo run lint --filter=@ Stellar Basic DAO/backend
 
 # Build
-pnpm turbo run build --filter=@ RustAcademy/backend
+pnpm turbo run build --filter=@ Stellar Basic DAO/backend
 ```
 
 ## Demo Mode (Testnet Only)

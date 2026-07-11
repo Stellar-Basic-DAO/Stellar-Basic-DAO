@@ -1,6 +1,6 @@
-# RustAcademy upgrade / regression test suite
+# Stellar Basic DAO upgrade / regression test suite
 
-This document describes the **regression test suite** used to future-proof RustAcademy: after contract or SDK upgrades, these tests ensure existing escrows and commitments still behave correctly.
+This document describes the **regression test suite** used to future-proof Stellar Basic DAO: after contract or SDK upgrades, these tests ensure existing escrows and commitments still behave correctly.
 
 ## Purpose
 
@@ -22,7 +22,7 @@ This document describes the **regression test suite** used to future-proof RustA
 
 ## How to run the regression suite
 
-From the **contract directory** (`app/contract/contracts/ RustAcademy/`):
+From the **contract directory** (`app/contract/contracts/ Stellar Basic DAO/`):
 
 ```sh
 # Run only the combined golden-path smoke test (fast)
@@ -41,7 +41,7 @@ cargo test
 From the **repository root**, using the workspace:
 
 ```sh
-cargo test -p  RustAcademy
+cargo test -p  Stellar Basic DAO
 ```
 
 Snapshots are stored under `test_snapshots/`. If your environment generates or checks snapshots (e.g. via Soroban CLI), ensure they are updated only when behavior is intentionally changed.

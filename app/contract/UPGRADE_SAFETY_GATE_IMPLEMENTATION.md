@@ -9,7 +9,7 @@
 
 ## Overview
 
-Added contract-level safeguards and comprehensive invariant enforcement for safe, controlled upgrades in RustAcademy. This implementation ensures upgrades only occur during admin-configured time windows and validates state machine consistency post-migration.
+Added contract-level safeguards and comprehensive invariant enforcement for safe, controlled upgrades in Stellar Basic DAO. This implementation ensures upgrades only occur during admin-configured time windows and validates state machine consistency post-migration.
 
 ---
 
@@ -216,7 +216,7 @@ All tests use the `GoldenState` fixture (legacy v0 contract pre-populated with e
 **Run Tests**:
 
 ```bash
-cd app/contract/contracts/ RustAcademy
+cd app/contract/contracts/ Stellar Basic DAO
 cargo test upgrade_safety_gate_ -- --nocapture
 ```
 

@@ -1,4 +1,4 @@
-# ⚡ RustAcademy — Soroban Smart Contract
+# ⚡ Stellar Basic DAO — Soroban Smart Contract
 
 > Trustless escrow, fee routing, DAO governance, and privacy controls on Stellar.
 
@@ -11,7 +11,7 @@
 
 ## Overview
 
-`RustAcademyContract` is a single monolithic Soroban WASM contract that manages all on-chain logic for the RustAcademy platform:
+`StellarBasicDAOContract` is a single monolithic Soroban WASM contract that manages all on-chain logic for the Stellar Basic DAO platform:
 
 | Module | Responsibility |
 |---|---|

@@ -1,6 +1,6 @@
-# RustAcademy SDK — Getting Started Guide
+# Stellar Basic DAO SDK — Getting Started Guide
 
-> A complete guide for integrating RustAcademy into your JavaScript or TypeScript application.
+> A complete guide for integrating Stellar Basic DAO into your JavaScript or TypeScript application.
 
 ---
 
@@ -26,7 +26,7 @@
 - **Node.js** 18+ (or a modern browser with `fetch` support)
 - **TypeScript** 5+ (optional, but recommended)
 - A **Stellar wallet** (for signing and sending transactions)
-- A ** RustAcademy API key** (optional — gives higher rate limits)
+- A ** Stellar Basic DAO API key** (optional — gives higher rate limits)
 
 ---
 
@@ -35,16 +35,16 @@
 ### Option A: Install the client package (when published)
 
 ```bash
-npm install @ RustAcademy/sdk
+npm install @ Stellar Basic DAO/sdk
 # or
-pnpm add @ RustAcademy/sdk
+pnpm add @ Stellar Basic DAO/sdk
 # or
-yarn add @ RustAcademy/sdk
+yarn add @ Stellar Basic DAO/sdk
 ```
 
 ### Option B: Use the lightweight HTTP client (zero dependencies)
 
-The RustAcademy API is a standard REST API. You can use `fetch` directly:
+The Stellar Basic DAO API is a standard REST API. You can use `fetch` directly:
 
 ```bash
 # No extra packages needed — just use the built-in fetch API
@@ -55,13 +55,13 @@ The RustAcademy API is a standard REST API. You can use `fetch` directly:
 ## Configuration
 
 ```typescript
-//  RustAcademy.config.ts
-export const RustAcademy_CONFIG = {
-  // Base URL — change to https://api. RustAcademy.example.com for production
-  baseUrl: process.env.RustAcademy_BASE_URL || "http://localhost:3000",
+//  Stellar Basic DAO.config.ts
+export const Stellar Basic DAO_CONFIG = {
+  // Base URL — change to https://api. Stellar Basic DAO.example.com for production
+  baseUrl: process.env.Stellar Basic DAO_BASE_URL || "http://localhost:3000",
 
   // Optional API key for higher rate limits
-  apiKey: process.env.RustAcademy_API_KEY || "",
+  apiKey: process.env.Stellar Basic DAO_API_KEY || "",
 
   // Network — 'testnet' or 'mainnet'
   network: process.env.STELLAR_NETWORK || "testnet",
@@ -72,15 +72,15 @@ export const RustAcademy_CONFIG = {
 
 | Variable                | Required | Default                 | Description                    |
 | ----------------------- | -------- | ----------------------- | ------------------------------ |
-| `RustAcademy_BASE_URL` | No       | `http://localhost:3000` | API base URL                   |
-| `RustAcademy_API_KEY`  | No       | —                       | API key for higher rate limits |
+| `Stellar Basic DAO_BASE_URL` | No       | `http://localhost:3000` | API base URL                   |
+| `Stellar Basic DAO_API_KEY`  | No       | —                       | API key for higher rate limits |
 | `STELLAR_NETWORK`       | No       | `testnet`               | Stellar network to use         |
 
 ---
 
 ## Authentication
 
-RustAcademy uses API keys for authentication. API keys are optional for public endpoints but give you:
+Stellar Basic DAO uses API keys for authentication. API keys are optional for public endpoints but give you:
 
 - **Higher rate limits**: 120 req/min vs 20 req/min
 - **Access to admin endpoints**: refunds, exports, feature flags
@@ -129,7 +129,7 @@ const headers = {
 ### 1. Initialize the client
 
 ```typescript
-class RustAcademyClient {
+class Stellar Basic DAOClient {
   private baseUrl: string;
   private apiKey?: string;
 
@@ -157,7 +157,7 @@ class RustAcademyClient {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new RustAcademyError(error);
+      throw new Stellar Basic DAOError(error);
     }
 
     return response.json();
@@ -255,7 +255,7 @@ class RustAcademyClient {
 }
 
 // Custom error class
-class RustAcademyError extends Error {
+class Stellar Basic DAOError extends Error {
   code: string;
   requestId?: string;
   fields?: Record<string, string[]>;
@@ -272,7 +272,7 @@ class RustAcademyError extends Error {
     this.code = error.error.code;
     this.requestId = error.error.request_id;
     this.fields = error.error.fields;
-    this.name = " RustAcademyError";
+    this.name = " Stellar Basic DAOError";
   }
 }
 ```
@@ -280,7 +280,7 @@ class RustAcademyError extends Error {
 ### 2. Use the client
 
 ```typescript
-const client = new RustAcademyClient(
+const client = new Stellar Basic DAOClient(
   "http://localhost:3000",
   "qk_live_abc123...", // optional
 );
@@ -331,7 +331,7 @@ DRAFT → ACTIVE → EXPIRED → (re-activated) → ACTIVE
 **Link Format:**
 
 ```
-https://app. RustAcademy.example.com/pay?amount=50.5000000&asset=XLM&username=alice_123
+https://app. Stellar Basic DAO.example.com/pay?amount=50.5000000&asset=XLM&username=alice_123
 ```
 
 ### Usernames
@@ -562,7 +562,7 @@ async function requestWithRetry<T>(
       return await fn();
     } catch (error) {
       if (
-        error instanceof RustAcademyError &&
+        error instanceof Stellar Basic DAOError &&
         error.code === "RATE_LIMIT_EXCEEDED"
       ) {
         const retryAfter = 30; // seconds
@@ -590,7 +590,7 @@ All errors follow the same JSON shape. See the [Error Contract](./ERROR-CODES.md
 try {
   await client.createUsername("taken_name", publicKey);
 } catch (error) {
-  if (error instanceof RustAcademyError) {
+  if (error instanceof Stellar Basic DAOError) {
     switch (error.code) {
       case "USERNAME_TAKEN":
         // Username already registered
@@ -614,11 +614,11 @@ try {
 
 ## Pagination
 
-RustAcademy uses cursor-based pagination for list endpoints. Pass the `cursor` from a previous response to get the next page.
+Stellar Basic DAO uses cursor-based pagination for list endpoints. Pass the `cursor` from a previous response to get the next page.
 
 ```typescript
 async function getAllTransactions(
-  client: RustAcademyClient,
+  client: Stellar Basic DAOClient,
   accountId: string,
 ): Promise<Transaction[]> {
   const all: Transaction[] = [];
@@ -644,14 +644,14 @@ async function getAllTransactions(
 
 ## Webhook Verification
 
-When you register a webhook, RustAcademy signs every payload with a secret. Verify signatures to ensure authenticity.
+When you register a webhook, Stellar Basic DAO signs every payload with a secret. Verify signatures to ensure authenticity.
 
 ```typescript
 import { createHmac } from "crypto";
 
 function verifyWebhookSignature(
   payload: string, // raw request body
-  signature: string, // x- RustAcademy-signature header
+  signature: string, // x- Stellar Basic DAO-signature header
   secret: string, // from webhook registration response
 ): boolean {
   const expected = createHmac("sha256", secret).update(payload).digest("hex");
@@ -659,10 +659,10 @@ function verifyWebhookSignature(
 }
 
 // Express example
-app.post("/webhooks/ RustAcademy", (req, res) => {
-  const signature = req.headers["x- RustAcademy-signature"] as string;
+app.post("/webhooks/ Stellar Basic DAO", (req, res) => {
+  const signature = req.headers["x- Stellar Basic DAO-signature"] as string;
   const raw = JSON.stringify(req.body); // use raw body parser in production
-  const secret = process.env.RustAcademy_WEBHOOK_SECRET!;
+  const secret = process.env.Stellar Basic DAO_WEBHOOK_SECRET!;
 
   if (!verifyWebhookSignature(raw, signature, secret)) {
     return res.status(401).json({ error: "Invalid signature" });

@@ -1,6 +1,6 @@
-# RustAcademy API — Error Contract & Troubleshooting Guide
+# Stellar Basic DAO API — Error Contract & Troubleshooting Guide
 
-Every non-2xx response from the RustAcademy backend follows a single JSON shape.
+Every non-2xx response from the Stellar Basic DAO backend follows a single JSON shape.
 Clients can rely on this contract for all key flows.
 
 **Last Updated:** April 2026 | **Version:** 2.0.0
@@ -123,7 +123,7 @@ request header. The resolved value is echoed back in:
 
 | Code                      | HTTP Status | Description                                      |
 | ------------------------- | ----------- | ------------------------------------------------ |
-| `CONTRACT_NOT_CONFIGURED` | 503         | RustAcademy_CONTRACT_ID is not set on the server |
+| `CONTRACT_NOT_CONFIGURED` | 503         | Stellar Basic DAO_CONTRACT_ID is not set on the server |
 | `SIMULATION_FAILED`       | 422         | Soroban transaction simulation failed            |
 
 ---
@@ -165,7 +165,7 @@ request header. The resolved value is echoed back in:
 | `WEBHOOK_DELIVERY_FAILED`    | 502  | Webhooks       | Check delivery logs; verify your endpoint returns 200                |
 | `REFUND_NOT_FOUND`           | 404  | Refunds        | Verify the refund ID                                                 |
 | `REFUND_NOT_REFUNDABLE`      | 409  | Refunds        | The entity is not in a state that allows refunding                   |
-| `CONTRACT_NOT_CONFIGURED`    | 503  | Soroban        | Server configuration issue; contact the RustAcademy team             |
+| `CONTRACT_NOT_CONFIGURED`    | 503  | Soroban        | Server configuration issue; contact the Stellar Basic DAO team             |
 | `SIMULATION_FAILED`          | 422  | Soroban        | Transaction would fail on-chain; check contract parameters           |
 
 ---
@@ -308,7 +308,7 @@ The `request_id` links your error to the server-side logs:
 catch (err) {
   const error = err.response?.data?.error;
   console.error(
-    ` RustAcademy error [${error.code}]: ${error.message}\n` +
+    ` Stellar Basic DAO error [${error.code}]: ${error.message}\n` +
     `Request ID: ${error.request_id}`
   );
   // When contacting support:
@@ -385,7 +385,7 @@ catch (err) {
 2. Implement client-side request deduplication (don't send the same request twice).
 3. Add caching for read endpoints (e.g., `/stellar/verified-assets` rarely changes).
 4. Use cursor-based pagination instead of making many small requests.
-5. If you need higher limits, contact the RustAcademy team for a custom rate limit.
+5. If you need higher limits, contact the Stellar Basic DAO team for a custom rate limit.
 
 ```typescript
 // Simple in-memory cache
@@ -410,7 +410,7 @@ async function cachedFetch<T>(url: string, ttlMs = 60000): Promise<T> {
 **Resolution:**
 
 1. The Horizon API may be temporarily unreachable. Implement retry with exponential backoff.
-2. RustAcademy caches responses for 60 seconds — don't bypass caching by varying query params.
+2. Stellar Basic DAO caches responses for 60 seconds — don't bypass caching by varying query params.
 3. If errors persist for > 5 minutes, check the Stellar status page.
 4. Consider using the `cursor` parameter instead of re-fetching from the beginning.
 
@@ -539,11 +539,11 @@ const response = await fetch("http://localhost:3000/api-keys", {
 
 **Resolution:**
 
-1. The `RustAcademy_CONTRACT_ID` environment variable is not set on the server.
-2. This is a server-side configuration issue — contact the RustAcademy team.
+1. The `Stellar Basic DAO_CONTRACT_ID` environment variable is not set on the server.
+2. This is a server-side configuration issue — contact the Stellar Basic DAO team.
 3. In development, set it in your `.env` file:
    ```env
-    RustAcademy_CONTRACT_ID=CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM
+    Stellar Basic DAO_CONTRACT_ID=CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM
    ```
 
 ---

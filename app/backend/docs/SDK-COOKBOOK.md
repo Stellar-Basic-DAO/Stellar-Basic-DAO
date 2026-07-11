@@ -1,4 +1,4 @@
-# RustAcademy SDK — Cookbook
+# Stellar Basic DAO SDK — Cookbook
 
 > Practical, copy-pasteable examples for common integration tasks.
 
@@ -168,7 +168,7 @@ const response = await fetch(`http://localhost:3000/webhooks/${publicKey}`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    webhookUrl: "https://example.com/webhooks/ RustAcademy",
+    webhookUrl: "https://example.com/webhooks/ Stellar Basic DAO",
     label: "Production webhook",
     events: ["payment.received", "EscrowDeposited", "EscrowWithdrawn"],
     minAmountStroops: 100000000, // 1 XLM minimum
@@ -188,7 +188,7 @@ const response = await fetch(`http://localhost:3000/webhooks/${publicKey}`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    webhookUrl: "https://example.com/webhooks/ RustAcademy",
+    webhookUrl: "https://example.com/webhooks/ Stellar Basic DAO",
     events: null, // null = all events
   }),
 });
@@ -199,7 +199,7 @@ const response = await fetch(`http://localhost:3000/webhooks/${publicKey}`, {
 ```typescript
 import { createHmac, timingSafeEqual } from 'crypto';
 
-function verify RustAcademyWebhook(
+function verify Stellar Basic DAOWebhook(
   rawBody: string,
   signatureHeader: string,
   secret: string,
@@ -230,9 +230,9 @@ const app = express();
 // Use raw body parser for webhook verification
 app.use("/webhooks", express.raw({ type: "application/json" }));
 
-app.post("/webhooks/ RustAcademy", (req, res) => {
-  const signature = req.headers["x- RustAcademy-signature"] as string;
-  const secret = process.env.RustAcademy_WEBHOOK_SECRET!;
+app.post("/webhooks/ Stellar Basic DAO", (req, res) => {
+  const signature = req.headers["x- Stellar Basic DAO-signature"] as string;
+  const secret = process.env.Stellar Basic DAO_WEBHOOK_SECRET!;
   const rawBody = req.body.toString();
 
   // Verify signature
@@ -303,14 +303,14 @@ app.listen(3001, () => console.log("Webhook server running on :3001"));
 ### Next.js API Route Handler
 
 ```typescript
-// app/api/webhooks/ RustAcademy/route.ts
+// app/api/webhooks/ Stellar Basic DAO/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { createHmac } from "crypto";
 
 export async function POST(request: NextRequest) {
   const rawBody = await request.text();
-  const signature = request.headers.get("x- RustAcademy-signature") || "";
-  const secret = process.env.RustAcademy_WEBHOOK_SECRET!;
+  const signature = request.headers.get("x- Stellar Basic DAO-signature") || "";
+  const secret = process.env.Stellar Basic DAO_WEBHOOK_SECRET!;
 
   // Verify signature
   const expected = createHmac("sha256", secret).update(rawBody).digest("hex");

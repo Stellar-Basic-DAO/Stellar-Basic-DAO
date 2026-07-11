@@ -1,6 +1,6 @@
 # Contributing to Stellar Basic DAO
 
-Welcome! **Stellar Basic DAO** (codename `RustAcademy` in source code and the deployed Soroban contract) is an open-source platform and we actively welcome contributions from the community. This guide covers how to get started, what our standards are, and how the review process works.
+Welcome! **Stellar Basic DAO** (codename `Stellar Basic DAO` in source code and the deployed Soroban contract) is an open-source platform and we actively welcome contributions from the community. This guide covers how to get started, what our standards are, and how the review process works.
 
 ---
 
@@ -22,7 +22,7 @@ Welcome! **Stellar Basic DAO** (codename `RustAcademy` in source code and the de
 
 ## Project Overview
 
-RustAcademy is a monorepo organized under `app/`:
+Stellar Basic DAO is a monorepo organized under `app/`:
 
 | Directory | Stack | CI |
 |---|---|---|
