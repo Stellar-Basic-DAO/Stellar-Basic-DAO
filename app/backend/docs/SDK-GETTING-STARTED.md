@@ -72,8 +72,8 @@ export const RustAcademy_CONFIG = {
 
 | Variable                | Required | Default                 | Description                    |
 | ----------------------- | -------- | ----------------------- | ------------------------------ |
-| ` RustAcademy_BASE_URL` | No       | `http://localhost:3000` | API base URL                   |
-| ` RustAcademy_API_KEY`  | No       | —                       | API key for higher rate limits |
+| `RustAcademy_BASE_URL` | No       | `http://localhost:3000` | API base URL                   |
+| `RustAcademy_API_KEY`  | No       | —                       | API key for higher rate limits |
 | `STELLAR_NETWORK`       | No       | `testnet`               | Stellar network to use         |
 
 ---
