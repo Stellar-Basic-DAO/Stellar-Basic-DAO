@@ -14,7 +14,7 @@ Thank you for your interest in contributing to the RustAcademy privacy contract!
 
 #### Naming Conventions
 
-- **Structs**: `PascalCase` (e.g., ` RustAcademyContract`)
+- **Structs**: `PascalCase` (e.g., `RustAcademyContract`)
 - **Functions**: `snake_case` (e.g., `enable_privacy`)
 - **Constants**: `SCREAMING_SNAKE_CASE` (e.g., `MAX_PRIVACY_LEVEL`)
 - **Variables**: `snake_case` (e.g., `account_address`)
