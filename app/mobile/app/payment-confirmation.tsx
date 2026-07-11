@@ -23,7 +23,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { ActivityIndicator } from "react-native";
 import { useContractRegistry } from "../hooks/useContractRegistry";
-import ErrorState from "@/components/resilience/error-state";
+import { ErrorState } from "@/components/resilience/error-state";
 
 // List of assets to attempt swaps from (hardcoded whitelist matching backend)
 const SWAPPABLE_ASSETS = ["XLM", "USDC", "AQUA", "yXLM"];
@@ -240,11 +240,8 @@ export default function PaymentConfirmationScreen() {
     setSavingContact(true);
     try {
       await saveContact({
-        id: uuidv4(),
         address: username,
         nickname: "",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
       });
       Alert.alert(
         "Contact saved!",

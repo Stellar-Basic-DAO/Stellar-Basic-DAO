@@ -17,72 +17,74 @@ function appName(env: string): string {
     case "production":
       return "RustAcademy";
     case "staging":
-      return " Stellar Basic DAO Staging";
+      return "Stellar Basic DAO Staging";
     default:
-      return " Stellar Basic DAO Dev";
+      return "Stellar Basic DAO Dev";
   }
 }
 
 function bundleIdentifier(env: string): string {
   switch (env) {
     case "production":
-      return "to. Stellar Basic DAO.app";
+      return "to.stellar-basic-dao.app";
     case "staging":
-      return "to. Stellar Basic DAO.app.staging";
+      return "to.stellar-basic-dao.app.staging";
     default:
-      return "to. Stellar Basic DAO.app.dev";
+      return "to.stellar-basic-dao.app.dev";
   }
 }
 
 function androidPackage(env: string): string {
   switch (env) {
     case "production":
-      return "to. Stellar Basic DAO.app";
+      return "to.stellar_basic_dao.app";
     case "staging":
-      return "to. Stellar Basic DAO.app.staging";
+      return "to.stellar_basic_dao.app.staging";
     default:
-      return "to. Stellar Basic DAO.app.dev";
+      return "to.stellar_basic_dao.app.dev";
   }
 }
 
 function apiUrl(env: string): string {
   switch (env) {
     case "production":
-      return "https://api. Stellar Basic DAO.to";
+      return "https://api.stellar-basic-dao.to";
     case "staging":
-      return "https://staging-api. Stellar Basic DAO.to";
+      return "https://staging-api.stellar-basic-dao.to";
     default:
       return process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000";
   }
 }
 
+const expoJson: Record<string, any> = appJson.expo || {};
+
 export default ({ config }: { config: any }) => ({
   ...appJson,
   expo: {
-    ...appJson.expo,
+    ...expoJson,
     name: appName(appEnv),
     extra: {
-      ...appJson.expo.extra,
+      ...(expoJson.extra || {}),
       apiUrl: apiUrl(appEnv),
       environment: appEnv,
       stellarNetwork,
       buildNumber,
       buildTag,
-      appVersion: appJson.expo.version,
+      appVersion: expoJson.version || "1.0.0",
     },
     ios: {
-      ...appJson.expo.ios,
+      ...(expoJson.ios || {}),
       bundleIdentifier: bundleIdentifier(appEnv),
       buildNumber,
       infoPlist: {
-        ...appJson.expo.ios.infoPlist,
+        ...((expoJson.ios && expoJson.ios.infoPlist) || {}),
       },
     },
     android: {
-      ...appJson.expo.android,
+      ...(expoJson.android || {}),
       package: androidPackage(appEnv),
       versionCode: androidVersionCode,
-      intentFilters: appJson.expo.android.intentFilters,
+      intentFilters: (expoJson.android && expoJson.android.intentFilters) || [],
     },
   },
 });

@@ -122,7 +122,7 @@ export default function InboxScreen() {
       style={[
         styles.card,
         !item.read && styles.unreadCard,
-        { backgroundColor: theme.cardBackground }
+        { backgroundColor: theme.surface }
       ]}
     >
       <View style={styles.cardContent}>
@@ -132,7 +132,7 @@ export default function InboxScreen() {
           </Text>
           {!item.read && <View style={styles.unreadDot} />}
         </View>
-        <Text style={[styles.title, { color: theme.textPrimary }]}>{item.title}</Text>
+        <Text style={[styles.cardTitle, { color: theme.textPrimary }]}>{item.title}</Text>
         <Text style={[styles.message, { color: theme.textSecondary }]}>{item.message}</Text>
         <View style={styles.cardFooter}>
           <Text style={[styles.time, { color: theme.textSecondary }]}>
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: '#007AFF',
   },
-  title: {
+  cardTitle: {
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 4,

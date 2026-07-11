@@ -42,18 +42,6 @@ const DEFAULT_RECEIPT_VISIBILITY: ReceiptVisibilityOptions = {
   showHash: true,
 };
 
-interface DetailParams {
-  id: string;
-  amount?: string;
-  asset?: string;
-  memo?: string;
-  timestamp?: string;
-  txHash?: string;
-  source?: string;
-  destination?: string;
-  status?: string;
-}
-
 function formatDate(iso: string | undefined, locale = "en-US"): string {
   if (!iso) return "Unknown";
   const d = new Date(iso);
@@ -236,7 +224,7 @@ function buildReceiptSvg(
 export default function TransactionDetailScreen() {
   const { theme, isDark } = useTheme();
   const router = useRouter();
-  const params = useLocalSearchParams<DetailParams>();
+  const params = useLocalSearchParams<Record<string, string>>();
 
   const [hydrating, setHydrating] = useState(false);
   const [transaction, setTransaction] = useState<TransactionItem | null>(null);
