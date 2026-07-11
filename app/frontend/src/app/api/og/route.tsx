@@ -213,7 +213,7 @@ function renderDefaultImage() {
           marginBottom: 16,
         }}
       >
-        RustAcademy
+        Stellar Basic DAO
       </div>
       <div
         style={{
@@ -291,7 +291,7 @@ function renderPaymentImage(params: OgParams) {
             gap: 10,
           }}
         >
-          <span style={{ color: ACCENT }}>⚡</span> RustAcademy
+          <span style={{ color: ACCENT }}>⚡</span> Stellar Basic DAO
         </div>
 
         {/* State badge */}
@@ -449,7 +449,7 @@ function renderProfileImage(params: OgParams) {
           gap: 10,
         }}
       >
-        <span style={{ color: ACCENT }}>⚡</span> RustAcademy · Stellar Network
+        <span style={{ color: ACCENT }}>⚡</span> Stellar Basic DAO · Stellar Network
       </div>
     </div>
   );

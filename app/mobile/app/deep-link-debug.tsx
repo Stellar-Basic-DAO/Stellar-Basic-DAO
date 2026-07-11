@@ -13,11 +13,11 @@ import { resolveDeepLink } from "../utils/deep-link-routing";
 import * as Linking from "expo-linking";
 
 const EXAMPLE_LINKS = [
-  "https:// RustAcademy.to/jordan?amount=12.5&asset=XLM",
-  " RustAcademy://transaction/tx_demo_12345?status=Success",
-  "https:// RustAcademy.to/transaction/tx_demo_12345",
-  " RustAcademy://alice?amount=1.25&asset=USDC&privacy=true",
-  "https:// RustAcademy.to/transaction/tx_demo_12345?memo=coffee",
+  "https:// Stellar Basic DAO.to/jordan?amount=12.5&asset=XLM",
+  " Stellar Basic DAO://transaction/tx_demo_12345?status=Success",
+  "https:// Stellar Basic DAO.to/transaction/tx_demo_12345",
+  " Stellar Basic DAO://alice?amount=1.25&asset=USDC&privacy=true",
+  "https:// Stellar Basic DAO.to/transaction/tx_demo_12345?memo=coffee",
 ];
 
 export default function DeepLinkDebugScreen() {
@@ -38,7 +38,7 @@ export default function DeepLinkDebugScreen() {
           Deep Link Debug
         </Text>
         <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
-          Validate RustAcademy deep link parsing and preview the target route.
+          Validate Stellar Basic DAO deep link parsing and preview the target route.
         </Text>
 
         <TextInput
@@ -101,7 +101,7 @@ export default function DeepLinkDebugScreen() {
             </>
           ) : (
             <Text style={[styles.resultValue, { color: theme.textPrimary }]}>
-              No RustAcademy link detected.
+              No Stellar Basic DAO link detected.
             </Text>
           )}
         </View>

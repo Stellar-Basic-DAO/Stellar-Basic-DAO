@@ -3,7 +3,7 @@ import { StellarIngestionService } from "./stellar-ingestion.service";
 import { ContractRegistryService } from "../contracts/contract-registry.service";
 
 /**
- * Reads the  RustAcademy_CONTRACT_ID environment variable and starts streaming
+ * Reads the  Stellar Basic DAO_CONTRACT_ID environment variable and starts streaming
  * once the NestJS application is ready, with optional dual-read support.
  *
  * If no contract ID is configured the service logs a warning and skips.
@@ -22,7 +22,7 @@ export class IngestionBootstrapService implements OnModuleInit {
 
     if (!contractId) {
       this.logger.warn(
-        " RustAcademy_CONTRACT_ID is not set; Stellar ingestion will NOT start. " +
+        " Stellar Basic DAO_CONTRACT_ID is not set; Stellar ingestion will NOT start. " +
           "Set this env var to enable event streaming.",
       );
       return;
@@ -32,19 +32,19 @@ export class IngestionBootstrapService implements OnModuleInit {
 
     try {
       const registryData = await this.registry.getRegistry();
-      const RustAcademyEntry = registryData.data.RustAcademy as Record<
+      const Stellar Basic DAOEntry = registryData.data.Stellar Basic DAO as Record<
         string,
         unknown
       >;
 
-      if (RustAcademyEntry && RustAcademyEntry.previousContractId) {
+      if (Stellar Basic DAOEntry && Stellar Basic DAOEntry.previousContractId) {
         this.logger.log(
-          `Contract registry has dual-read config; starting with previous contract ${RustAcademyEntry.previousContractId}`,
+          `Contract registry has dual-read config; starting with previous contract ${Stellar Basic DAOEntry.previousContractId}`,
         );
         await this.ingestion.startStreamingWithDualRead({
           contractId,
-          previousContractId: RustAcademyEntry.previousContractId as string,
-          effectiveLedger: RustAcademyEntry.effectiveLedger as
+          previousContractId: Stellar Basic DAOEntry.previousContractId as string,
+          effectiveLedger: Stellar Basic DAOEntry.effectiveLedger as
             | number
             | undefined,
         });

@@ -3,9 +3,9 @@
 /**
  * AnalyticsDashboard.tsx
  *
- * Interactive analytics dashboard for  RustAcademy (Issue #175).
+ * Interactive analytics dashboard for  Stellar Basic DAO (Issue #175).
  * Charts: Area (volume), Line (tx count), Donut (asset distribution).
- * Fully responsive and themed to  RustAcademy dark-glass aesthetic.
+ * Fully responsive and themed to  Stellar Basic DAO dark-glass aesthetic.
  */
 
 import { useEffect, useState, useCallback } from "react";

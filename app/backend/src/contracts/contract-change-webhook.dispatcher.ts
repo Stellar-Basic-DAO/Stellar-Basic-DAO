@@ -38,8 +38,8 @@ export class ContractChangeWebhookDispatcher {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "X- RustAcademy-Signature": signature,
-              "X- RustAcademy-Event": "contract_registry.changed",
+              "X- Stellar Basic DAO-Signature": signature,
+              "X- Stellar Basic DAO-Event": "contract_registry.changed",
             },
             body,
           });

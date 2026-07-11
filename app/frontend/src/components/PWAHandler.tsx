@@ -31,7 +31,7 @@ export function PWAHandler() {
                 // New content is available; please refresh.
                 if (
                   confirm(
-                    "A new version of  RustAcademy is available. Refresh now?",
+                    "A new version of  Stellar Basic DAO is available. Refresh now?",
                   )
                 ) {
                   window.location.reload();
@@ -90,10 +90,10 @@ export function PWAHandler() {
           </div>
           <div className="flex-1">
             <h3 className="font-semibold text-white">
-              Install RustAcademy App
+              Install Stellar Basic DAO App
             </h3>
             <p className="text-sm text-neutral-400 mt-1">
-              Add RustAcademy to your home screen for a faster, offline-ready
+              Add Stellar Basic DAO to your home screen for a faster, offline-ready
               experience.
             </p>
             <div className="flex gap-3 mt-4">

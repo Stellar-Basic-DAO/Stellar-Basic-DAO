@@ -76,7 +76,7 @@ export class ContractRegistryService {
     private readonly contractWritePolicyService: ContractWritePolicyService,
   ) {
     this.expectedContracts = (
-      process.env.CONTRACT_REGISTRY_EXPECTED_SET ?? " RustAcademy"
+      process.env.CONTRACT_REGISTRY_EXPECTED_SET ?? " Stellar Basic DAO"
     )
       .split(",")
       .map((value) => value.trim().toLowerCase())

@@ -34,7 +34,7 @@ export default function PaymentConfirmationScreen() {
   const { isConnected } = useNetworkStatus();
   const { authenticateForSensitiveAction } = useSecurity();
   const backendUrl =
-    process.env.EXPO_PUBLIC_API_URL || "https://api. RustAcademy.com";
+    process.env.EXPO_PUBLIC_API_URL || "https://api. Stellar Basic DAO.com";
   const { isReady, error: registryError } = useContractRegistry(
     ["Escrow"],
     backendUrl,

@@ -37,7 +37,7 @@ import type {
   StealthWithdrawnEvent,
 } from "./types/contract-event.types";
 import {
-  RustAcademy_EVENT_SCHEMA_CONTRACTS,
+  STELLAR_BASIC_DAO_EVENT_SCHEMA_CONTRACTS,
   STELLAR_BASIC_DAO_EVENT_TOPICS,
   type StellarBasicDaoEventTopic,
 } from "./event-schema";
@@ -122,7 +122,7 @@ interface TopicLayout {
  * Parses raw Horizon Soroban contract event records into typed domain events.
  *
  * Canonical topic layout:
- *  Topic[0] = stable  RustAcademy testnet namespace (for example TOPIC_ESCROW)
+ *  Topic[0] = stable  Stellar Basic DAO testnet namespace (for example TOPIC_ESCROW)
  *  Topic[1] = event name symbol
  *  Topic[2+] = indexed fields (commitment, owner, admin, etc.)
  *
@@ -907,12 +907,12 @@ export class SorobanEventParser {
     );
     if (canonicalTopics.has(first)) {
       const second = topics[1] ? this.decodeSymbol(topics[1]) : null;
-      if (!second || !(second in RustAcademy_EVENT_SCHEMA_CONTRACTS))
+      if (!second || !(second in STELLAR_BASIC_DAO_EVENT_SCHEMA_CONTRACTS))
         return null;
 
       const contract =
-        RustAcademy_EVENT_SCHEMA_CONTRACTS[
-          second as keyof typeof RustAcademy_EVENT_SCHEMA_CONTRACTS
+        STELLAR_BASIC_DAO_EVENT_SCHEMA_CONTRACTS[
+          second as keyof typeof STELLAR_BASIC_DAO_EVENT_SCHEMA_CONTRACTS
         ];
       if (contract.topic !== first) return null;
 
@@ -923,7 +923,7 @@ export class SorobanEventParser {
       };
     }
 
-    if (first in RustAcademy_EVENT_SCHEMA_CONTRACTS) {
+    if (first in STELLAR_BASIC_DAO_EVENT_SCHEMA_CONTRACTS) {
       return {
         eventName: first as SorobanEventType,
         topicNamespace: "LEGACY",
@@ -939,8 +939,8 @@ export class SorobanEventParser {
     schemaVersion: number,
   ): boolean {
     const contract =
-      RustAcademy_EVENT_SCHEMA_CONTRACTS[
-        eventName as keyof typeof RustAcademy_EVENT_SCHEMA_CONTRACTS
+      STELLAR_BASIC_DAO_EVENT_SCHEMA_CONTRACTS[
+        eventName as keyof typeof STELLAR_BASIC_DAO_EVENT_SCHEMA_CONTRACTS
       ];
 
     return (contract.compatibleVersions as readonly number[]).includes(

@@ -249,7 +249,7 @@ function DashboardContent() {
         <header className="mb-10 flex flex-col gap-6 md:mb-16 md:flex-row md:items-start md:justify-between">
           <div>
             <nav className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.24em] text-neutral-400 md:mb-4">
-              <span> RustAcademy</span>
+              <span> Stellar Basic DAO</span>
               <span>/</span>
               <span className="text-neutral-100">Dashboard</span>
             </nav>

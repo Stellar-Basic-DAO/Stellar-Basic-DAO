@@ -4,7 +4,7 @@ import {
   RawHorizonContractEvent,
 } from "../soroban-event.parser";
 import {
-  RustAcademy_EVENT_SCHEMA_CONTRACTS,
+  STELLAR_BASIC_DAO_EVENT_SCHEMA_CONTRACTS,
   STELLAR_BASIC_DAO_EVENT_SCHEMA_VERSION,
   STELLAR_BASIC_DAO_EVENT_TOPICS,
 } from "../event-schema";
@@ -229,7 +229,7 @@ describe("SorobanEventParser", () => {
 
   describe("event schema contracts", () => {
     it("locks canonical topics and deterministic payload key order", () => {
-      expect(RustAcademy_EVENT_SCHEMA_CONTRACTS.EscrowDeposited).toEqual({
+      expect(STELLAR_BASIC_DAO_EVENT_SCHEMA_CONTRACTS.EscrowDeposited).toEqual({
         topic: STELLAR_BASIC_DAO_EVENT_TOPICS.escrow,
         eventName: "EscrowDeposited",
         indexedFields: ["escrow_id", "owner"],
@@ -247,7 +247,7 @@ describe("SorobanEventParser", () => {
       });
 
       for (const contract of Object.values(
-        RustAcademy_EVENT_SCHEMA_CONTRACTS,
+        STELLAR_BASIC_DAO_EVENT_SCHEMA_CONTRACTS,
       )) {
         expect(contract.payloadKeys).toEqual([...contract.payloadKeys].sort());
         expect(contract.compatibleVersions).toContain(contract.schemaVersion);

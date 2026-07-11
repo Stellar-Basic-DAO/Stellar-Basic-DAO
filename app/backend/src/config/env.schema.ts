@@ -95,7 +95,7 @@ export const envSchema = Joi.object({
     .empty("")
     .optional()
     .description(
-      "Comma-separated list of allowed CORS origins (e.g. https:// RustAcademy.to,https://app. RustAcademy.to). " +
+      "Comma-separated list of allowed CORS origins (e.g. https:// Stellar Basic DAO.to,https://app. Stellar Basic DAO.to). " +
         "Required in production when no wildcard is desired.",
     ),
 
@@ -103,7 +103,7 @@ export const envSchema = Joi.object({
     .empty("")
     .optional()
     .description(
-      "Vercel project slug (e.g.  RustAcademy-frontend). " +
+      "Vercel project slug (e.g.  Stellar Basic DAO-frontend). " +
         "When set, all preview URLs matching https://<slug>-*.vercel.app are allowed.",
     ),
 
@@ -141,7 +141,7 @@ export const envSchema = Joi.object({
     ),
 
   // Stellar ingestion (optional; omit to disable)
-  RustAcademy_CONTRACT_ID: Joi.string()
+  Stellar Basic DAO_CONTRACT_ID: Joi.string()
     .empty("")
     .optional()
     .description(
@@ -162,7 +162,7 @@ export const envSchema = Joi.object({
     .empty("")
     .optional()
     .description(
-      "From address for SendGrid emails (e.g. noreply@ RustAcademy.to)",
+      "From address for SendGrid emails (e.g. noreply@ Stellar Basic DAO.to)",
     ),
 
   // Expo push channel
@@ -283,7 +283,7 @@ export const envSchema = Joi.object({
   SENTRY_RELEASE: Joi.string()
     .empty("")
     .optional()
-    .description("Sentry release identifier (e.g.  RustAcademy-backend@1.2.3)"),
+    .description("Sentry release identifier (e.g.  Stellar Basic DAO-backend@1.2.3)"),
 
   SENTRY_TRACES_SAMPLE_RATE: Joi.number()
     .min(0)
@@ -401,7 +401,7 @@ export interface EnvConfig {
   CACHE_TTL_MS: number;
   FEATURE_FLAGS_CACHE_TTL_MS: number;
   FEATURE_FLAGS_BOOTSTRAP_JSON?: string;
-  RustAcademy_CONTRACT_ID?: string;
+  Stellar Basic DAO_CONTRACT_ID?: string;
   SENDGRID_API_KEY?: string;
   SENDGRID_FROM_EMAIL?: string;
   EXPO_ACCESS_TOKEN?: string;

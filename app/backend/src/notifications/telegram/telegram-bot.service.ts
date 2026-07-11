@@ -80,7 +80,7 @@ export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
 
       if (existingMapping) {
         await ctx.reply(
-          `✅ Your Telegram account is already linked to  RustAcademy!\n\n` +
+          `✅ Your Telegram account is already linked to  Stellar Basic DAO!\n\n` +
             `Public Key: \`${existingMapping.publicKey}\`\n\n` +
             `You will receive real-time notifications for:\n` +
             `• Payment received\n` +
@@ -93,12 +93,12 @@ export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
 
       // Show welcome message with instructions
       await ctx.reply(
-        `👋 Welcome to  RustAcademy Notifications Bot!\n\n` +
+        `👋 Welcome to  Stellar Basic DAO Notifications Bot!\n\n` +
           `I'll send you real-time alerts for:\n` +
           `• 💰 Payments received\n` +
           `• 🔒 Escrow deposits, withdrawals, and refunds\n\n` +
-          `To link your  RustAcademy account:\n` +
-          `1. Copy your  RustAcademy public key (starts with G...)\n` +
+          `To link your  Stellar Basic DAO account:\n` +
+          `1. Copy your  Stellar Basic DAO public key (starts with G...)\n` +
           `2. Send it to me in the next message\n\n` +
           `Or use /cancel anytime to abort.`,
         { parse_mode: "Markdown" },
@@ -162,7 +162,7 @@ export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
 
         await ctx.reply(
           `🔐 Verification Required\n\n` +
-            `To confirm you own this  RustAcademy account, please visit:\n` +
+            `To confirm you own this  Stellar Basic DAO account, please visit:\n` +
             `\`${text}\`\n\n` +
             `And enter this verification code:\n` +
             `✨ \`${verificationCode}\` ✨\n\n` +
@@ -182,7 +182,7 @@ export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
 
       if (!mapping) {
         await ctx.reply(
-          "❌ Your Telegram account is not linked to any  RustAcademy account.\n\n" +
+          "❌ Your Telegram account is not linked to any  Stellar Basic DAO account.\n\n" +
             "Use /start to begin linking.",
         );
         return;
@@ -194,7 +194,7 @@ export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
       const notifications = mapping.enabled ? "🔔 Enabled" : "🔕 Disabled";
 
       await ctx.reply(
-        `📊 Your  RustAcademy Link Status\n\n` +
+        `📊 Your  Stellar Basic DAO Link Status\n\n` +
           `Public Key: \`${mapping.publicKey}\`\n` +
           `Status: ${status}\n` +
           `Notifications: ${notifications}\n` +
@@ -214,7 +214,7 @@ export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
       const mapping = await this.telegramRepo.findByTelegramId(telegramId);
 
       if (!mapping) {
-        await ctx.reply("❌ No  RustAcademy account is linked.");
+        await ctx.reply("❌ No  Stellar Basic DAO account is linked.");
         return;
       }
 
@@ -224,7 +224,7 @@ export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
       ctx.session.linkingPublicKey = undefined;
 
       await ctx.reply(
-        "✅ Your  RustAcademy account has been disconnected.\n\n" +
+        "✅ Your  Stellar Basic DAO account has been disconnected.\n\n" +
           "You will no longer receive notifications here.\n" +
           "Use /start to link again anytime.",
       );
@@ -238,7 +238,7 @@ export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
       const mapping = await this.telegramRepo.findByTelegramId(telegramId);
 
       if (!mapping) {
-        await ctx.reply("❌ No  RustAcademy account linked. Use /start first.");
+        await ctx.reply("❌ No  Stellar Basic DAO account linked. Use /start first.");
         return;
       }
 
@@ -261,7 +261,7 @@ export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
 
       const mapping = await this.telegramRepo.findByTelegramId(telegramId);
       if (!mapping) {
-        await ctx.reply("❌ No  RustAcademy account linked. Use /start first.");
+        await ctx.reply("❌ No  Stellar Basic DAO account linked. Use /start first.");
         return;
       }
 
@@ -294,7 +294,7 @@ export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
 
       const mapping = await this.telegramRepo.findByTelegramId(telegramId);
       if (!mapping) {
-        await ctx.reply("❌ No  RustAcademy account linked. Use /start first.");
+        await ctx.reply("❌ No  Stellar Basic DAO account linked. Use /start first.");
         return;
       }
 
@@ -311,7 +311,7 @@ export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
 
       const mapping = await this.telegramRepo.findByTelegramId(telegramId);
       if (!mapping) {
-        await ctx.reply("❌ No  RustAcademy account linked. Use /start first.");
+        await ctx.reply("❌ No  Stellar Basic DAO account linked. Use /start first.");
         return;
       }
 
@@ -324,8 +324,8 @@ export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
     // /help command
     this.bot.command("help", async (ctx) => {
       await ctx.reply(
-        `📖  RustAcademy Bot Commands\n\n` +
-          `/start - Link your  RustAcademy account\n` +
+        `📖  Stellar Basic DAO Bot Commands\n\n` +
+          `/start - Link your  Stellar Basic DAO account\n` +
           `/status - Check linkage status\n` +
           `/unlink - Disconnect account\n` +
           `/settings - Notification settings\n` +

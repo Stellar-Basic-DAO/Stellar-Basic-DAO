@@ -71,7 +71,7 @@ export class DeveloperService {
           "X-QX-Event": "payment.received",
           "X-QX-Event-Id": testEventId,
           "X-QX-Test": "true",
-          "User-Agent": " RustAcademy-Webhook/1.0",
+          "User-Agent": " Stellar Basic DAO-Webhook/1.0",
         },
         body: bodyStr,
         signal: controller.signal,

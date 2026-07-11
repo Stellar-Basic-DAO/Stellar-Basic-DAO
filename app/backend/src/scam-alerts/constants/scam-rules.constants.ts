@@ -71,8 +71,8 @@ export const EXTERNAL_BLOCKLIST_SOURCES = [
     method: "GET",
   },
   {
-    name: " RustAcademy Community Blocklist",
-    url: "https://blocklist. RustAcademy.io/api/v1/blocklist",
+    name: " Stellar Basic DAO Community Blocklist",
+    url: "https://blocklist. Stellar Basic DAO.io/api/v1/blocklist",
     method: "GET",
   },
 ];

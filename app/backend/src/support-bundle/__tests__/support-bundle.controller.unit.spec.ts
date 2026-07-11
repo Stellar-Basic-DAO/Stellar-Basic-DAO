@@ -23,7 +23,7 @@ describe("SupportBundleController", () => {
     contract_registry: {
       active_contracts: [
         {
-          name: " RustAcademy",
+          name: " Stellar Basic DAO",
           contract_id: "CD2J6K7T3YJ77QXZP3EXAMPLE",
           version: 1,
           wasm_hash: "abcd...",

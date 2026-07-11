@@ -1,12 +1,12 @@
 
-# 📱 RustAcademy Mobile
+# 📱 Stellar Basic DAO Mobile
 
 > Learn Rust anywhere. Earn XLM on the go.
 ---
 
 ## Overview
 
-RustAcademy Mobile gives learners a mobile-first experience.
+Stellar Basic DAO Mobile gives learners a mobile-first experience.
 
 Users can:
 

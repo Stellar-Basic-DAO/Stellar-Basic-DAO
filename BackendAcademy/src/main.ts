@@ -34,8 +34,8 @@ async function bootstrap() {
   );
 
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('RustAcademy API')
-    .setDescription('The RustAcademy Backend API')
+    .setTitle('Stellar Basic DAO API')
+    .setDescription('The Stellar Basic DAO Backend API')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

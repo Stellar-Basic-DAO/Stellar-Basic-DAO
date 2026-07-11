@@ -50,7 +50,7 @@ describe("Soroban tooling services", () => {
       const contractRegistryService = {
         getRegistry: jest.fn().mockResolvedValue({
           data: {
-            RustAcademy: {
+            Stellar Basic DAO: {
               id: "C123",
               wasmHash: "not-the-same-hash",
               version: 1,
@@ -73,7 +73,7 @@ describe("Soroban tooling services", () => {
         adminPublicKey: "GADMIN",
         contracts: [
           {
-            name: " RustAcademy",
+            name: " Stellar Basic DAO",
             wasmPath: "README.md",
           },
         ],

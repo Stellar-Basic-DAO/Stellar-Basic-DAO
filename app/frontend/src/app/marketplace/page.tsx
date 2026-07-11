@@ -213,7 +213,7 @@ function MarketplacePageContent() {
           <nav className="flex items-center gap-2 text-xs font-black text-neutral-600 uppercase tracking-widest mb-6">
             <Link href="/" className="hover:text-white transition">
               {" "}
-              RustAcademy
+              Stellar Basic DAO
             </Link>
             <span>/</span>
             <span className="text-neutral-400">Marketplace</span>

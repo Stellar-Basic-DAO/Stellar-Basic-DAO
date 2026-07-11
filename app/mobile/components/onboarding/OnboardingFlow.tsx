@@ -42,7 +42,7 @@ export default function OnboardingFlow({
   const steps: OnboardingStep[] = [
     {
       id: "welcome",
-      title: "Welcome to  RustAcademy",
+      title: "Welcome to  Stellar Basic DAO",
       subtitle: "Fast, privacy-focused payments on Stellar",
       content: (
         <View style={styles.welcomeContent}>

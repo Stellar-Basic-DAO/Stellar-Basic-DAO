@@ -103,7 +103,7 @@ function NotificationsPageContent() {
         <header className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-8 shadow-[0_30px_80px_-30px_rgba(15,23,42,0.85)] backdrop-blur">
           <nav className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.24em] text-neutral-400">
             <Link href="/" className="transition hover:text-white">
-              RustAcademy
+              Stellar Basic DAO
             </Link>
             <span>/</span>
             <span className="text-neutral-100">Notifications</span>

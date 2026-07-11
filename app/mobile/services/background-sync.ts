@@ -40,9 +40,9 @@ export interface SyncExecutionResult {
   snapshot: SyncSnapshot;
 }
 
-const SYNC_SETTINGS_KEY = " RustAcademy.background-sync.settings.v1";
-const SYNC_SNAPSHOT_KEY = " RustAcademy.background-sync.snapshot.v1";
-const SYNC_TASK_NAME = " RustAcademy.background-sync.task";
+const SYNC_SETTINGS_KEY = "STELLAR_BASIC_DAO_background_sync_settings_v1";
+const SYNC_SNAPSHOT_KEY = "STELLAR_BASIC_DAO.background-sync.snapshot.v1";
+const SYNC_TASK_NAME = "STELLAR_BASIC_DAO.background-sync.task";
 const MAX_NOTIFICATIONS = 50;
 const MAX_ACTIVITY_ITEMS = 25;
 

@@ -32,13 +32,13 @@
 
 ```bash
 # Backup database first
-pg_dump -U postgres  RustAcademy > backup_before_crash_reporting.sql
+pg_dump -U postgres  Stellar Basic DAO > backup_before_crash_reporting.sql
 
 # Run migration
-psql -U postgres -d  RustAcademy -f src/crash-reporting/migrations/001_create_crash_reporting_tables.sql
+psql -U postgres -d  Stellar Basic DAO -f src/crash-reporting/migrations/001_create_crash_reporting_tables.sql
 
 # Verify tables
-psql -U postgres -d  RustAcademy -c "\dt crash_*"
+psql -U postgres -d  Stellar Basic DAO -c "\dt crash_*"
 ```
 
 ### 2. Deploy Code
@@ -145,11 +145,11 @@ If issues are detected:
 
 ```bash
 # Drop tables
-psql -U postgres -d  RustAcademy -c "DROP TABLE IF EXISTS crash_reports CASCADE;"
-psql -U postgres -d  RustAcademy -c "DROP TABLE IF EXISTS crash_reporting_settings CASCADE;"
+psql -U postgres -d  Stellar Basic DAO -c "DROP TABLE IF EXISTS crash_reports CASCADE;"
+psql -U postgres -d  Stellar Basic DAO -c "DROP TABLE IF EXISTS crash_reporting_settings CASCADE;"
 
 # Restore from backup if needed
-psql -U postgres -d  RustAcademy < backup_before_crash_reporting.sql
+psql -U postgres -d  Stellar Basic DAO < backup_before_crash_reporting.sql
 ```
 
 ### 3. Code Rollback

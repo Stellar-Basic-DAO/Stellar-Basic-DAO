@@ -26,7 +26,7 @@ const WatchlistContext = createContext<WatchlistContextType | undefined>(
   undefined,
 );
 
-const WATCHLIST_STORAGE_KEY = " RustAcademy-marketplace-watchlist";
+const WATCHLIST_STORAGE_KEY = " Stellar Basic DAO-marketplace-watchlist";
 
 export function WatchlistProvider({ children }: { children: ReactNode }) {
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);

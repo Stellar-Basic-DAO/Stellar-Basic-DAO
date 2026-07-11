@@ -27,14 +27,14 @@ export class FundingPreflightDto {
 }
 
 export class DeployContractSpecDto {
-  @ApiProperty({ example: " RustAcademy" })
+  @ApiProperty({ example: " Stellar Basic DAO" })
   @IsString()
   @IsNotEmpty()
   name: string;
 
   @ApiProperty({
     example:
-      "app/contract/target/wasm32-unknown-unknown/release/ RustAcademy.wasm",
+      "app/contract/target/wasm32-unknown-unknown/release/ Stellar Basic DAO.wasm",
   })
   @IsString()
   @IsNotEmpty()

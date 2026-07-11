@@ -68,7 +68,7 @@ export class CreateRecurringPaymentLinkDto {
   assetIssuer?: string;
 
   @ApiProperty({
-    description: "Username route ( RustAcademy.to/username)",
+    description: "Username route ( Stellar Basic DAO.to/username)",
     example: "john_doe",
     required: false,
   })

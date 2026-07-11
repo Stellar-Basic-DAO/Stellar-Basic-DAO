@@ -44,7 +44,7 @@ const AMOUNT_TOLERANCE_PCT = 0.001;
  * AutoMatchService
  *
  * Background service that automatically reconciles incoming Stellar payment
- * transactions with open  RustAcademy payment links.
+ * transactions with open  Stellar Basic DAO payment links.
  *
  * ## Confidence scoring (0–100 points)
  *

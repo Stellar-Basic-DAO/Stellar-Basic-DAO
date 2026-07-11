@@ -12,8 +12,8 @@ export interface WalletSession {
   lastConfirmedAt: string;
 }
 
-const WALLET_SESSION_KEY = " RustAcademy.wallet.session.v2";
-const LAST_WALLET_TYPE_KEY = " RustAcademy.wallet.lastType";
+const WALLET_SESSION_KEY = "STELLAR_BASIC_DAO_wallet_session_v2";
+const LAST_WALLET_TYPE_KEY = "STELLAR_BASIC_DAO_wallet_lastType";
 
 /**
  * Maximum age for a session to be considered restorable (7 days).

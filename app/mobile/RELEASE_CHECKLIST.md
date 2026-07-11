@@ -1,6 +1,6 @@
 # Mobile Release Checklist
 
-This checklist supports the internal testing build pipeline for RustAcademy Mobile.
+This checklist supports the internal testing build pipeline for Stellar Basic DAO Mobile.
 
 ## Release Pipeline
 

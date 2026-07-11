@@ -38,7 +38,7 @@ export interface DualReadIngestionConfig extends IngestionConfig {
 }
 
 /**
- * Listens to Horizon SSE streams for a  RustAcademy Soroban contract.
+ * Listens to Horizon SSE streams for a  Stellar Basic DAO Soroban contract.
  *
  * Responsibilities:
  *  - Open a streaming subscription starting from the last known cursor.
@@ -376,7 +376,7 @@ export class StellarIngestionService implements OnModuleInit, OnModuleDestroy {
     const event = this.parser.parse(raw);
 
     if (!event) {
-      // Unrecognised or non- RustAcademy event; still advance cursor.
+      // Unrecognised or non- Stellar Basic DAO event; still advance cursor.
       await this.safeUpdateCursor(streamId, raw.paging_token, raw.ledger);
       return;
     }

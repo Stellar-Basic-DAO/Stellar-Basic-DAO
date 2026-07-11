@@ -52,7 +52,7 @@ i18n.use(initReactI18next).init({
         hops: "Hops: {{hopCount}}",
         sorobanPreflight: "Soroban preflight (composer)",
         sorobanPreflightDescription:
-          "Runs the same simulation as POST /transactions/compose with health_check on  RustAcademy_CONTRACT_ID.",
+          "Runs the same simulation as POST /transactions/compose with health_check on  Stellar Basic DAO_CONTRACT_ID.",
         sourceAccountPlaceholder: "Source account G… (funded, for sequence)",
         simulating: "Simulating…",
         runPreflight: "Run preflight simulation",
@@ -85,7 +85,7 @@ i18n.use(initReactI18next).init({
         noNotifications: "No notifications",
 
         // Home screen
-        appTitle: " RustAcademy",
+        appTitle: " Stellar Basic DAO",
         appSubtitle: "Your global payment companion",
         payAgain: "Pay Again",
         payNew: "Pay New",
@@ -138,7 +138,7 @@ i18n.use(initReactI18next).init({
         hops: "Saltos: {{hopCount}}",
         sorobanPreflight: "Preflight de Soroban (compositor)",
         sorobanPreflightDescription:
-          "Ejecuta la misma simulación que POST /transactions/compose con health_check en  RustAcademy_CONTRACT_ID.",
+          "Ejecuta la misma simulación que POST /transactions/compose con health_check en  Stellar Basic DAO_CONTRACT_ID.",
         sourceAccountPlaceholder:
           "Cuenta fuente G… (financiada, para secuencia)",
         simulating: "Simulando…",
@@ -173,7 +173,7 @@ i18n.use(initReactI18next).init({
         noNotifications: "Sin notificaciones",
 
         // Home screen
-        appTitle: " RustAcademy",
+        appTitle: " Stellar Basic DAO",
         appSubtitle: "Tu compañero de pagos globales",
         payAgain: "Pagar de Nuevo",
         payNew: "Pagar Nuevo",
@@ -220,7 +220,7 @@ i18n.use(initReactI18next).init({
         hops: "Sauts : {{hopCount}}",
         sorobanPreflight: "Pré-vol Soroban (compositeur)",
         sorobanPreflightDescription:
-          "Exécute la même simulation que POST /transactions/compose avec health_check sur  RustAcademy_CONTRACT_ID.",
+          "Exécute la même simulation que POST /transactions/compose avec health_check sur  Stellar Basic DAO_CONTRACT_ID.",
         sourceAccountPlaceholder: "Compte source G… (financé, pour séquence)",
         simulating: "Simulation…",
         runPreflight: "Exécuter la simulation de pré-vol",
@@ -244,7 +244,7 @@ i18n.use(initReactI18next).init({
         requestFailed: "Échec de la demande",
 
         // Home screen
-        appTitle: " RustAcademy",
+        appTitle: " Stellar Basic DAO",
         appSubtitle: "Votre compagnon de paiement mondial",
         payAgain: "Payer Encore",
         payNew: "Nouveau Paiement",

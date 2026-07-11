@@ -117,7 +117,7 @@ export class SendGridEmailProvider implements INotificationProvider {
       <h2>${payload.title}</h2>
       <p>${payload.body}</p>
       <hr/>
-      <p style="color:#666;font-size:12px"> RustAcademy · ${payload.occurredAt}</p>
+      <p style="color:#666;font-size:12px"> Stellar Basic DAO · ${payload.occurredAt}</p>
     `.trim();
   }
 }
@@ -215,10 +215,10 @@ export class WebhookProvider implements INotificationProvider {
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
-      "X- RustAcademy-Signature": signature,
-      "X- RustAcademy-Delivery": webhookPayload.id,
-      "X- RustAcademy-Event": payload.eventType,
-      "X- RustAcademy-Timestamp": webhookPayload.sentAt,
+      "X- Stellar Basic DAO-Signature": signature,
+      "X- Stellar Basic DAO-Delivery": webhookPayload.id,
+      "X- Stellar Basic DAO-Event": payload.eventType,
+      "X- Stellar Basic DAO-Timestamp": webhookPayload.sentAt,
     };
 
     try {
@@ -328,8 +328,8 @@ export class WebhookProvider implements INotificationProvider {
   /**
    * Verify an incoming webhook signature.
    * @param body Raw request body string
-   * @param signature Value of X- RustAcademy-Signature header
-   * @param timestamp Value of X- RustAcademy-Timestamp header
+   * @param signature Value of X- Stellar Basic DAO-Signature header
+   * @param timestamp Value of X- Stellar Basic DAO-Timestamp header
    * @param secret Shared webhook secret
    * @param toleranceMs Replay window in ms (default 5 minutes)
    */

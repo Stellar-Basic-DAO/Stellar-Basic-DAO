@@ -216,7 +216,7 @@ export default function WebhooksPage() {
                   </h3>
                   <p className="text-xs text-gray-500 mb-2">
                     Use this secret to verify that webhooks were sent by
-                    RustAcademy.
+                    Stellar Basic DAO.
                   </p>
                   <div className="flex items-center">
                     <code className="bg-gray-100 px-3 py-2 rounded-l-md text-sm font-mono border border-gray-200 border-r-0 flex-grow">

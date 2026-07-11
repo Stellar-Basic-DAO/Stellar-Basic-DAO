@@ -12,7 +12,7 @@ export type StoredNotification = {
   readAt: string | null;
 };
 
-export const NOTIFICATION_STORAGE_KEY = " RustAcademy.notification-center.v2";
+export const NOTIFICATION_STORAGE_KEY = " Stellar Basic DAO.notification-center.v2";
 
 export const CATEGORY_LABELS: Record<NotificationCategory, string> = {
   payments: "Payments",

@@ -2,8 +2,8 @@ import { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: " RustAcademy",
-    short_name: " RustAcademy",
+    name: " Stellar Basic DAO",
+    short_name: " Stellar Basic DAO",
     description: "Privacy-focused payments on Stellar",
     start_url: "/",
     display: "standalone",

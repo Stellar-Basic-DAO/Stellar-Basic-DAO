@@ -100,7 +100,7 @@ export class StellarController {
   @ApiOperation({
     summary: "Run Soroban tx composer preflight (health_check simulation)",
     description:
-      "Uses the same pipeline as POST /transactions/compose against  RustAcademy_CONTRACT_ID.",
+      "Uses the same pipeline as POST /transactions/compose against  Stellar Basic DAO_CONTRACT_ID.",
   })
   async sorobanPreflight(@Body() body: SorobanPreflightDto) {
     const contractId = this.appConfig.stellarBasicDaoContractId;
@@ -108,7 +108,7 @@ export class StellarController {
       throw new ServiceUnavailableException({
         code: "CONTRACT_NOT_CONFIGURED",
         message:
-          "Set  RustAcademy_CONTRACT_ID to enable Soroban preflight simulation.",
+          "Set  Stellar Basic DAO_CONTRACT_ID to enable Soroban preflight simulation.",
       });
     }
 

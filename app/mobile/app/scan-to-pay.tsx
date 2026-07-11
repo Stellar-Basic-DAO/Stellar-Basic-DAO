@@ -96,7 +96,7 @@ export default function ScanToPayScreen() {
           Camera Permission Required
         </Text>
         <Text style={[styles.permBody, { color: theme.textSecondary }]}>
-          RustAcademy needs camera access to scan QR payment codes.
+          Stellar Basic DAO needs camera access to scan QR payment codes.
         </Text>
         <Pressable
           style={[
@@ -138,7 +138,7 @@ export default function ScanToPayScreen() {
       <SafeAreaView style={styles.overlay} pointerEvents="box-none">
         <Text style={styles.title}>Scan to Pay</Text>
         <Text style={styles.hint}>
-          Point your camera at a RustAcademy QR code
+          Point your camera at a Stellar Basic DAO QR code
         </Text>
 
         {/* Viewfinder */}

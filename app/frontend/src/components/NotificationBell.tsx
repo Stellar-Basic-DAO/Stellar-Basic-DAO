@@ -62,7 +62,7 @@ export function NotificationBell() {
       <button
         type="button"
         aria-expanded={isOpen}
-        aria-controls=" RustAcademy-notification-panel"
+        aria-controls=" Stellar Basic DAO-notification-panel"
         aria-label={
           unreadCount > 0
             ? `Open notifications. ${unreadCount} unread.`
@@ -81,7 +81,7 @@ export function NotificationBell() {
 
       {isOpen ? (
         <div
-          id=" RustAcademy-notification-panel"
+          id=" Stellar Basic DAO-notification-panel"
           className="absolute right-0 top-14 z-50 w-[min(26rem,calc(100vw-2rem))] rounded-[2rem] border border-white/10 bg-neutral-950/98 p-5 shadow-[0_30px_80px_-25px_rgba(15,23,42,0.9)] backdrop-blur"
         >
           <div className="flex items-start justify-between gap-4">

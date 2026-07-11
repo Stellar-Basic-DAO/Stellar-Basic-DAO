@@ -259,7 +259,7 @@ export default function TransactionsScreen() {
       .join("\n");
 
     try {
-      const fileName = ` RustAcademy-transactions-${new Date().toISOString().slice(0, 10)}.csv`;
+      const fileName = ` Stellar Basic DAO-transactions-${new Date().toISOString().slice(0, 10)}.csv`;
       const cacheDirectory = fileSystemCompat.cacheDirectory ?? "";
       const fileUri = `${cacheDirectory}${fileName}`;
 

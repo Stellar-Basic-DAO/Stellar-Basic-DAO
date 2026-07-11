@@ -1,6 +1,6 @@
 # BackendAcademy
 
-RustAcademy backend module — placeholder for future NestJS backend implementation.
+Stellar Basic DAO backend module — placeholder for future NestJS backend implementation.
 
 ## Getting Started
 

@@ -1,6 +1,6 @@
-# Contributing to RustAcademy Mobile (Expo)
+# Contributing to Stellar Basic DAO Mobile (Expo)
 
-Thank you for your interest in contributing to the RustAcademy mobile app!
+Thank you for your interest in contributing to the Stellar Basic DAO mobile app!
 
 ## Development Workflow
 

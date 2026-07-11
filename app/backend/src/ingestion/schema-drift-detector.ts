@@ -1,6 +1,6 @@
 import { xdr, scValToNative } from "@stellar/stellar-sdk";
 import {
-  RustAcademy_EVENT_SCHEMA_CONTRACTS,
+  STELLAR_BASIC_DAO_EVENT_SCHEMA_CONTRACTS,
 } from "./event-schema";
 import type { SorobanEventType } from "./types/contract-event.types";
 import type { DriftType } from "./parser-diagnostics.types";
@@ -13,7 +13,7 @@ export interface FieldDriftResult {
 
 /**
  * SchemaDriftDetector compares a live event's decoded payload map against
- * the canonical schema metadata in RustAcademy_EVENT_SCHEMA_CONTRACTS.
+ * the canonical schema metadata in STELLAR_BASIC_DAO_EVENT_SCHEMA_CONTRACTS.
  *
  * It operates purely on already-decoded XDR data so it never throws and
  * never touches private key material.
@@ -37,8 +37,8 @@ export class SchemaDriftDetector {
     dataMap: Record<string, xdr.ScVal>,
   ): FieldDriftResult {
     const contract =
-      RustAcademy_EVENT_SCHEMA_CONTRACTS[
-        eventName as keyof typeof RustAcademy_EVENT_SCHEMA_CONTRACTS
+      STELLAR_BASIC_DAO_EVENT_SCHEMA_CONTRACTS[
+        eventName as keyof typeof STELLAR_BASIC_DAO_EVENT_SCHEMA_CONTRACTS
       ];
 
     if (!contract) {

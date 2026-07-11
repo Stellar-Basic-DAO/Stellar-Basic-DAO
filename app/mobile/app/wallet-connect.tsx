@@ -228,7 +228,7 @@ export default function WalletConnectScreen() {
         <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
           {wallet.connected
             ? "Your wallet is connected. You can switch accounts, change networks, or disconnect below."
-            : "Connect a wallet once and  RustAcademy will remember it for next time."}
+            : "Connect a wallet once and  Stellar Basic DAO will remember it for next time."}
         </Text>
 
         {/* ── Demo banner ──────────────────────────────────────────────── */}

@@ -36,20 +36,20 @@ describe("buildCorsOptions", () => {
     const opts = buildCorsOptions({
       nodeEnv: "production",
       allowedOrigins: [
-        "https:// RustAcademy.to",
-        "https://app. RustAcademy.to",
+        "https:// Stellar Basic DAO.to",
+        "https://app. Stellar Basic DAO.to",
       ],
     });
 
     it("allows a listed origin", async () => {
       await expect(
-        resolveOrigin(opts, "https:// RustAcademy.to"),
+        resolveOrigin(opts, "https:// Stellar Basic DAO.to"),
       ).resolves.toBe(true);
     });
 
     it("allows a second listed origin", async () => {
       await expect(
-        resolveOrigin(opts, "https://app. RustAcademy.to"),
+        resolveOrigin(opts, "https://app. Stellar Basic DAO.to"),
       ).resolves.toBe(true);
     });
 
@@ -67,15 +67,15 @@ describe("buildCorsOptions", () => {
   describe("production — Vercel preview URLs", () => {
     const opts = buildCorsOptions({
       nodeEnv: "production",
-      allowedOrigins: ["https:// RustAcademy.to"],
-      vercelProject: " RustAcademy-frontend",
+      allowedOrigins: ["https:// Stellar Basic DAO.to"],
+      vercelProject: " Stellar Basic DAO-frontend",
     });
 
     it("allows a valid Vercel preview URL", async () => {
       await expect(
         resolveOrigin(
           opts,
-          "https:// RustAcademy-frontend-abc123-team.vercel.app",
+          "https:// Stellar Basic DAO-frontend-abc123-team.vercel.app",
         ),
       ).resolves.toBe(true);
     });
@@ -90,14 +90,14 @@ describe("buildCorsOptions", () => {
       await expect(
         resolveOrigin(
           opts,
-          "https://evil- RustAcademy-frontend-abc.vercel.app",
+          "https://evil- Stellar Basic DAO-frontend-abc.vercel.app",
         ),
       ).rejects.toThrow("Origin not allowed");
     });
 
     it("still allows the static production origin", async () => {
       await expect(
-        resolveOrigin(opts, "https:// RustAcademy.to"),
+        resolveOrigin(opts, "https:// Stellar Basic DAO.to"),
       ).resolves.toBe(true);
     });
   });
@@ -106,7 +106,7 @@ describe("buildCorsOptions", () => {
     it("does not set origin to true or '*' in production", () => {
       const opts = buildCorsOptions({
         nodeEnv: "production",
-        allowedOrigins: ["https:// RustAcademy.to"],
+        allowedOrigins: ["https:// Stellar Basic DAO.to"],
       });
       expect(opts.origin).not.toBe(true);
       expect(opts.origin).not.toBe("*");

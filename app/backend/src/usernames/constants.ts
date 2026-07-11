@@ -1,5 +1,5 @@
 /**
- * Username rules for  RustAcademy.to/yourname
+ * Username rules for  Stellar Basic DAO.to/yourname
  *
  * Rules are enforced server-side in UsernamesService and by DTO validation.
  * Uniqueness and race conditions are enforced by the database (Supabase) unique constraint.

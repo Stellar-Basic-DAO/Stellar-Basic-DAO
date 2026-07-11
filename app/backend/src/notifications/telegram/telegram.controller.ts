@@ -47,7 +47,7 @@ class TelegramLinkStatusResponse {
  * REST API for managing Telegram account linkage and notifications.
  *
  * Users can:
- * - Link their Telegram account to a  RustAcademy public key
+ * - Link their Telegram account to a  Stellar Basic DAO public key
  * - Verify the linkage with a code
  * - Update notification settings
  * - Unlink their account
@@ -64,7 +64,7 @@ export class TelegramController {
 
   /**
    * GET /telegram/status/:telegramId
-   * Check if a Telegram account is linked to  RustAcademy
+   * Check if a Telegram account is linked to  Stellar Basic DAO
    */
   @Get("status/:telegramId")
   @ApiOperation({ summary: "Check Telegram account linkage status" })
@@ -193,7 +193,7 @@ export class TelegramController {
 
   /**
    * DELETE /telegram/link/:telegramId
-   * Unlink a Telegram account from  RustAcademy
+   * Unlink a Telegram account from  Stellar Basic DAO
    */
   @Delete("link/:telegramId")
   @HttpCode(HttpStatus.NO_CONTENT)

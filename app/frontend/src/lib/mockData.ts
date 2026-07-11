@@ -15,7 +15,7 @@ export const MOCK_USERS: User[] = [
     username: "alex",
     name: "Alex Nova",
     avatarColor: "bg-indigo-500",
-    bio: "Building  RustAcademy",
+    bio: "Building  Stellar Basic DAO",
     followers: 1205,
     isTrending: true,
     isRecentlyActive: true,

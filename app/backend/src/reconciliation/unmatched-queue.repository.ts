@@ -177,7 +177,7 @@ export class UnmatchedQueueRepository {
 
   /**
    * Dismiss an entry — the operator has determined this transaction does not
-   * correspond to any  RustAcademy payment link and requires no further action.
+   * correspond to any  Stellar Basic DAO payment link and requires no further action.
    *
    * @throws Error if the database update fails.
    */

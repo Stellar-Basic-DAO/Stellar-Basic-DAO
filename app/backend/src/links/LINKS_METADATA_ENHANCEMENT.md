@@ -22,7 +22,7 @@ The `/links/metadata` endpoint has been enhanced with richer validation rules an
   - 1-32 lowercase alphanumeric characters
   - May include hyphens and underscores
   - Cannot start or end with special characters
-  - Reserved words blocked (admin, system, root, RustAcademy)
+  - Reserved words blocked (admin, system, root, Stellar Basic DAO)
 - Normalized to lowercase automatically
 
 #### 3. Stellar Public Key Validation

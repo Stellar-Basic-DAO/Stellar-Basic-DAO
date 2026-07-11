@@ -22,7 +22,7 @@ describe("SupportBundleService", () => {
     const mockRegistryService = {
       getRegistry: jest.fn().mockResolvedValue({
         data: {
-          RustAcademy: {
+          Stellar Basic DAO: {
             id: "CD2J6K7T3YJ77QXZP3EXAMPLE",
             version: 3,
             wasmHash: "abcdef1234567890abcdef1234567890",

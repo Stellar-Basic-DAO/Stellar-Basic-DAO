@@ -22,7 +22,7 @@ export interface EventSchemaContract {
 
 // payloadKeys are sorted alphabetically.
 // "ledger_sequence" ('l') sorts after 'f*' / 'e*' keys and before 'p*' / 'r*' / 's*' keys.
-export const RustAcademy_EVENT_SCHEMA_CONTRACTS = {
+export const STELLAR_BASIC_DAO_EVENT_SCHEMA_CONTRACTS = {
   // ── Escrow events ───────────────────────────────────────────────────────
   EscrowDeposited: {
     topic: STELLAR_BASIC_DAO_EVENT_TOPICS.escrow,
@@ -332,8 +332,8 @@ export const RustAcademy_EVENT_SCHEMA_CONTRACTS = {
   },
 } as const satisfies Record<string, EventSchemaContract>;
 
-export const RustAcademy_EVENT_COMPATIBILITY = Object.fromEntries(
-  Object.entries(RustAcademy_EVENT_SCHEMA_CONTRACTS).map(
+export const STELLAR_BASIC_DAO_EVENT_COMPATIBILITY = Object.fromEntries(
+  Object.entries(STELLAR_BASIC_DAO_EVENT_SCHEMA_CONTRACTS).map(
     ([eventName, contract]) => [
       eventName,
       {
@@ -344,7 +344,7 @@ export const RustAcademy_EVENT_COMPATIBILITY = Object.fromEntries(
     ],
   ),
 ) as unknown as Record<
-  keyof typeof RustAcademy_EVENT_SCHEMA_CONTRACTS,
+  keyof typeof STELLAR_BASIC_DAO_EVENT_SCHEMA_CONTRACTS,
   {
     currentVersion: number;
     compatibleVersions: readonly number[];

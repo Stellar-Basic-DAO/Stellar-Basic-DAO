@@ -156,10 +156,10 @@ export default function LinkGeneratorScreen() {
   const handleShare = async () => {
     const url =
       canonicalData ||
-      `https:// RustAcademy.to/${form.destination}/${form.amount}?asset=${recipientAssetCode}${form.memo ? `&memo=${encodeURIComponent(form.memo)}` : ""}`;
+      `https:// Stellar Basic DAO.to/${form.destination}/${form.amount}?asset=${recipientAssetCode}${form.memo ? `&memo=${encodeURIComponent(form.memo)}` : ""}`;
     try {
       await Share.share({
-        message: `Pay me via  RustAcademy:\n${url}`,
+        message: `Pay me via  Stellar Basic DAO:\n${url}`,
       });
     } catch (error: any) {
       Alert.alert("Error sharing", error.message);
@@ -169,7 +169,7 @@ export default function LinkGeneratorScreen() {
   const handleCopy = async () => {
     const url =
       canonicalData ||
-      `https:// RustAcademy.to/${form.destination}/${form.amount}?asset=${recipientAssetCode}${form.memo ? `&memo=${encodeURIComponent(form.memo)}` : ""}`;
+      `https:// Stellar Basic DAO.to/${form.destination}/${form.amount}?asset=${recipientAssetCode}${form.memo ? `&memo=${encodeURIComponent(form.memo)}` : ""}`;
     await Clipboard.setStringAsync(url);
     Alert.alert("Copied", "Payment link copied to clipboard");
   };

@@ -2,7 +2,7 @@ import Constants from "expo-constants";
 import type { TransactionResponse } from "../types/transaction";
 
 /**
- * Base URL for the  RustAcademy backend.
+ * Base URL for the  Stellar Basic DAO backend.
  * Set EXPO_PUBLIC_API_URL in your .env file.
  * Falls back to localhost for local development.
  */
@@ -18,7 +18,7 @@ export interface FetchTransactionsOptions {
 }
 
 /**
- * Fetches paginated payment history for a Stellar account from the  RustAcademy backend.
+ * Fetches paginated payment history for a Stellar account from the  Stellar Basic DAO backend.
  * Throws a descriptive Error on network issues or non-2xx responses.
  */
 export async function fetchTransactions(

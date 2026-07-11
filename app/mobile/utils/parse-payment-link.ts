@@ -1,5 +1,5 @@
-const RustAcademy_HOSTS = [" RustAcademy.to", "www. RustAcademy.to"];
-const RustAcademy_SCHEME = " RustAcademy";
+const Stellar Basic DAO_HOSTS = ["STELLAR_BASIC_DAO.to", "www. Stellar Basic DAO.to"];
+const Stellar Basic DAO_SCHEME = " Stellar Basic DAO";
 
 const EXPIRES_PARAM = "expires";
 
@@ -29,8 +29,8 @@ function extractParts(
   try {
     const url = new URL(raw);
 
-    if (url.protocol === `${RustAcademy_SCHEME}:`) {
-      //  RustAcademy://username?amount=...  –  hostname holds the username
+    if (url.protocol === `${Stellar Basic DAO_SCHEME}:`) {
+      //  Stellar Basic DAO://username?amount=...  –  hostname holds the username
       const username =
         url.hostname || url.pathname.replace(/^\/+/, "").split("/")[0];
       return username ? { username, params: url.searchParams } : null;
@@ -38,7 +38,7 @@ function extractParts(
 
     if (
       (url.protocol === "https:" || url.protocol === "http:") &&
-      RustAcademy_HOSTS.includes(url.hostname)
+      Stellar Basic DAO_HOSTS.includes(url.hostname)
     ) {
       const segments = url.pathname
         .replace(/^\/+/, "")
@@ -61,7 +61,7 @@ export function parsePaymentLink(raw: string): ParseResult {
 
   const parts = extractParts(trimmed);
   if (!parts) {
-    return { valid: false, error: "Not a valid  RustAcademy link" };
+    return { valid: false, error: "Not a valid  Stellar Basic DAO link" };
   }
 
   const { username, params } = parts;

@@ -25,7 +25,7 @@ export default function OfflinePage() {
       </h1>
       <p className="text-neutral-400 max-w-md mx-auto mb-8 text-lg">
         It looks like you&apos;ve lost your connection. Don&apos;t worry,
-        RustAcademy is ready to resume once you&apos;re back online.
+        Stellar Basic DAO is ready to resume once you&apos;re back online.
       </p>
       <button
         onClick={() => window.location.reload()}

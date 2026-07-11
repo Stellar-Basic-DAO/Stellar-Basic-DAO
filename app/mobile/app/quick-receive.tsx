@@ -24,7 +24,7 @@ export default function QuickReceiveScreen() {
 
   const receiveLink = useMemo(() => {
     if (!username) return null;
-    return `https:// RustAcademy.to/${username}`;
+    return `https:// Stellar Basic DAO.to/${username}`;
   }, [username]);
 
   const handleCopy = async () => {
@@ -37,7 +37,7 @@ export default function QuickReceiveScreen() {
     if (!receiveLink) return;
 
     await Share.share({
-      message: `Send me payment via  RustAcademy:\n${receiveLink}`,
+      message: `Send me payment via  Stellar Basic DAO:\n${receiveLink}`,
     });
   };
 

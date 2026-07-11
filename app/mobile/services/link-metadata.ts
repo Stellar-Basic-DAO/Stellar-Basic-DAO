@@ -1,7 +1,7 @@
 import Constants from "expo-constants";
 
 /**
- * Base URL for the  RustAcademy backend.
+ * Base URL for the  Stellar Basic DAO backend.
  * Set EXPO_PUBLIC_API_URL in your .env file.
  * Falls back to localhost for local development.
  */
@@ -45,7 +45,7 @@ export interface FetchLinkMetadataOptions {
 }
 
 /**
- * Fetches link metadata with optional swap options from the  RustAcademy backend.
+ * Fetches link metadata with optional swap options from the  Stellar Basic DAO backend.
  * Throws a descriptive Error on network issues or non-2xx responses.
  */
 export async function fetchLinkMetadata(

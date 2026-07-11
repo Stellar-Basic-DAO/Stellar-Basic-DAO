@@ -77,7 +77,7 @@ export default function RootApp() {
  *    - Tap blocked action → help modal shows wallet switching instructions
  *
  * 4. Customize if needed:
- *    - Change expectedNetwork prop to "mainnet" if needed (unlikely for RustAcademy)
+ *    - Change expectedNetwork prop to "mainnet" if needed (unlikely for Stellar Basic DAO)
  *    - Adjust banner colors in GlobalNetworkBanner.tsx
  *    - Customize guard overlay in NetworkMismatchGuard.tsx
  */

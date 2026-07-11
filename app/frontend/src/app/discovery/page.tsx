@@ -82,7 +82,7 @@ export default function DiscoveryPage() {
           Discover{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">
             {" "}
-            RustAcademy
+            Stellar Basic DAO
           </span>
         </h1>
         <p className="text-xl text-neutral-400 leading-relaxed">
@@ -144,7 +144,7 @@ export default function DiscoveryPage() {
             Want to get featured?
           </h3>
           <p className="text-lg text-neutral-300 max-w-xl mx-auto relative z-10">
-            Create your RustAcademy profile, share your link, and start
+            Create your Stellar Basic DAO profile, share your link, and start
             receiving payments to appear on the Discovery page.
           </p>
           <div className="relative z-10 pt-8">

@@ -267,7 +267,7 @@ export default function PublicProfile() {
 
         {/* Footer */}
         <div className="text-center mt-12 text-neutral-400 text-sm">
-          <p>Powered by RustAcademy • Stellar Network</p>
+          <p>Powered by Stellar Basic DAO • Stellar Network</p>
         </div>
       </main>
     </div>

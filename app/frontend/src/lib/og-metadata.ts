@@ -9,7 +9,7 @@
  *  - memo                  → only included when it is a short, non-sensitive label
  */
 
-export const SITE_NAME = " RustAcademy";
+export const SITE_NAME = " Stellar Basic DAO";
 export const SITE_DESCRIPTION = "Privacy-focused payments on Stellar";
 
 /** Resolved at build/request time from the environment. Falls back to a relative path. */
@@ -20,7 +20,7 @@ export function getSiteUrl(): string {
       /:4000$/,
       ":3000",
     ) ||
-    "https:// RustAcademy.to"
+    "https:// Stellar Basic DAO.to"
   );
 }
 
@@ -50,7 +50,7 @@ export async function fetchPaymentMeta(params: {
 }): Promise<SafePaymentMeta | null> {
   try {
     const apiBase =
-      process.env.RustAcademy_INTERNAL_API_URL?.replace(/\/$/, "") ||
+      process.env.NEXT_PUBLIC_STELLAR_BASIC_DAO_API_URL?.replace(/\/$/, "") ||
       process.env.NEXT_PUBLIC_STELLAR_BASIC_DAO_API_URL?.replace(/\/$/, "") ||
       "http://localhost:4000";
 
@@ -98,7 +98,7 @@ export function buildPaymentTitle(meta: SafePaymentMeta): string {
     case "DRAFT":
       return `Pay ${meta.amount} ${meta.asset} to @${meta.username}`;
     default:
-      return `Payment link —  RustAcademy`;
+      return `Payment link —  Stellar Basic DAO`;
   }
 }
 
@@ -125,7 +125,7 @@ export function buildPaymentDescription(meta: SafePaymentMeta): string {
 export const FALLBACK_PAYMENT_METADATA = {
   title: `Payment Link — ${SITE_NAME}`,
   description:
-    "This payment link is unavailable, expired, or invalid. Visit  RustAcademy to create a new one.",
+    "This payment link is unavailable, expired, or invalid. Visit  Stellar Basic DAO to create a new one.",
   ogImage: DEFAULT_OG_IMAGE,
 } as const;
 

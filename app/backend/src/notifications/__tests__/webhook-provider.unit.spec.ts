@@ -63,7 +63,7 @@ describe("WebhookProvider", () => {
           method: "POST",
           headers: expect.objectContaining({
             "Content-Type": "application/json",
-            "X- RustAcademy-Event": "payment.received",
+            "X- Stellar Basic DAO-Event": "payment.received",
           }),
         }),
       );
@@ -83,7 +83,7 @@ describe("WebhookProvider", () => {
 
       const call = mockFetch.mock.calls[0];
       const headers = call[1].headers;
-      const signature = headers["X- RustAcademy-Signature"];
+      const signature = headers["X- Stellar Basic DAO-Signature"];
 
       expect(signature).toMatch(/^sha256=[a-f0-9]{64}$/);
     });
@@ -102,7 +102,7 @@ describe("WebhookProvider", () => {
 
       const call = mockFetch.mock.calls[0];
       const headers = call[1].headers;
-      const signature = headers["X- RustAcademy-Signature"];
+      const signature = headers["X- Stellar Basic DAO-Signature"];
 
       expect(signature).toBe("");
     });
@@ -137,8 +137,8 @@ describe("WebhookProvider", () => {
       const call = mockFetch.mock.calls[0];
       const headers = call[1].headers;
 
-      expect(headers["X- RustAcademy-Delivery"]).toMatch(/^wh_\d+_[a-z0-9]+$/);
-      expect(headers["X- RustAcademy-Timestamp"]).toMatch(
+      expect(headers["X- Stellar Basic DAO-Delivery"]).toMatch(/^wh_\d+_[a-z0-9]+$/);
+      expect(headers["X- Stellar Basic DAO-Timestamp"]).toMatch(
         /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
       );
     });
@@ -186,8 +186,8 @@ describe("WebhookProvider", () => {
       const call = mockFetch.mock.calls[0];
       const body = call[1].body;
       const headers = call[1].headers;
-      const signature = headers["X- RustAcademy-Signature"];
-      const timestamp = headers["X- RustAcademy-Timestamp"];
+      const signature = headers["X- Stellar Basic DAO-Signature"];
+      const timestamp = headers["X- Stellar Basic DAO-Timestamp"];
 
       const isValid = WebhookProvider.verifySignature(
         body,

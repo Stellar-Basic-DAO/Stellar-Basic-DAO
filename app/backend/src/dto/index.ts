@@ -2,7 +2,7 @@
  * Shared DTO Library
  *
  * This module provides a centralized library of DTOs and validators
- * for common payloads used across the  RustAcademy backend API.
+ * for common payloads used across the  Stellar Basic DAO backend API.
  *
  * ## Usage
  *

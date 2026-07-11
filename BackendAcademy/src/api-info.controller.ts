@@ -5,7 +5,7 @@ export class ApiInfoController {
   @Get()
   getApiInfo() {
     return {
-      name: 'RustAcademy API',
+      name: 'Stellar Basic DAO API',
       version: process.env.npm_package_version || '1.0.0',
       status: 'ok',
       docs: '/api/docs',

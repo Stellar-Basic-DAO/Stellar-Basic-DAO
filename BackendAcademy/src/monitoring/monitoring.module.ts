@@ -9,7 +9,7 @@ import { MetricsController } from './metrics.controller';
 import { MonitoringService } from './monitoring.service';
 
 /**
- * Wires up Prometheus metrics for the RustAcademy backend.
+ * Wires up Prometheus metrics for the Stellar Basic DAO backend.
  *
  * - {@link MetricsController} serves a `/metrics` endpoint that exposes the
  *   prom-client registry in Prometheus exposition format.
@@ -33,7 +33,7 @@ import { MonitoringService } from './monitoring.service';
         enabled: true,
       },
       defaultLabels: {
-        app: 'rustacademy-backend',
+        app: 'stellar-basic-dao-academy-backend',
       },
     }),
   ],

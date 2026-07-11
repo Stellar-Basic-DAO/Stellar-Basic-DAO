@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document summarizes the implementation of the opt-in crash/log capture feature with strict redaction for the RustAcademy backend.
+This document summarizes the implementation of the opt-in crash/log capture feature with strict redaction for the Stellar Basic DAO backend.
 
 ## ✅ Acceptance Criteria Met
 

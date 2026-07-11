@@ -220,7 +220,7 @@ export default function DeveloperSettings() {
               <div>
                 <h2 className="text-xl font-bold">API Keys</h2>
                 <p className="text-sm text-neutral-500 mt-1">
-                  Manage keys used to authenticate requests to the  RustAcademy API.
+                  Manage keys used to authenticate requests to the  Stellar Basic DAO API.
                 </p>
               </div>
               <button
@@ -402,7 +402,7 @@ export default function DeveloperSettings() {
                 { scope: "links:read",        desc: "Fetch and query payment links. Cannot create or modify." },
                 { scope: "links:write",       desc: "Create and update payment links. Includes links:read." },
                 { scope: "transactions:read", desc: "Read transaction history from the Horizon API." },
-                { scope: "usernames:read",    desc: "Look up registered  RustAcademy usernames." },
+                { scope: "usernames:read",    desc: "Look up registered  Stellar Basic DAO usernames." },
               ].map(({ scope, desc }) => (
                 <div
                   key={scope}

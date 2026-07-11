@@ -111,7 +111,7 @@ console.log(redactedObj);
 
 ```bash
 # Using psql
-psql -U postgres -d  RustAcademy -f src/crash-reporting/migrations/001_create_crash_reporting_tables.sql
+psql -U postgres -d  Stellar Basic DAO -f src/crash-reporting/migrations/001_create_crash_reporting_tables.sql
 
 # Or using Supabase CLI
 supabase db push

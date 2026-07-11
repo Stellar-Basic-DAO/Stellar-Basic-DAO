@@ -21,7 +21,7 @@ const CHECKLIST: ChecklistItem[] = [
     key: "deep-links",
     label: "Deep Links",
     description:
-      "Verify  RustAcademy:// and https:// RustAcademy.to links open the app and route to the correct screen.",
+      "Verify  Stellar Basic DAO:// and https:// Stellar Basic DAO.to links open the app and route to the correct screen.",
   },
   {
     key: "wallet-connect",

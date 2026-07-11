@@ -2,7 +2,7 @@
  * Shared validators for common payloads
  *
  * This module exports reusable validation decorators and constraints
- * for validating common Stellar and  RustAcademy-specific data formats.
+ * for validating common Stellar and  Stellar Basic DAO-specific data formats.
  */
 
 export * from "./username.validator";

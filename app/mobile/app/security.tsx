@@ -63,7 +63,7 @@ export default function SecurityScreen() {
     Alert.alert(
       enabled ? "Biometric lock enabled" : "Biometric lock disabled",
       enabled
-        ? " RustAcademy will require biometrics or fallback PIN when opening and before sensitive actions."
+        ? " Stellar Basic DAO will require biometrics or fallback PIN when opening and before sensitive actions."
         : "Biometric lock has been turned off.",
     );
   };

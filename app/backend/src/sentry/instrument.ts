@@ -12,7 +12,7 @@ const SENTRY_DSN = process.env.SENTRY_DSN;
 const SENTRY_ENVIRONMENT =
   process.env.SENTRY_ENVIRONMENT || process.env.NODE_ENV || "development";
 const SENTRY_RELEASE =
-  process.env.SENTRY_RELEASE || " RustAcademy-backend@0.1.0";
+  process.env.SENTRY_RELEASE || " Stellar Basic DAO-backend@0.1.0";
 const SENTRY_TRACES_SAMPLE_RATE = parseFloat(
   process.env.SENTRY_TRACES_SAMPLE_RATE || "1.0",
 );

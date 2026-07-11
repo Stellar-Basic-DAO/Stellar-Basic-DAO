@@ -25,8 +25,8 @@ const MOCK_NOTIFICATIONS: Notification[] = [
   },
   {
     id: "3",
-    title: "Welcome to RustAcademy!",
-    message: "Thanks for joining RustAcademy. Start your crypto journey today!",
+    title: "Welcome to Stellar Basic DAO!",
+    message: "Thanks for joining Stellar Basic DAO. Start your crypto journey today!",
     type: "system",
     read: true,
     createdAt: Date.now() - 86400000,

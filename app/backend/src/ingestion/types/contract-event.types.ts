@@ -1,6 +1,6 @@
 /**
- * Domain types for  RustAcademy Soroban contract events.
- * These mirror the Rust event structs defined in contracts/ RustAcademy/src/events.rs
+ * Domain types for  Stellar Basic DAO Soroban contract events.
+ * These mirror the Rust event structs defined in contracts/ Stellar Basic DAO/src/events.rs
  */
 
 export type SorobanEventType =

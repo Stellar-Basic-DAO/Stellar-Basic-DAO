@@ -1,7 +1,7 @@
 /**
  * Job Queue Module - Main Export
  *
- * Unified job queue system for background processing in  RustAcademy backend.
+ * Unified job queue system for background processing in  Stellar Basic DAO backend.
  * Provides standardized retry policies, centralized visibility, and safe cancellation.
  */
 

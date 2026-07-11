@@ -2,7 +2,7 @@
  * Auto-Match Engine – Domain Types
  *
  * Models the full lifecycle of automatically matching an incoming Stellar
- * payment to an open  RustAcademy payment link:
+ * payment to an open  Stellar Basic DAO payment link:
  *
  *   IncomingTransaction  ──▶  score against PaymentLink[]
  *                         ──▶  MatchResult (AutoMatch | ReviewRequired | Unmatched)

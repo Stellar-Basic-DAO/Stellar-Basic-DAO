@@ -51,7 +51,7 @@ export function AppLockOverlay({ visible, onUnlock }: AppLockOverlayProps) {
       <View style={[styles.card, { backgroundColor: theme.surfaceElevated }]}>
         <Text style={[styles.title, { color: theme.textPrimary }]}>
           {" "}
-          RustAcademy Security Lock
+          Stellar Basic DAO Security Lock
         </Text>
         <Text style={[styles.body, { color: theme.textSecondary }]}>
           Use biometrics or your fallback PIN to continue.

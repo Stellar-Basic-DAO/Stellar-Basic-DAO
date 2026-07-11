@@ -39,7 +39,7 @@ import type { StudyRoomMember, StudyRoomMessage } from "./entities/study-room.en
 /**
  * Study Rooms API
  *
- * Topic-based collaborative study rooms for the RustAcademy platform.
+ * Topic-based collaborative study rooms for the Stellar Basic DAO platform.
  * Callers identify themselves via the `x-public-key` header
  * (the Stellar / wallet public key used throughout the system).
  *

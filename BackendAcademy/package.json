@@ -1,8 +1,8 @@
 {
-  "name": "rustacademy-backend",
+  "name": "stellar-basic-dao-academy-backend",
   "version": "0.1.0",
   "private": true,
-  "description": "RustAcademy NestJS backend",
+  "description": "Stellar Basic DAO NestJS backend",
   "scripts": {
     "build": "nest build",
     "start": "node dist/main",

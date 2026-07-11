@@ -21,7 +21,7 @@ export const GlobalNetworkBanner = () => {
           <Text style={[styles.text, styles.textStaging]}>🚧 STAGING MODE</Text>
           <Text style={[styles.subtext, styles.textStaging]}>
             {guard.isConnected
-              ? `Connected to ${guard.currentNetwork.toUpperCase()} • Backend: staging-api. RustAcademy.to`
+              ? `Connected to ${guard.currentNetwork.toUpperCase()} • Backend: staging-api. Stellar Basic DAO.to`
               : "Testnet backend • Not intended for production use"}
           </Text>
         </View>

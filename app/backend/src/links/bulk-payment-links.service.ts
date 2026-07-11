@@ -155,7 +155,7 @@ export class BulkPaymentLinksService {
     const id = `link_${uuidv4().substring(0, 12)}`;
 
     // Build shareable URL
-    const url = `https://app. RustAcademy.to/pay?${metadata.canonical}`;
+    const url = `https://app. Stellar Basic DAO.to/pay?${metadata.canonical}`;
 
     return {
       id,

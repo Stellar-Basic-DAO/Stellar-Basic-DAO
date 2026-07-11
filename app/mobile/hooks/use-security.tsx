@@ -57,7 +57,7 @@ const DEFAULT_SETTINGS: SecuritySettings = {
 };
 
 const PIN_DESCRIPTION_BY_REASON: Record<SecurityAuthReason, string> = {
-  app_unlock: "Enter your fallback PIN to unlock  RustAcademy.",
+  app_unlock: "Enter your fallback PIN to unlock  Stellar Basic DAO.",
   payment_authorization: "Enter your fallback PIN to authorize this payment.",
   sensitive_data_access: "Enter your fallback PIN to reveal sensitive data.",
 };
@@ -166,7 +166,7 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
           ? "Authenticate to approve payment"
           : reason === "sensitive_data_access"
             ? "Authenticate to access sensitive data"
-            : "Authenticate to unlock  RustAcademy";
+            : "Authenticate to unlock  Stellar Basic DAO";
 
       try {
         const result = await LocalAuthentication.authenticateAsync({

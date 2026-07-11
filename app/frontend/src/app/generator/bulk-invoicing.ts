@@ -60,8 +60,8 @@ export type BulkCsvParseResult = {
 
 type BulkCsvColumns = Record<string, string>;
 
-export const TEMPLATE_STORAGE_KEY = " RustAcademy.bulkInvoice.templates.v2";
-export const CUSTOMER_STORAGE_KEY = " RustAcademy.bulkInvoice.customers.v2";
+export const TEMPLATE_STORAGE_KEY = " Stellar Basic DAO.bulkInvoice.templates.v2";
+export const CUSTOMER_STORAGE_KEY = " Stellar Basic DAO.bulkInvoice.customers.v2";
 
 export const DEFAULT_TEMPLATES: InvoiceTemplate[] = [
   {
@@ -278,7 +278,7 @@ export function validateBulkCsvDraftRow(row: BulkCsvDraftRow): BulkCsvDraftRow {
 
   if (!nextRow.username && !nextRow.destination) {
     nextRow.errors.push(
-      "Add either a  RustAcademy username or a Stellar destination.",
+      "Add either a  Stellar Basic DAO username or a Stellar destination.",
     );
   }
 

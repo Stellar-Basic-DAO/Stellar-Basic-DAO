@@ -15,42 +15,42 @@ const buildTag = process.env.GIT_TAG ?? process.env.GITHUB_REF_NAME ?? "";
 function appName(env: string): string {
   switch (env) {
     case "production":
-      return " RustAcademy";
+      return " Stellar Basic DAO";
     case "staging":
-      return " RustAcademy Staging";
+      return " Stellar Basic DAO Staging";
     default:
-      return " RustAcademy Dev";
+      return " Stellar Basic DAO Dev";
   }
 }
 
 function bundleIdentifier(env: string): string {
   switch (env) {
     case "production":
-      return "to. RustAcademy.app";
+      return "to. Stellar Basic DAO.app";
     case "staging":
-      return "to. RustAcademy.app.staging";
+      return "to. Stellar Basic DAO.app.staging";
     default:
-      return "to. RustAcademy.app.dev";
+      return "to. Stellar Basic DAO.app.dev";
   }
 }
 
 function androidPackage(env: string): string {
   switch (env) {
     case "production":
-      return "to. RustAcademy.app";
+      return "to. Stellar Basic DAO.app";
     case "staging":
-      return "to. RustAcademy.app.staging";
+      return "to. Stellar Basic DAO.app.staging";
     default:
-      return "to. RustAcademy.app.dev";
+      return "to. Stellar Basic DAO.app.dev";
   }
 }
 
 function apiUrl(env: string): string {
   switch (env) {
     case "production":
-      return "https://api. RustAcademy.to";
+      return "https://api. Stellar Basic DAO.to";
     case "staging":
-      return "https://staging-api. RustAcademy.to";
+      return "https://staging-api. Stellar Basic DAO.to";
     default:
       return process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000";
   }

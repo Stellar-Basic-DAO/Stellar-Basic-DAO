@@ -99,7 +99,7 @@ export function UsernameCard({
         <div className="flex-1">
           <p className="text-xs text-neutral-600 font-mono mb-0.5">
             {" "}
-            RustAcademy.to/
+            Stellar Basic DAO.to/
           </p>
           <h3 className="text-3xl font-black tracking-tight text-white leading-none group-hover:text-indigo-300 transition-colors duration-300">
             {listing.username}

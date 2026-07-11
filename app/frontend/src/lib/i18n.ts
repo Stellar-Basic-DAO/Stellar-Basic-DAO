@@ -24,7 +24,7 @@ i18n.use(initReactI18next).init({
         settingsTitle: "Settings",
         profileCustomization: "Profile Customization",
         profileCustomizationDescription:
-          "Customize your public payment page at  RustAcademy.to/{{username}}",
+          "Customize your public payment page at  Stellar Basic DAO.to/{{username}}",
         generalTab: "General",
         developerTab: "Developer",
         themeSettings: "Theme Settings",
@@ -118,7 +118,7 @@ i18n.use(initReactI18next).init({
         goToDashboard: "Go to Dashboard",
         shareableUsernames: "Shareable Usernames",
         shareableUsernamesDesc:
-          "Claim your unique name like  RustAcademy.to/alex and receive payments easily.",
+          "Claim your unique name like  Stellar Basic DAO.to/alex and receive payments easily.",
         instantPayments: "Instant Payments",
         instantPaymentsDesc:
           "Generate payment links instantly with advanced path payment support.",
@@ -182,7 +182,7 @@ i18n.use(initReactI18next).init({
         settingsTitle: "Configuración",
         profileCustomization: "Personalización del Perfil",
         profileCustomizationDescription:
-          "Personaliza tu página de pago pública en  RustAcademy.to/{{username}}",
+          "Personaliza tu página de pago pública en  Stellar Basic DAO.to/{{username}}",
         generalTab: "General",
         developerTab: "Desarrollador",
         themeSettings: "Configuración de Tema",
@@ -280,7 +280,7 @@ i18n.use(initReactI18next).init({
         goToDashboard: "Ir al Panel de Control",
         shareableUsernames: "Nombres de Usuario Compartibles",
         shareableUsernamesDesc:
-          "Reclama tu nombre único como  RustAcademy.to/alex y recibe pagos fácilmente.",
+          "Reclama tu nombre único como  Stellar Basic DAO.to/alex y recibe pagos fácilmente.",
         instantPayments: "Pagos Instantáneos",
         instantPaymentsDesc:
           "Genera enlaces de pago al instante con soporte avanzado de pagos de ruta.",
@@ -343,7 +343,7 @@ i18n.use(initReactI18next).init({
         settingsTitle: "Paramètres",
         profileCustomization: "Personnalisation du Profil",
         profileCustomizationDescription:
-          "Personnalisez votre page de paiement publique sur  RustAcademy.to/{{username}}",
+          "Personnalisez votre page de paiement publique sur  Stellar Basic DAO.to/{{username}}",
         generalTab: "Général",
         developerTab: "Développeur",
         themeSettings: "Paramètres de Thème",
@@ -440,7 +440,7 @@ i18n.use(initReactI18next).init({
         goToDashboard: "Aller au Tableau de Bord",
         shareableUsernames: "Noms d'Utilisateur Partageables",
         shareableUsernamesDesc:
-          "Réclamez votre nom unique comme  RustAcademy.to/alex et recevez des paiements facilement.",
+          "Réclamez votre nom unique comme  Stellar Basic DAO.to/alex et recevez des paiements facilement.",
         instantPayments: "Paiements Instantanés",
         instantPaymentsDesc:
           "Générez des liens de paiement instantanément avec prise en charge avancée des paiements de chemin.",

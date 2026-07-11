@@ -157,7 +157,7 @@ export class BulkPaymentLinkResponseItemDto {
   @ApiProperty({
     description: "Shareable payment link URL",
     example:
-      "https://app. RustAcademy.example.com/pay?amount=100.5000000&asset=XLM",
+      "https://app. Stellar Basic DAO.example.com/pay?amount=100.5000000&asset=XLM",
   })
   url!: string;
 

@@ -230,7 +230,7 @@ export class ReconciliationController {
 
   /**
    * Dismiss an unmatched transaction — the operator has determined it is not
-   * related to any  RustAcademy payment link and requires no further action.
+   * related to any  Stellar Basic DAO payment link and requires no further action.
    */
   @Delete("unmatched/:id")
   @HttpCode(HttpStatus.OK)

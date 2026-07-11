@@ -64,8 +64,8 @@ const DEFAULT_PUBLIC_KEY =
   "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 const PUBLIC_KEY_REGEX = /^G[A-Z2-7]{55}$/;
 const PUBLIC_KEY_STORAGE_CANDIDATES = [
-  " RustAcademy.publicKey",
-  " RustAcademy.walletPublicKey",
+  " Stellar Basic DAO.publicKey",
+  " Stellar Basic DAO.walletPublicKey",
   "walletPublicKey",
   "publicKey",
 ];
@@ -114,7 +114,7 @@ function resolveAnalyticsPublicKey(): string {
     }
   }
 
-  const fromEnv = process.env.NEXT_PUBLIC_RustAcademy_ANALYTICS_PUBLIC_KEY?.trim();
+  const fromEnv = process.env.NEXT_PUBLIC_Stellar Basic DAO_ANALYTICS_PUBLIC_KEY?.trim();
   if (fromEnv && PUBLIC_KEY_REGEX.test(fromEnv)) {
     return fromEnv;
   }
@@ -249,7 +249,7 @@ export async function exportAnalyticsReport(
 
   const blob = await res.blob();
   const disposition = res.headers.get("Content-Disposition");
-  const fallbackName = ` RustAcademy-analytics-report.${format}`;
+  const fallbackName = ` Stellar Basic DAO-analytics-report.${format}`;
   const fileName = parseFilename(disposition) ?? fallbackName;
   const objectUrl = window.URL.createObjectURL(blob);
   const link = document.createElement("a");

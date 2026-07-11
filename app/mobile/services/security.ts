@@ -30,10 +30,10 @@ try {
 
 import type { SecuritySettings } from "@/types/security";
 
-const SECURITY_SETTINGS_KEY = " RustAcademy.security.settings";
-const FALLBACK_PIN_HASH_KEY = " RustAcademy.security.pinHash";
-const SENSITIVE_TOKEN_KEY = " RustAcademy.security.sensitiveToken";
-const PIN_HASH_SALT = " RustAcademy.v2.pin.salt";
+const SECURITY_SETTINGS_KEY = "STELLAR_BASIC_DAO.security.settings";
+const FALLBACK_PIN_HASH_KEY = "STELLAR_BASIC_DAO.security.pinHash";
+const SENSITIVE_TOKEN_KEY = "STELLAR_BASIC_DAO.security.sensitiveToken";
+const PIN_HASH_SALT = "STELLAR_BASIC_DAO.v2.pin.salt";
 
 const DEFAULT_SETTINGS: SecuritySettings = {
   biometricLockEnabled: false,

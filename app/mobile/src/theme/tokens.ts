@@ -14,7 +14,7 @@
 // ---------------------------------------------------------------------------
 
 /** Unique key identifying a theme. */
-export type ThemeId = "light" | "dark" | " RustAcademy-blue" | "pulsefy-purple";
+export type ThemeId = "light" | "dark" | " Stellar Basic DAO-blue" | "pulsefy-purple";
 
 /** The four user-selectable modes. */
 export type ThemeMode = "light" | "dark" | "system" | "brand";
@@ -283,13 +283,13 @@ export const DarkTheme: ThemeTokens = {
 } as const;
 
 /**
- * Brand:  RustAcademy Blue
+ * Brand:  Stellar Basic DAO Blue
  * Deep navy base with electric blue accents.
  * Contrast-checked: textPrimary (#F0F4FF) on background (#0B1120) = 16.8:1 ✓
  */
-export const RustAcademyBlueTheme: ThemeTokens = {
-  id: " RustAcademy-blue",
-  name: " RustAcademy Blue",
+export const Stellar Basic DAOBlueTheme: ThemeTokens = {
+  id: " Stellar Basic DAO-blue",
+  name: " Stellar Basic DAO Blue",
   isDark: true,
 
   background: "#0B1120",
@@ -450,13 +450,13 @@ export const PulsefyPurpleTheme: ThemeTokens = {
 export const ThemeRegistry: Record<ThemeId, ThemeTokens> = {
   light: LightTheme,
   dark: DarkTheme,
-  " RustAcademy-blue": RustAcademyBlueTheme,
+  " Stellar Basic DAO-blue": Stellar Basic DAOBlueTheme,
   "pulsefy-purple": PulsefyPurpleTheme,
 } as const;
 
 /** Brand themes only (for the selector). */
 export const BrandThemes: readonly ThemeTokens[] = [
-  RustAcademyBlueTheme,
+  Stellar Basic DAOBlueTheme,
   PulsefyPurpleTheme,
 ] as const;
 
