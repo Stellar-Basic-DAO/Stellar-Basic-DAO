@@ -1,6 +1,6 @@
 # RustAcademy Contract Events Schema
 
-This document defines the indexer-facing contract event schema for ` RustAcademy`.
+This document defines the indexer-facing contract event schema for `RustAcademy`.
 
 ## Design goals
 
