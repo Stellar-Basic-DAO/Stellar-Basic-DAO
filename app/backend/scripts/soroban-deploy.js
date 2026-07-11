@@ -79,8 +79,8 @@ function parseArgs(argv) {
     }
     var network = ((_a = map.get("network")) !== null && _a !== void 0 ? _a : "testnet");
     var source = map.get("source");
-    var wasm = (_b = map.get("wasm")) !== null && _b !== void 0 ? _b : "app/contract/target/wasm32-unknown-unknown/release/ RustAcademy.wasm";
-    var contractName = (_c = map.get("contract-name")) !== null && _c !== void 0 ? _c : " RustAcademy";
+    var wasm = (_b = map.get("wasm")) !== null && _b !== void 0 ? _b : "app/contract/target/wasm32-unknown-unknown/release/stellar_basic_dao.wasm";
+    var contractName = (_c = map.get("contract-name")) !== null && _c !== void 0 ? _c : "stellar_basic_dao";
     if (!source) {
         throw new Error("--source is required");
     }

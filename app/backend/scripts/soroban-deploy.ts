@@ -33,8 +33,8 @@ function parseArgs(argv: string[]): Args {
   const source = map.get("source");
   const wasm =
     map.get("wasm") ??
-    "app/contract/target/wasm32-unknown-unknown/release/ RustAcademy.wasm";
-  const contractName = map.get("contract-name") ?? " RustAcademy";
+    "app/contract/target/wasm32-unknown-unknown/release/stellar_basic_dao.wasm";
+  const contractName = map.get("contract-name") ?? "stellar_basic_dao";
   if (!source) {
     throw new Error("--source is required");
   }
