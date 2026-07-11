@@ -539,7 +539,7 @@ const response = await fetch("http://localhost:3000/api-keys", {
 
 **Resolution:**
 
-1. The ` RustAcademy_CONTRACT_ID` environment variable is not set on the server.
+1. The `RustAcademy_CONTRACT_ID` environment variable is not set on the server.
 2. This is a server-side configuration issue — contact the RustAcademy team.
 3. In development, set it in your `.env` file:
    ```env
