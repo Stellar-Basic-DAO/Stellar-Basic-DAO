@@ -1,6 +1,6 @@
-# Contributing to RustAcademy
+# Contributing to Stellar Basic DAO
 
-Welcome! RustAcademy is an open-source platform and we actively welcome contributions from the community. This guide covers how to get started, what our standards are, and how the review process works.
+Welcome! **Stellar Basic DAO** (codename `RustAcademy` in source code and the deployed Soroban contract) is an open-source platform and we actively welcome contributions from the community. This guide covers how to get started, what our standards are, and how the review process works.
 
 ---
 
@@ -303,4 +303,4 @@ Look for issues labeled `good-first-issue` or `help-wanted` on GitHub.
 - Mobile app screens
 - Backend API endpoint documentation (Swagger)
 
-Top contributors earn XLM rewards and recognition in the platform — contributing to RustAcademy earns you contribution XP on the academy itself.
+Top contributors earn XLM rewards and recognition in the platform — contributing to Stellar Basic DAO earns you contribution XP on the academy itself.
