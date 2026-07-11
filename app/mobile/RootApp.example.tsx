@@ -13,14 +13,14 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { WalletProvider } from "./hooks/useWalletContext";
 import { NetworkGuardProvider } from "./contexts/NetworkGuardContext";
-import { ThemeProvider } from "./src/theme/ThemeContext";
+import { RustAcademyThemeProvider } from "./src/theme/ThemeContext";
 import { NotificationProvider } from "./components/notifications/NotificationContext";
 
 // ── Components ───────────────────────────────────────────────────────────────
 
 import { GlobalNetworkBanner } from "./components/wallet/GlobalNetworkBanner";
 import { WalletSyncBridge } from "./components/wallet/WalletSyncBridge";
-import { RootNavigator } from "./app/RootNavigator";
+// import { RootNavigator } from "./app/RootNavigator";
 
 /**
  * Root App Component
@@ -39,7 +39,7 @@ export default function RootApp() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <ThemeProvider>
+        <RustAcademyThemeProvider>
           <WalletProvider>
             {/* ← NetworkGuardProvider MUST come AFTER WalletProvider */}
             <NetworkGuardProvider expectedNetwork="testnet">
@@ -51,11 +51,11 @@ export default function RootApp() {
                 <WalletSyncBridge />
 
                 {/* Your app's main navigation */}
-                <RootNavigator />
+                {/* <RootNavigator /> */}
               </NotificationProvider>
             </NetworkGuardProvider>
           </WalletProvider>
-        </ThemeProvider>
+        </RustAcademyThemeProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

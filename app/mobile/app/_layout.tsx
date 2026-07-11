@@ -32,7 +32,7 @@ import {
 } from "../services/notification-routing";
 
 // ── Theme System v2 ──────────────────────────────────────────────────────────
-import { StellarBasicDAOThemeProvider, useTheme } from "../src/theme/ThemeContext";
+import { RustAcademyThemeProvider, useTheme } from "../src/theme/ThemeContext";
 import { invalidateOldCache } from "../services/cache";
 
 function useDeepLinkHandler(
@@ -104,9 +104,9 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <StellarBasicDAOThemeProvider>
+    <RustAcademyThemeProvider>
       <ThemeBridge />
-    </StellarBasicDAOThemeProvider>
+    </RustAcademyThemeProvider>
   );
 }
 
