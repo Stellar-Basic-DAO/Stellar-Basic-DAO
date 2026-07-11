@@ -1,5 +1,5 @@
 {
-  "name": "-rustacademy",
+  "name": "stellar-basic-dao",
   "private": true,
   "packageManager": "pnpm@10.33.0",
   "scripts": {
