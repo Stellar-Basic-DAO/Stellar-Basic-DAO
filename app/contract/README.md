@@ -205,7 +205,7 @@ cargo build --target wasm32-unknown-unknown --profile release-with-logs
 stellar contract deploy \
   --network testnet \
   --source <DEPLOYER_SECRET_KEY> \
-  --wasm target/wasm32-unknown-unknown/release/rust_academy.wasm
+  --wasm target/wasm32-unknown-unknown/release/stellar_basic_dao.wasm
 
 # Initialize
 stellar contract invoke \

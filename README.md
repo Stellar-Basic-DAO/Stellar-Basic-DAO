@@ -338,7 +338,7 @@ cargo test
 # Deploy to Stellar Testnet
 stellar contract deploy \
   --network testnet \
-  --wasm target/wasm32-unknown-unknown/release/rust_academy.wasm
+  --wasm target/wasm32-unknown-unknown/release/stellar_basic_dao.wasm
 ```
 
 ---
