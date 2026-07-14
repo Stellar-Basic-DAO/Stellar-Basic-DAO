@@ -7,7 +7,8 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "type-check": "turbo run type-check",
-    "test": "turbo run test"
+    "test": "turbo run test",
+    "test:root": "jest --config jest.config.js"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",

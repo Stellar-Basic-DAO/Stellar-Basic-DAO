@@ -30,6 +30,10 @@
         "^build"
       ]
     },
+    "test:root": {
+      "cache": false,
+      "dependsOn": []
+    },
     "test:e2e": {
       "dependsOn": [
         "build"
