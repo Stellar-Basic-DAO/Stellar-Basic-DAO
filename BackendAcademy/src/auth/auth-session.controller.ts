@@ -61,19 +61,23 @@ export class AuthSessionController {
    * Logout — revokes a single session identified by sessionId.
    * The sessionId is embedded in the refresh token payload but can also
    * be supplied directly by the client.
+   *
+   * Uses @Body instead of @Query to avoid leaking session IDs in server logs.
    */
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
-  logout(@Query('sessionId') sessionId: string): void {
+  logout(@Body('sessionId') sessionId: string): void {
     this.authSessionService.revokeSession(sessionId);
   }
 
   /**
    * Logout-all — revokes all active sessions for the given user.
+   *
+   * Uses @Body instead of @Query to avoid leaking user IDs in server logs.
    */
   @Post('logout-all')
   @HttpCode(HttpStatus.NO_CONTENT)
-  logoutAll(@Query('userId') userId: string): void {
+  logoutAll(@Body('userId') userId: string): void {
     this.authSessionService.revokeAllUserSessions(userId);
   }
 

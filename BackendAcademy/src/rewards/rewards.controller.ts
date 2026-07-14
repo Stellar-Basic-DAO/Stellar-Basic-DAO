@@ -103,9 +103,15 @@ export class RewardsController {
   @Get('leaderboard')
   @HttpCode(HttpStatus.OK)
   getLeaderboard(
-    @Query('topN', ParseIntPipe) topN: number,
+    @Query(
+      'topN',
+      new ParseIntPipe({ optional: true }),
+    )
+    topN: number = 100,
   ): LeaderboardResponse {
-    return this.rewardsService.getLeaderboard(topN);
+    // Clamp topN to prevent excessive queries
+    const clamped = Math.max(1, Math.min(1000, topN));
+    return this.rewardsService.getLeaderboard(clamped);
   }
 
   /**
