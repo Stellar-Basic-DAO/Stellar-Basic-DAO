@@ -5,6 +5,7 @@ import { JwtLearnerGuard } from './guards/jwt-learner.guard';
 import { JwtTutorGuard } from './guards/jwt-tutor.guard';
 import { JwtAdminGuard } from './guards/jwt-admin.guard';
 import { RolesGuard } from './guards/roles.guard';
+import { DevAuthGuard } from './guards/dev-auth.guard';
 import { AuthSessionService } from './auth-session.service';
 import { AuthSessionController } from './auth-session.controller';
 
@@ -30,6 +31,7 @@ import { AuthSessionController } from './auth-session.controller';
   ],
   exports: [
     JwtModule,
+    DevAuthGuard,
     JwtLearnerGuard,
     JwtTutorGuard,
     JwtAdminGuard,

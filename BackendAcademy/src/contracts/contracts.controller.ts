@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, UseGuards } from '@nestjs/common';
 import { ContractsService } from './contracts.service';
+import { DevAuthGuard } from '../auth/guards/dev-auth.guard';
 import {
   DeployContractDto,
   InvokeContractDto,
@@ -10,6 +11,7 @@ import {
 } from './dto/governance.dto';
 
 @Controller('contracts')
+@UseGuards(DevAuthGuard)
 export class ContractsController {
   constructor(private readonly contractsService: ContractsService) {}
 
