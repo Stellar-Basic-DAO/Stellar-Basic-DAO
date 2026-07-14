@@ -41,10 +41,13 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📚 Learning paths API: http://localhost:${PORT}/api/courses/learning-paths`);
-});
+// Only start the HTTP server when this file is run directly (not when imported for tests)
+// Jest automatically sets NODE_ENV=test, so this check prevents port binding during testing
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(`📚 Learning paths API: http://localhost:${PORT}/api/courses/learning-paths`);
+  });
+}
 
 export default app;
