@@ -90,4 +90,4 @@ Clients must resolve contract IDs dynamically based on the target network. Below
 | **Stellar Mainnet**     | `https://horizon.stellar.org`           | `CAS3HITBYZ...`        | Set post-audit upon deployment               |
 
 > [!IMPORTANT]
-> To comply with PR FE-31, both frontend and backend clients must consume these contract IDs from a centralized Contract Registry service, or fall back to the environment variable `RustAcademy_CONTRACT_ID` rather than embedding them directly in client source code.
+> To comply with PR FE-31, both frontend and backend clients must consume these contract IDs from a centralized Contract Registry service, or fall back to the environment variable `STELLAR_BASIC_DAO_CONTRACT_ID` rather than embedding them directly in client source code.

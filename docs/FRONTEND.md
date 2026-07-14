@@ -65,7 +65,7 @@ Create `app/frontend/.env.local` from the example:
 
 ```env
 # Backend API
-NEXT_PUBLIC_RUSTACADEMY_API_URL=http://localhost:4000
+NEXT_PUBLIC_STELLAR_BASIC_DAO_API_URL=http://localhost:4000
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
 # Stellar
