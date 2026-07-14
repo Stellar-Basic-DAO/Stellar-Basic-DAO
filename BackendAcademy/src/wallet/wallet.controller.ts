@@ -1,19 +1,22 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { WalletService } from './wallet.service';
 import { RegisterWalletDto, VerifyTransactionDto } from './dto/verify-transaction.dto';
-import { DevAuthGuard } from '../auth/guards/dev-auth.guard';
+import { JwtLearnerGuard } from '../auth/guards/jwt-learner.guard';
 
 @Controller('wallet')
-@UseGuards(DevAuthGuard)
+@UseGuards(JwtLearnerGuard)
 export class WalletController {
   constructor(private readonly walletService: WalletService) {}
 
   @Post('register')
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   async registerWallet(@Body() dto: RegisterWalletDto) {
     return this.walletService.registerWallet(dto);
   }
 
   @Post('verify')
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   async verifyTransaction(@Body() dto: VerifyTransactionDto) {
     return this.walletService.verifyTransaction(dto);
   }

@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Param, Body, UseGuards } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { ContractsService } from './contracts.service';
-import { DevAuthGuard } from '../auth/guards/dev-auth.guard';
+import { JwtAdminGuard } from '../auth/guards/jwt-admin.guard';
 import {
   DeployContractDto,
   InvokeContractDto,
@@ -11,7 +12,7 @@ import {
 } from './dto/governance.dto';
 
 @Controller('contracts')
-@UseGuards(DevAuthGuard)
+@UseGuards(JwtAdminGuard)
 export class ContractsController {
   constructor(private readonly contractsService: ContractsService) {}
 
@@ -21,6 +22,7 @@ export class ContractsController {
   }
 
   @Post('reputation/:userId')
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   updateReputation(
     @Param('userId') userId: string,
     @Body('score') score: number,
@@ -29,6 +31,7 @@ export class ContractsController {
   }
 
   @Post('certificates/issue')
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   issueCertificate(
     @Body('userId') userId: string,
     @Body('courseId') courseId: string,
@@ -47,6 +50,7 @@ export class ContractsController {
   }
 
   @Post('badges/issue')
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   issueBadge(
     @Body('userId') userId: string,
     @Body('badgeType') badgeType: string,
@@ -65,6 +69,7 @@ export class ContractsController {
   }
 
   @Post('payouts/create')
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   createPayout(
     @Body('userId') userId: string,
     @Body('amount') amount: number,
@@ -79,16 +84,19 @@ export class ContractsController {
   }
 
   @Post('payouts/:id/release')
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   releasePayout(@Param('id') id: string) {
     return this.contractsService.releasePayout(id);
   }
 
   @Post('invoke')
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   async invokeContract(@Body() dto: InvokeContractDto) {
     return this.contractsService.invokeContract(dto);
   }
 
   @Post('deploy')
+  @Throttle({ default: { limit: 3, ttl: 60_000 } })
   async deployContract(@Body() dto: DeployContractDto) {
     return this.contractsService.deployContract(dto);
   }
@@ -114,6 +122,7 @@ export class ContractsController {
   }
 
   @Post('governance/proposals')
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   createProposal(@Body() dto: CreateProposalDto) {
     return this.contractsService.createProposal(
       dto.title,
@@ -133,6 +142,7 @@ export class ContractsController {
   }
 
   @Post('governance/proposals/:id/vote')
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   castVote(@Param('id') id: string, @Body() dto: CastVoteDto) {
     return this.contractsService.castVote(id, dto.userId, dto.vote);
   }
