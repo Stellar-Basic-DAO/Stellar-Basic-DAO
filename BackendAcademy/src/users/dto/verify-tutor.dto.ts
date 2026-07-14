@@ -1,17 +1,16 @@
-import { IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
 
 /**
- * Body used by an admin to verify a tutor.
- * `adminId` should be supplied by an authenticated admin/role guard in the
- * REST layer in production; it is optional here for offline/test usage.
+ * Body used by an admin to verify a tutor profile.
+ * Records who performed the verification and an optional note.
  */
 export class VerifyTutorDto {
   @IsOptional()
-  @IsString()
+  @IsUUID()
   adminId?: string;
 
   @IsOptional()
   @IsString()
-  @MaxLength(500)
+  @MaxLength(1000)
   note?: string;
 }

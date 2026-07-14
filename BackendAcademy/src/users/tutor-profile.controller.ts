@@ -92,6 +92,8 @@ export class TutorProfileController {
   @Get(':id/reputation')
   async getReputation(@Param('id', ParseUUIDPipe) id: string) {
     return this.tutorService.getReputation(id);
+  }
+
   // ---- Verification lifecycle endpoints --------------------------------
 
   /**
