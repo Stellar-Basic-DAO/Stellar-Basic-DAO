@@ -1,18 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
+import { InvokeContractDto, DeployContractDto } from './dto/invoke-contract.dto';
 import {
   ReputationRecord,
   CertificateNft,
   BadgeNft,
   EscrowPayout,
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import { InvokeContractDto, DeployContractDto } from './dto/invoke-contract.dto';
-import {
   ContractDeployment,
   ContractHealth,
   ContractInfo,
   ContractInvocationResult,
+  GovernanceProposal,
 } from './interfaces/contracts.interface';
 
 @Injectable()
@@ -21,6 +19,14 @@ export class ContractsService {
   private readonly certificates = new Map<string, CertificateNft>();
   private readonly badges = new Map<string, BadgeNft>();
   private readonly payouts = new Map<string, EscrowPayout>();
+  private readonly deployments = new Map<string, ContractDeployment>();
+  private readonly invocationHistory = new Map<string, ContractInvocationResult[]>();
+  private readonly invocationCounts = new Map<string, number>();
+  private readonly proposals = new Map<string, GovernanceProposal>();
+
+  // ------------------------------------------------------------------
+  // Reputation
+  // ------------------------------------------------------------------
 
   getReputation(userId: string) {
     return this.reputations.get(userId) ?? { userId, score: 0, level: 1, lastUpdated: new Date() };
@@ -35,6 +41,10 @@ export class ContractsService {
     this.reputations.set(userId, record);
     return { success: true, data: record };
   }
+
+  // ------------------------------------------------------------------
+  // Certificates
+  // ------------------------------------------------------------------
 
   issueCertificate(userId: string, courseId: string) {
     const cert: CertificateNft = {
@@ -54,6 +64,10 @@ export class ContractsService {
     return Array.from(this.certificates.values()).filter((c) => c.userId === userId);
   }
 
+  // ------------------------------------------------------------------
+  // Badges
+  // ------------------------------------------------------------------
+
   issueBadge(userId: string, badgeType: string) {
     const badge: BadgeNft = {
       id: `badge_${uuidv4()}`, userId, badgeType, issuedAt: new Date(),
@@ -71,6 +85,10 @@ export class ContractsService {
   listBadges(userId: string) {
     return Array.from(this.badges.values()).filter((b) => b.userId === userId);
   }
+
+  // ------------------------------------------------------------------
+  // Payouts
+  // ------------------------------------------------------------------
 
   createPayout(userId: string, amount: number, currency: string) {
     const payout: EscrowPayout = {
@@ -92,9 +110,11 @@ export class ContractsService {
     if (!payout) throw new NotFoundException('Payout not found');
     payout.status = 'completed';
     return { success: true, data: payout };
-  private readonly deployments = new Map<string, ContractDeployment>();
-  private readonly invocationHistory = new Map<string, ContractInvocationResult[]>();
-  private readonly invocationCounts = new Map<string, number>();
+  }
+
+  // ------------------------------------------------------------------
+  // Contract Deployment & Invocation
+  // ------------------------------------------------------------------
 
   async invokeContract(dto: InvokeContractDto): Promise<ContractInvocationResult> {
     this.validateContractId(dto.contractId);
@@ -167,8 +187,6 @@ export class ContractsService {
       deployedAt: deployment.deployedAt,
       methods: ['transfer', 'balance', 'approve', 'burn', 'mint', 'allowance'],
     };
-    this.proposals.set(proposal.id, proposal);
-    return { success: true, message: 'Proposal created', data: proposal };
   }
 
   async getContractHealth(contractId: string): Promise<ContractHealth> {
@@ -204,6 +222,50 @@ export class ContractsService {
   async getAllDeployments(): Promise<ContractDeployment[]> {
     return Array.from(this.deployments.values());
   }
+
+  // ------------------------------------------------------------------
+  // Governance Proposals
+  // ------------------------------------------------------------------
+
+  createProposal(title: string, description: string, proposer: string) {
+    const proposal: GovernanceProposal = {
+      id: uuidv4(),
+      title,
+      description,
+      proposer,
+      yesVotes: 0,
+      noVotes: 0,
+      status: 'active',
+      createdAt: new Date(),
+    };
+    this.proposals.set(proposal.id, proposal);
+    return { success: true, message: 'Proposal created', data: proposal };
+  }
+
+  getProposal(id: string) {
+    const proposal = this.proposals.get(id);
+    if (!proposal) throw new NotFoundException('Proposal not found');
+    return proposal;
+  }
+
+  listProposals() {
+    return Array.from(this.proposals.values());
+  }
+
+  castVote(proposalId: string, userId: string, vote: 'yes' | 'no') {
+    const proposal = this.proposals.get(proposalId);
+    if (!proposal) throw new NotFoundException('Proposal not found');
+    if (proposal.status !== 'active') {
+      return { success: false, message: 'Proposal is no longer active' };
+    }
+    if (vote === 'yes') proposal.yesVotes++;
+    else proposal.noVotes++;
+    return { success: true, message: `Vote cast as ${vote}`, data: proposal };
+  }
+
+  // ------------------------------------------------------------------
+  // Private helpers
+  // ------------------------------------------------------------------
 
   private validateContractId(contractId: string): void {
     if (!contractId || !contractId.trim()) {
@@ -295,24 +357,5 @@ export class ContractsService {
     }
     this.invocationHistory.get(contractId)!.push(result);
     this.invocationCounts.set(contractId, (this.invocationCounts.get(contractId) ?? 0) + 1);
-  getProposal(id: string) {
-    const proposal = this.proposals.get(id);
-    if (!proposal) throw new NotFoundException('Proposal not found');
-    return proposal;
-  }
-
-  listProposals() {
-    return Array.from(this.proposals.values());
-  }
-
-  castVote(proposalId: string, userId: string, vote: 'yes' | 'no') {
-    const proposal = this.proposals.get(proposalId);
-    if (!proposal) throw new NotFoundException('Proposal not found');
-    if (proposal.status !== 'active') {
-      return { success: false, message: 'Proposal is no longer active' };
-    }
-    if (vote === 'yes') proposal.yesVotes++;
-    else proposal.noVotes++;
-    return { success: true, message: `Vote cast as ${vote}`, data: proposal };
   }
 }

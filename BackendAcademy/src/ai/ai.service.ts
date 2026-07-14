@@ -182,10 +182,6 @@ export class AiService {
     return response;
   }
 
-  private generateAiResponse(
-    userMessage: string,
-    context?: Record<string, any>,
-  ): string {
   private fallbackResponse(userMessage: string): string {
     const responses = [
       "That's a great question! Let me help you work through that. Based on what you've shared, I think the first thing you should understand is the core concept behind the problem.",

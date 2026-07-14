@@ -6,12 +6,5 @@ import { ContractsService } from './contracts.service';
   controllers: [ContractsController],
   providers: [ContractsService],
   exports: [ContractsService],
-import { ContractHealthController } from './contracts.controller';
-import { ContractHealthService } from './contracts.service';
-
-@Module({
-  controllers: [ContractsController],
-  providers: [ContractsService],
-  exports: [ContractsService],
 })
 export class ContractsModule {}

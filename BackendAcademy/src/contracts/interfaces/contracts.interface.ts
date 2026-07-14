@@ -27,6 +27,9 @@ export interface EscrowPayout {
   amount: number;
   currency: string;
   status: 'pending' | 'completed' | 'failed';
+  createdAt: Date;
+}
+
 export interface ContractInvocation {
   contractId: string;
   method: string;
@@ -69,6 +72,8 @@ export interface ContractInfo {
   deployedBy: string;
   deployedAt: Date;
   methods: string[];
+}
+
 export interface GovernanceProposal {
   id: string;
   title: string;
