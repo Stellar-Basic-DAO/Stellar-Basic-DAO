@@ -307,7 +307,10 @@ pnpm install
 
 # 3. Copy environment files
 cp app/backend/.env.example app/backend/.env
-cp BackendAcademy/.env.example BackendAcademy/.env
+
+# BackendAcademy does not yet have a .env.example file.
+# Create one manually when needed:
+# cp BackendAcademy/.env.example BackendAcademy/.env
 
 # 4. Start local infrastructure (PostgreSQL + Redis)
 docker-compose up -d
