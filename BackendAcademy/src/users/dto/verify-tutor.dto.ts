@@ -6,7 +6,7 @@ import { IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
  */
 export class VerifyTutorDto {
   @IsOptional()
-  @IsUUID()
+  @IsString()
   adminId?: string;
 
   @IsOptional()
