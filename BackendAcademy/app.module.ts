@@ -1,17 +1,15 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { UsersModule } from './users/users.module';
 
+/**
+ * Root BackendAcademy bootstrap module.
+ *
+ * This module is intentionally minimal — it delegates all functionality
+ * to the main NestJS application defined in `src/app.module.ts`.
+ *
+ * @see src/app.module.ts
+ */
 @Module({
-  imports: [
-    // Global config — reads .env automatically
-    ConfigModule.forRoot({ isGlobal: true }),
-
-    // Feature modules
-    UsersModule,
-    // TODO: AuthModule
-    // TODO: DatabaseModule (TypeORM / Prisma)
-  ],
+  imports: [],
   controllers: [],
   providers: [],
 })

@@ -49,7 +49,6 @@ import { SessionsModule } from './sessions/sessions.module';
     SecurityModule,
     ChallengesModule,
     AiModule,
-    ContractsModule,
     LeaderboardModule,
     AnalyticsModule,
     WalletModule,
