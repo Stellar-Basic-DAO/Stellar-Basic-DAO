@@ -132,10 +132,11 @@ export class SearchService {
         ? courses
         : courses.filter((course) => {
             const courseTags = this.normalize(course.tags);
-            const courseCategories = this.normalize([
-              course.category,
-              ...(course.categories ?? []),
-            ]);
+            const courseCategories = this.normalize(
+              [course.category, ...(course.categories ?? [])].filter(
+                (c): c is string => c != null,
+              ),
+            );
             const checks = [
               ...tags.map((tag) => courseTags.includes(tag)),
               ...categories.map((category) =>

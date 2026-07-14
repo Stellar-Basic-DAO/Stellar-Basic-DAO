@@ -63,12 +63,12 @@ describe('SearchService', () => {
       tags: ['axum'],
     });
 
-    await expect(
-      searchService.searchCourses({
-        tags: ['ownership'],
-        categories: ['backend'],
-      }),
-    ).resolves.toEqual(
+    const result = await searchService.searchCourses({
+      tags: ['ownership'],
+      categories: ['backend'],
+    });
+    expect(result.total).toBe(2);
+    expect(result.entries).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ id: ownership.id }),
         expect.objectContaining({ title: 'Web APIs' }),
@@ -88,12 +88,13 @@ describe('SearchService', () => {
       tags: ['rust'],
     });
 
-    await expect(
-      searchService.searchCourses({
-        tags: ['rust', 'async'],
-        categories: ['backend'],
-        match: 'all',
-      }),
-    ).resolves.toEqual([expect.objectContaining({ id: matchingCourse.id })]);
+    const result = await searchService.searchCourses({
+      tags: ['rust', 'async'],
+      categories: ['backend'],
+      match: 'all',
+    });
+    expect(result.entries).toEqual([
+      expect.objectContaining({ id: matchingCourse.id }),
+    ]);
   });
 });
