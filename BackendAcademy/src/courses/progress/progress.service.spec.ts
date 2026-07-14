@@ -1,5 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { CourseService } from '../course.service';
+import { CourseEntity } from '../course.entity';
+import { CourseRevisionEntity } from '../course-revision.entity';
 import { CourseLevel } from '../interfaces/course-level.enum';
 import { RegisterCourseProgressDto } from './dto/register-course-progress.dto';
 import {

@@ -1,14 +1,36 @@
 import { CourseEntity } from '../courses/course.entity';
 import { CourseLevel } from '../courses';
 import { CourseService } from '../courses/course.service';
+import { CourseRevisionEntity } from '../courses/course-revision.entity';
 import { SearchService } from './search.service';
+
+class MockRewardsService {
+  recordActivity(userId: string, _date: Date, xp: number) {
+    return { userId, xpAwarded: xp, level: 1, xpToNextLevel: 0 };
+  }
+}
+
+class InMemoryRepo<T extends { id: string }> {
+  protected readonly rows = new Map<string, T>();
+  create(partial: Partial<T> = {}): T { return partial as T; }
+  async save(entity: T): Promise<T> { this.rows.set(entity.id, entity); return entity; }
+  async findOne(opts: { where: Partial<T> }): Promise<T | null> {
+    return Array.from(this.rows.values()).find(r =>
+      Object.entries(opts.where).every(([k, v]) => (r as any)[k] === v)
+    ) ?? null;
+  }
+  async find(): Promise<T[]> { return Array.from(this.rows.values()); }
+}
 
 describe('SearchService', () => {
   let courseService: CourseService;
   let searchService: SearchService;
 
   beforeEach(() => {
-    courseService = new CourseService();
+    const courseRepo = new InMemoryRepo<CourseEntity>() as unknown as import('typeorm').Repository<CourseEntity>;
+    const revisionRepo = new InMemoryRepo<CourseRevisionEntity>() as unknown as import('typeorm').Repository<CourseRevisionEntity>;
+    const rewardsService = new MockRewardsService() as any;
+    courseService = new CourseService(courseRepo, revisionRepo, rewardsService);
     searchService = new SearchService(courseService);
   });
 
