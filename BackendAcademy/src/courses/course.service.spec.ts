@@ -4,6 +4,13 @@ import { CourseEntity } from './course.entity';
 import { CourseRevisionEntity } from './course-revision.entity';
 import { CourseLevel } from './interfaces/course-level.enum';
 
+// Mock RewardsService since CourseService depends on it
+class MockRewardsService {
+  recordActivity(userId: string, _date: Date, xp: number) {
+    return { userId, xpAwarded: xp, level: 1, xpToNextLevel: 0 };
+  }
+}
+
 /**
  * Minimal in-memory mock that imitates the subset of the
  * `Repository<T>` surface that `CourseService` relies on.  Tests construct
@@ -118,6 +125,7 @@ describe('CourseService', () => {
     service = new CourseService(
       courseRepo as unknown as import('typeorm').Repository<CourseEntity>,
       revisionRepo as unknown as import('typeorm').Repository<CourseRevisionEntity>,
+      new MockRewardsService() as any,
     );
   });
 

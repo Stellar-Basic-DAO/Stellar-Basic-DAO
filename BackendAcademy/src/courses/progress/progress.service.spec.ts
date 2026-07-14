@@ -16,8 +16,32 @@ import { ProgressService } from './progress.service';
  * snapshot progress against stable ids. Course ids come from
  * courseService.create() because CreateCourseDto doesn't accept an id.
  */
+// Minimal mock for RewardsService (required by CourseService constructor)
+class MockRewardsService {
+  recordActivity(userId: string, _date: Date, xp: number) {
+    return { userId, xpAwarded: xp, level: 1, xpToNextLevel: 0 };
+  }
+}
+
+class InMemoryRepo<T extends { id: string }> {
+  protected readonly rows = new Map<string, T>();
+  create(partial: Partial<T> = {}): T { return partial as T; }
+  async save(entity: T): Promise<T> { this.rows.set(entity.id, entity); return entity; }
+  async findOne(opts: { where: Partial<T> }): Promise<T | null> {
+    return Array.from(this.rows.values()).find(r =>
+      Object.entries(opts.where).every(([k, v]) => (r as any)[k] === v)
+    ) ?? null;
+  }
+  async find(): Promise<T[]> { return Array.from(this.rows.values()); }
+  async remove(entity: T): Promise<T> { this.rows.delete(entity.id); return entity; }
+  async count(): Promise<number> { return this.rows.size; }
+}
+
 async function buildServices() {
-  const courseService = new CourseService();
+  const courseRepo = new InMemoryRepo<CourseEntity>() as unknown as import('typeorm').Repository<CourseEntity>;
+  const revisionRepo = new InMemoryRepo<CourseRevisionEntity>() as unknown as import('typeorm').Repository<CourseRevisionEntity>;
+  const rewardsService = new MockRewardsService() as any;
+  const courseService = new CourseService(courseRepo, revisionRepo, rewardsService);
   const service = new ProgressService(courseService);
   const x = await courseService.create({
     title: 'Rust Basics',
