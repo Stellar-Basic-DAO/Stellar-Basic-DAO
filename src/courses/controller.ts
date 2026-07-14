@@ -30,7 +30,7 @@ export class LearningPathController {
    */
   async getLearningPathById(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const path = learningPathService.getLearningPathById(id);
 
       if (!path) {
@@ -61,7 +61,7 @@ export class LearningPathController {
    */
   async getLearningPathsByTrack(req: Request, res: Response): Promise<void> {
     try {
-      const { track } = req.params;
+      const track = req.params.track as string;
       
       if (!['beginner', 'intermediate', 'advanced'].includes(track)) {
         res.status(400).json({
@@ -117,7 +117,7 @@ export class LearningPathController {
    */
   async getNextPathRecommendation(req: Request, res: Response): Promise<void> {
     try {
-      const { currentLevel } = req.params;
+      const currentLevel = req.params.currentLevel as string;
       
       if (!['beginner', 'intermediate', 'advanced'].includes(currentLevel)) {
         res.status(400).json({
