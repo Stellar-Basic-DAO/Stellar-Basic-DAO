@@ -1,0 +1,52 @@
+version: '3.8'
+
+# ── docker-compose.override.yml ──────────────────────────────────────────────
+# Local development infrastructure for BackendAcademy.
+#
+# Provides PostgreSQL 16 and Redis 7 for services that need database
+# or caching support.
+#
+# Usage:
+#   docker compose -f docker-compose.override.yml up -d
+#   docker compose -f docker-compose.override.yml down
+#
+# When run alongside the devcontainer's docker-compose.yml, pass both files:
+#   docker compose \
+#     -f .devcontainer/docker-compose.yml \
+#     -f docker-compose.override.yml \
+#     up -d
+# ──────────────────────────────────────────────────────────────────────────────
+
+services:
+  # ── PostgreSQL 16 ──────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: stellar-basic-dao-academy
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Redis 7 ────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres-data:
