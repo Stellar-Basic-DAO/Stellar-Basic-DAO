@@ -50,7 +50,7 @@ describe("Soroban tooling services", () => {
       const contractRegistryService = {
         getRegistry: jest.fn().mockResolvedValue({
           data: {
-            RustAcademy: {
+           RustAcademy: {
               id: "C123",
               wasmHash: "not-the-same-hash",
               version: 1,

@@ -44,7 +44,7 @@ console.log("📋 To run this migration, you have several options:\n");
 console.log("Option 1: Using psql (PostgreSQL command-line tool)");
 console.log("--------------------------------------------------");
 console.log(
-  "psql -U postgres -d  RustAcademy -f src/crash-reporting/migrations/001_create_crash_reporting_tables.sql\n",
+  "psql -U postgres -d RustAcademy -f src/crash-reporting/migrations/001_create_crash_reporting_tables.sql\n",
 );
 
 console.log("Option 2: Using Supabase Dashboard");

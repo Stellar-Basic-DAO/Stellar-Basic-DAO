@@ -81,9 +81,9 @@ export class WebhookDeliveryHandler implements JobHandler<WebhookDeliveryPayload
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X- Stellar Basic DAO-Event": eventType,
-          "X- Stellar Basic DAO-Event-Id": eventId,
-          "User-Agent": " Stellar Basic DAO-Webhook/1.0",
+          "X-Stellar-Basic-DAO-Event": eventType,
+          "X-Stellar-Basic-DAO-Event-Id": eventId,
+          "User-Agent": "Stellar-Basic-DAO-Webhook/1.0",
         },
         body: JSON.stringify({
           eventType,

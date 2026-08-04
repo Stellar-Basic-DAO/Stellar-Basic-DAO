@@ -143,9 +143,9 @@ async function bootstrap() {
 
   // Swagger setup
   const swaggerConfig = new DocumentBuilder()
-    .setTitle(" Stellar Basic DAO Backend")
+    .setTitle("Stellar Basic DAO Backend")
     .setDescription(
-      " Stellar Basic DAO API documentation - A Stellar-based exchange platform. " +
+      "Stellar Basic DAO API documentation - A Stellar-based exchange platform. " +
         `Currently connected to: ${configService.network}`,
     )
     .setVersion("v1")

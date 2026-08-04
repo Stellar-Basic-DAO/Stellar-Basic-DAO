@@ -35,11 +35,11 @@
 ### Option A: Install the client package (when published)
 
 ```bash
-npm install @ Stellar Basic DAO/sdk
+npm install @stellar-basic-dao/sdk
 # or
-pnpm add @ Stellar Basic DAO/sdk
+pnpm add @stellar-basic-dao/sdk
 # or
-yarn add @ Stellar Basic DAO/sdk
+yarn add @stellar-basic-dao/sdk
 ```
 
 ### Option B: Use the lightweight HTTP client (zero dependencies)
@@ -55,9 +55,9 @@ The Stellar Basic DAO API is a standard REST API. You can use `fetch` directly:
 ## Configuration
 
 ```typescript
-//  Stellar Basic DAO.config.ts
+// stellar-basic-dao.config.ts
 export const RustAcademy_CONFIG = {
-  // Base URL — change to https://api. Stellar Basic DAO.example.com for production
+  // Base URL — change to https://api.RustAcademy.example.com for production
   baseUrl: process.env.RustAcademy_BASE_URL || "http://localhost:3000",
 
   // Optional API key for higher rate limits
@@ -129,7 +129,7 @@ const headers = {
 ### 1. Initialize the client
 
 ```typescript
-class Stellar Basic DAOClient {
+class StellarBasicDAOClient {
   private baseUrl: string;
   private apiKey?: string;
 
@@ -157,7 +157,7 @@ class Stellar Basic DAOClient {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Stellar Basic DAOError(error);
+      throw new StellarBasicDAOError(error);
     }
 
     return response.json();
@@ -255,7 +255,7 @@ class Stellar Basic DAOClient {
 }
 
 // Custom error class
-class Stellar Basic DAOError extends Error {
+class StellarBasicDAOError extends Error {
   code: string;
   requestId?: string;
   fields?: Record<string, string[]>;
@@ -272,7 +272,7 @@ class Stellar Basic DAOError extends Error {
     this.code = error.error.code;
     this.requestId = error.error.request_id;
     this.fields = error.error.fields;
-    this.name = " Stellar Basic DAOError";
+    this.name = " StellarBasicDAOError";
   }
 }
 ```
@@ -280,7 +280,7 @@ class Stellar Basic DAOError extends Error {
 ### 2. Use the client
 
 ```typescript
-const client = new Stellar Basic DAOClient(
+const client = new StellarBasicDAOClient(
   "http://localhost:3000",
   "qk_live_abc123...", // optional
 );
@@ -331,7 +331,7 @@ DRAFT → ACTIVE → EXPIRED → (re-activated) → ACTIVE
 **Link Format:**
 
 ```
-https://app. Stellar Basic DAO.example.com/pay?amount=50.5000000&asset=XLM&username=alice_123
+https://app.RustAcademy.example.com/pay?amount=50.5000000&asset=XLM&username=alice_123
 ```
 
 ### Usernames
@@ -562,7 +562,7 @@ async function requestWithRetry<T>(
       return await fn();
     } catch (error) {
       if (
-        error instanceof Stellar Basic DAOError &&
+        error instanceof StellarBasicDAOError &&
         error.code === "RATE_LIMIT_EXCEEDED"
       ) {
         const retryAfter = 30; // seconds
@@ -590,7 +590,7 @@ All errors follow the same JSON shape. See the [Error Contract](./ERROR-CODES.md
 try {
   await client.createUsername("taken_name", publicKey);
 } catch (error) {
-  if (error instanceof Stellar Basic DAOError) {
+  if (error instanceof StellarBasicDAOError) {
     switch (error.code) {
       case "USERNAME_TAKEN":
         // Username already registered
@@ -618,7 +618,7 @@ Stellar Basic DAO uses cursor-based pagination for list endpoints. Pass the `cur
 
 ```typescript
 async function getAllTransactions(
-  client: Stellar Basic DAOClient,
+  client: StellarBasicDAOClient,
   accountId: string,
 ): Promise<Transaction[]> {
   const all: Transaction[] = [];
@@ -651,7 +651,7 @@ import { createHmac } from "crypto";
 
 function verifyWebhookSignature(
   payload: string, // raw request body
-  signature: string, // x- Stellar Basic DAO-signature header
+  signature: string, // x-stellar-basic-dao-signature header
   secret: string, // from webhook registration response
 ): boolean {
   const expected = createHmac("sha256", secret).update(payload).digest("hex");
@@ -659,8 +659,8 @@ function verifyWebhookSignature(
 }
 
 // Express example
-app.post("/webhooks/ Stellar Basic DAO", (req, res) => {
-  const signature = req.headers["x- Stellar Basic DAO-signature"] as string;
+app.post("/webhooks/stellar-basic-dao", (req, res) => {
+  const signature = req.headers["x-stellar-basic-dao-signature"] as string;
   const raw = JSON.stringify(req.body); // use raw body parser in production
   const secret = process.env.RustAcademy_WEBHOOK_SECRET!;
 

@@ -101,7 +101,7 @@ export class AnalyticsController {
         payments,
         query.reportType,
       );
-      const filename = ` Stellar Basic DAO-${query.reportType}-report.pdf`;
+      const filename = `stellar-basic-dao-${query.reportType}-report.pdf`;
       res.header("Content-Type", "application/pdf");
       res.attachment(filename);
       return res.send(pdf);
@@ -112,7 +112,7 @@ export class AnalyticsController {
       payments,
       query.reportType,
     );
-    const filename = ` Stellar Basic DAO-${query.reportType}-report.csv`;
+    const filename = `stellar-basic-dao-${query.reportType}-report.csv`;
     res.header("Content-Type", "text/csv");
     res.attachment(filename);
     return res.send(csv);

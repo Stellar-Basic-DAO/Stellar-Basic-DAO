@@ -1,4 +1,4 @@
--- Usernames table for  RustAcademy.to/yourname
+-- Usernames table for RustAcademy.to/yourname
 -- Uniqueness is enforced at the database to avoid race conditions on concurrent creation.
 
 CREATE TABLE IF NOT EXISTS usernames (

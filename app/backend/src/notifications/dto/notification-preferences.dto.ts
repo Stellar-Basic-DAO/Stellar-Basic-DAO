@@ -50,7 +50,7 @@ export class UpsertNotificationPreferenceDto {
   @IsString()
   pushToken?: string;
 
-  @ApiPropertyOptional({ example: "https://example.com/hooks/ Stellar Basic DAO" })
+  @ApiPropertyOptional({ example: "https://example.com/hooks/stellar-basic-dao" })
   @IsOptional()
   @IsUrl()
   webhookUrl?: string;

@@ -131,7 +131,7 @@ export class ContractRegistryResponseDto {
 
   @ApiProperty({
     example: {
-      RustAcademy: {
+     RustAcademy: {
         id: "CD2J6K7T3YJ77QXZP3EXAMPLE",
         wasmHash: "abcdef1234567890",
         version: 1,

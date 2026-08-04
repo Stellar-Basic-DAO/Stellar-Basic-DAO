@@ -102,14 +102,14 @@ Users can interact with the bot using these commands:
 ```
 User: /start
 
-Bot: 👋 Welcome to  Stellar Basic DAO Notifications Bot!
+Bot: 👋 Welcome to Stellar Basic DAO Notifications Bot!
 
      I'll send you real-time alerts for:
      • 💰 Payments received
      • 🔒 Escrow deposits, withdrawals, and refunds
 
-     To link your  Stellar Basic DAO account:
-     1. Copy your  Stellar Basic DAO public key (starts with G...)
+     To link your Stellar Basic DAO account:
+     1. Copy your Stellar Basic DAO public key (starts with G...)
      2. Send it to me in the next message
 
      Or use /cancel anytime to abort.
@@ -118,7 +118,7 @@ User: GDQERHRWJYV7JHRP5V7DWJVI6Y5ABZP3YRH7DKYJRBEGJQKE6IQEOSY2
 
 Bot: 🔐 Verification Required
 
-     To confirm you own this  Stellar Basic DAO account, please visit:
+     To confirm you own this Stellar Basic DAO account, please visit:
      `GDQERHRWJYV7JHRP5V7DWJVI6Y5ABZP3YRH7DKYJRBEGJQKE6IQEOSY2`
 
      And enter this verification code:
@@ -126,7 +126,7 @@ Bot: 🔐 Verification Required
 
      Once verified, I'll start sending you notifications!
 
-[User verifies on  Stellar Basic DAO platform]
+[User verifies on Stellar Basic DAO platform]
 
 Bot: ✅ Your account has been verified! You'll now receive
      real-time notifications for all activity.

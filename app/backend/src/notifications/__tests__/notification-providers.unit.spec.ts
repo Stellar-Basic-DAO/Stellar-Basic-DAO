@@ -52,7 +52,7 @@ beforeEach(() => {
 describe("SendGridEmailProvider", () => {
   const provider = new SendGridEmailProvider(
     "SG.test-key",
-    "noreply@ Stellar Basic DAO.to",
+    "noreply@RustAcademy.to",
   );
 
   it("throws when no email on preference", async () => {

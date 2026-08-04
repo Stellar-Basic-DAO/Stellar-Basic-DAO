@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS recurring_payment_links (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   
   -- Link identification
-  username TEXT,  -- Optional:  RustAcademy.to/username route
+  username TEXT,  -- Optional: RustAcademy.to/username route
   destination TEXT,  -- Optional: direct Stellar public key (G...)
   
   -- Payment details

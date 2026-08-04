@@ -168,7 +168,7 @@ const response = await fetch(`http://localhost:3000/webhooks/${publicKey}`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    webhookUrl: "https://example.com/webhooks/ Stellar Basic DAO",
+    webhookUrl: "https://example.com/webhooks/stellar-basic-dao",
     label: "Production webhook",
     events: ["payment.received", "EscrowDeposited", "EscrowWithdrawn"],
     minAmountStroops: 100000000, // 1 XLM minimum
@@ -188,7 +188,7 @@ const response = await fetch(`http://localhost:3000/webhooks/${publicKey}`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    webhookUrl: "https://example.com/webhooks/ Stellar Basic DAO",
+    webhookUrl: "https://example.com/webhooks/stellar-basic-dao",
     events: null, // null = all events
   }),
 });
@@ -199,7 +199,7 @@ const response = await fetch(`http://localhost:3000/webhooks/${publicKey}`, {
 ```typescript
 import { createHmac, timingSafeEqual } from 'crypto';
 
-function verify Stellar Basic DAOWebhook(
+function verifyStellarBasicDAOWebhook(
   rawBody: string,
   signatureHeader: string,
   secret: string,
@@ -230,8 +230,8 @@ const app = express();
 // Use raw body parser for webhook verification
 app.use("/webhooks", express.raw({ type: "application/json" }));
 
-app.post("/webhooks/ Stellar Basic DAO", (req, res) => {
-  const signature = req.headers["x- Stellar Basic DAO-signature"] as string;
+app.post("/webhooks/stellar-basic-dao", (req, res) => {
+  const signature = req.headers["x-stellar-basic-dao-signature"] as string;
   const secret = process.env.RustAcademy_WEBHOOK_SECRET!;
   const rawBody = req.body.toString();
 
@@ -303,13 +303,13 @@ app.listen(3001, () => console.log("Webhook server running on :3001"));
 ### Next.js API Route Handler
 
 ```typescript
-// app/api/webhooks/ Stellar Basic DAO/route.ts
+// app/api/webhooks/stellar-basic-dao/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { createHmac } from "crypto";
 
 export async function POST(request: NextRequest) {
   const rawBody = await request.text();
-  const signature = request.headers.get("x- Stellar Basic DAO-signature") || "";
+  const signature = request.headers.get("x-stellar-basic-dao-signature") || "";
   const secret = process.env.RustAcademy_WEBHOOK_SECRET!;
 
   // Verify signature

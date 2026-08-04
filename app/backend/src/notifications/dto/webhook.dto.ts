@@ -31,7 +31,7 @@ const WEBHOOK_EVENTS: NotificationEventType[] = [
 
 export class CreateWebhookDto {
   @ApiProperty({
-    example: "https://example.com/webhooks/ Stellar Basic DAO",
+    example: "https://example.com/webhooks/stellar-basic-dao",
     description: "URL to receive webhook POST requests",
   })
   @IsUrl(
@@ -90,7 +90,7 @@ export class CreateWebhookDto {
 
 export class UpdateWebhookDto {
   @ApiPropertyOptional({
-    example: "https://example.com/webhooks/ Stellar Basic DAO",
+    example: "https://example.com/webhooks/stellar-basic-dao",
     description: "URL to receive webhook POST requests",
   })
   @IsOptional()

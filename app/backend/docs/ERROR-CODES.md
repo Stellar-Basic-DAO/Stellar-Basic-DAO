@@ -543,7 +543,7 @@ const response = await fetch("http://localhost:3000/api-keys", {
 2. This is a server-side configuration issue — contact the Stellar Basic DAO team.
 3. In development, set it in your `.env` file:
    ```env
-    RustAcademy_CONTRACT_ID=CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM
+   RustAcademy_CONTRACT_ID=CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM
    ```
 
 ---

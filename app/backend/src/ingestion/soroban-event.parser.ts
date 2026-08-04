@@ -122,7 +122,7 @@ interface TopicLayout {
  * Parses raw Horizon Soroban contract event records into typed domain events.
  *
  * Canonical topic layout:
- *  Topic[0] = stable  Stellar Basic DAO testnet namespace (for example TOPIC_ESCROW)
+ *  Topic[0] = stable Stellar Basic DAO testnet namespace (for example TOPIC_ESCROW)
  *  Topic[1] = event name symbol
  *  Topic[2+] = indexed fields (commitment, owner, admin, etc.)
  *

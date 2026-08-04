@@ -34,7 +34,7 @@ export class DeployContractSpecDto {
 
   @ApiProperty({
     example:
-      "app/contract/target/wasm32-unknown-unknown/release/ Stellar Basic DAO.wasm",
+      "app/contract/target/wasm32-unknown-unknown/release/stellar_basic_dao.wasm",
   })
   @IsString()
   @IsNotEmpty()

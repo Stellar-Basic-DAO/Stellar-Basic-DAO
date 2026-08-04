@@ -36,7 +36,7 @@ describe("Soroban Contract Flow (e2e)", () => {
       !process.env.RustAcademy_CONTRACT_ID
     ) {
       throw new Error(
-        "Skipping E2E: Missing E2E_WALLET_SECRET or  RustAcademy_CONTRACT_ID. Ensure this runs in gated CI.",
+        "Skipping E2E: Missing E2E_WALLET_SECRET or RustAcademy_CONTRACT_ID. Ensure this runs in gated CI.",
       );
     }
 
