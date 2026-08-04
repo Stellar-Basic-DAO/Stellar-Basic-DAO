@@ -60,10 +60,10 @@ npm run test:smoke:soroban
 
 ```bash
 # Test against production
-SMOKE_TEST_BASE_URL=https://api.stellar-basic-dao.io npm run test:smoke:all
+SMOKE_TEST_BASE_URL=https://api.RustAcademy.to npm run test:smoke:all
 
 # Test against staging
-SMOKE_TEST_BASE_URL=https://api-staging.stellar-basic-dao.io npm run test:smoke:all
+SMOKE_TEST_BASE_URL=https://api-staging.RustAcademy.to npm run test:smoke:all
 ```
 
 ### CI/CD Integration
@@ -85,8 +85,8 @@ The smoke test workflow (`.github/workflows/smoke-tests.yml`):
 
 ### Environment Detection
 
-- **Production**: `https://api.stellar-basic-dao.io`
-- **Staging**: `https://api-staging.stellar-basic-dao.io`
+- **Production**: `https://api.RustAcademy.to`
+- **Staging**: `https://api-staging.RustAcademy.to`
 - **Development**: `http://localhost:3000`
 
 ### Workflow Steps
@@ -191,7 +191,7 @@ import {
 
 const reporter = new SmokeTestReporter(
   "production",
-  "https://api.stellar-basic-dao.io",
+  "https://api.RustAcademy.to",
 );
 reporter.start();
 

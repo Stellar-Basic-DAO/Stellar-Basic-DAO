@@ -51,10 +51,10 @@ jobs:
             echo "env=${{ github.event.deployment.environment }}" >> $GITHUB_OUTPUT
           else
             if [ "${{ inputs.environment }}" == "production" ]; then
-              echo "url=https://api.stellar-basic-dao.io" >> $GITHUB_OUTPUT
+              echo "url=https://api.RustAcademy.to" >> $GITHUB_OUTPUT
               echo "env=production" >> $GITHUB_OUTPUT
             elif [ "${{ inputs.environment }}" == "staging" ]; then
-              echo "url=https://api-staging.stellar-basic-dao.io" >> $GITHUB_OUTPUT
+              echo "url=https://api-staging.RustAcademy.to" >> $GITHUB_OUTPUT
               echo "env=staging" >> $GITHUB_OUTPUT
             else
               echo "url=http://localhost:4000" >> $GITHUB_OUTPUT
