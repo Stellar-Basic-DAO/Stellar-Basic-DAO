@@ -13,7 +13,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { WalletProvider } from "./hooks/useWalletContext";
 import { NetworkGuardProvider } from "./contexts/NetworkGuardContext";
-import { RustAcademyThemeProvider } from "./src/theme/ThemeContext";
+import {RustAcademyThemeProvider } from "./src/theme/ThemeContext";
 import { NotificationProvider } from "./components/notifications/NotificationContext";
 
 // ── Components ───────────────────────────────────────────────────────────────

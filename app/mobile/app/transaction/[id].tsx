@@ -120,7 +120,7 @@ function buildShareMessage(transaction: TransactionItem): string {
   const asset = formatAsset(transaction.asset);
   const deepLink = buildReceiptLink(transaction);
   const lines = [
-    " Stellar Basic DAO Transaction Receipt",
+    "Stellar Basic DAO Transaction Receipt",
     "───────────────────────────",
     `Amount: ${transaction.amount} ${asset}`,
     `Status: ${transaction.status}`,
@@ -132,12 +132,12 @@ function buildShareMessage(transaction: TransactionItem): string {
   lines.push(`Hash: ${transaction.txHash}`);
   lines.push(`View: ${deepLink}`);
   lines.push("───────────────────────────");
-  lines.push("Powered by  Stellar Basic DAO");
+  lines.push("Powered by Stellar Basic DAO");
   return lines.join("\n");
 }
 
 function buildReceiptLink(transaction: TransactionItem): string {
-  return `https:// Stellar Basic DAO.to/transaction/${transaction.pagingToken}`;
+  return `https://RustAcademy.to/transaction/${transaction.pagingToken}`;
 }
 
 function escapeXml(value: string): string {
@@ -203,7 +203,7 @@ function buildReceiptSvg(
   <circle cx="120" cy="620" r="220" fill="#10B981" opacity="0.12" />
   <rect x="40" y="40" width="1120" height="640" rx="32" fill="${secondarySurfaceColor}" opacity="0.92" />
   <rect x="48" y="48" width="1104" height="10" rx="5" fill="url(#accent)" />
-  <text x="48" y="112" fill="#93C5FD" font-family="Arial" font-size="24" font-weight="700"> Stellar Basic DAO Receipt v2</text>
+  <text x="48" y="112" fill="#93C5FD" font-family="Arial" font-size="24" font-weight="700">Stellar Basic DAO Receipt v2</text>
   <text x="48" y="176" fill="#FFFFFF" font-family="Arial" font-size="72" font-weight="700">${escapeXml(
     transaction.amount,
   )} ${escapeXml(formatAsset(transaction.asset))}</text>
@@ -289,7 +289,7 @@ export default function TransactionDetailScreen() {
       const svg = buildReceiptSvg(tx, receiptVisibility);
       const cacheDirectory = fileSystemCompat.cacheDirectory ?? "";
       if (cacheDirectory) {
-        const fileUri = `${cacheDirectory} Stellar Basic DAO-receipt-${tx.pagingToken}.svg`;
+        const fileUri = `${cacheDirectory}stellar-basic-dao-receipt-${tx.pagingToken}.svg`;
         await FileSystem.writeAsStringAsync(fileUri, svg, {
           encoding: "utf8",
         });
@@ -297,7 +297,7 @@ export default function TransactionDetailScreen() {
         if (canShareFile) {
           await Sharing.shareAsync(fileUri, {
             mimeType: "image/svg+xml",
-            dialogTitle: "Share  Stellar Basic DAO receipt",
+            dialogTitle: "Share Stellar Basic DAO receipt",
             UTI: "public.svg-image",
           });
           await Haptics.notificationAsync(
@@ -310,7 +310,7 @@ export default function TransactionDetailScreen() {
       const message = buildShareMessage(tx);
       await Share.share({
         message,
-        title: " Stellar Basic DAO Transaction Receipt",
+        title: "Stellar Basic DAO Transaction Receipt",
       });
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (error) {
@@ -455,7 +455,7 @@ export default function TransactionDetailScreen() {
               ]}
             >
               <View style={styles.receiptGlow} />
-              <Text style={styles.receiptEyebrow}> Stellar Basic DAO Receipt v2</Text>
+              <Text style={styles.receiptEyebrow}>Stellar Basic DAO Receipt v2</Text>
               <Text style={styles.receiptAmount}>
                 {formattedAmount} {assetLabel}
               </Text>

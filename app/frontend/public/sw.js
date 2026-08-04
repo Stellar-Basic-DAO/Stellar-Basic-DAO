@@ -1,4 +1,4 @@
-const CACHE_NAME = " RustAcademy-v1";
+const CACHE_NAME = "RustAcademy-v1";
 const OFFLINE_URL = "/offline";
 
 const ASSETS_TO_CACHE = ["/", "/offline", "/icon.png", "/favicon.ico"];

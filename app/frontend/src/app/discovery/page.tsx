@@ -82,7 +82,7 @@ export default function DiscoveryPage() {
           Discover{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">
             {" "}
-            Stellar Basic DAO
+           Stellar Basic DAO
           </span>
         </h1>
         <p className="text-xl text-neutral-400 leading-relaxed">

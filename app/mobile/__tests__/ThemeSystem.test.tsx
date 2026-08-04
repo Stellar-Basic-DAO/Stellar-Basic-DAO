@@ -10,11 +10,11 @@ import { act, create } from "react-test-renderer";
 import { Text, View } from "react-native";
 
 // ── Theme imports ────────────────────────────────────────────────────────────
-import { RustAcademyThemeProvider, useTheme } from "../src/theme/ThemeContext";
+import {RustAcademyThemeProvider, useTheme } from "../src/theme/ThemeContext";
 import {
   LightTheme,
   DarkTheme,
-  RustAcademyBlueTheme,
+ RustAcademyBlueTheme,
   PulsefyPurpleTheme,
   type ThemeTokens,
   type StatusColors,
@@ -195,7 +195,7 @@ describe("Theme System v2", () => {
       expect(Object.keys(ThemeRegistry)).toHaveLength(4);
       expect(ThemeRegistry["light"]).toBe(LightTheme);
       expect(ThemeRegistry["dark"]).toBe(DarkTheme);
-      expect(ThemeRegistry[" Stellar Basic DAO-blue"]).toBe(RustAcademyBlueTheme);
+      expect(ThemeRegistry["stellar-basic-dao-blue"]).toBe(RustAcademyBlueTheme);
       expect(ThemeRegistry["pulsefy-purple"]).toBe(PulsefyPurpleTheme);
     });
   });

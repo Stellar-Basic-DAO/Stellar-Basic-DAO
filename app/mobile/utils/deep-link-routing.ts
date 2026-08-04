@@ -1,7 +1,22 @@
 import { parsePaymentLink } from './parse-payment-link';
 
-const RustAcademy_HOSTS = ["STELLAR_BASIC_DAO.to", "www. Stellar Basic DAO.to"];
-const RustAcademy_SCHEME = "RustAcademy";
+// NOTE: hosts are lowercase because the URL parser normalizes hostnames to
+// lowercase (matches the applinks:RustAcademy.to / intent-filter registrations).
+const RustAcademy_HOSTS = ['rustacademy.to', 'www.rustacademy.to'];
+const RustAcademy_SCHEME = 'RustAcademy';
+
+function isAppScheme(url: URL): boolean {
+  // url.protocol is lowercased by the URL parser (e.g. "rustacademy:")
+  return (
+    url.protocol.slice(0, -1).toLowerCase() === RustAcademy_SCHEME.toLowerCase()
+  );
+}
+
+function isAppHost(url: URL): boolean {
+  // React Native's URL polyfill preserves hostname case, so compare
+  // case-insensitively (works in both Node and RN environments).
+  return RustAcademy_HOSTS.some((host) => url.hostname.toLowerCase() === host);
+}
 
 export interface DeepLinkRoute {
   pathname: string;
@@ -19,23 +34,25 @@ export function parseTransactionDeepLink(
   try {
     const url = new URL(raw);
 
-    if (url.protocol === `${RustAcademy_SCHEME}:`) {
+    if (isAppScheme(url)) {
+      // Scheme links route via the host: RustAcademy://transaction/<id>
+      const isTransaction = url.hostname.toLowerCase() === 'transaction';
       const segments = url.pathname
         .replace(/^\/+/, '')
         .split('/')
         .filter(Boolean);
-      if (segments.length >= 2 && segments[0] === 'transaction') {
+      if (isTransaction && segments.length >= 1) {
         const params: Record<string, string> = {};
         url.searchParams.forEach((value, key) => {
           params[key] = value;
         });
-        return { id: segments[1], params };
+        return { id: segments[0], params };
       }
     }
 
     if (
       (url.protocol === 'https:' || url.protocol === 'http:') &&
-      RustAcademy_HOSTS.includes(url.hostname)
+      isAppHost(url)
     ) {
       const segments = url.pathname
         .replace(/^\/+/, '')
@@ -59,9 +76,9 @@ export function isStellarBasicDaoLink(raw: string): boolean {
   try {
     const url = new URL(raw);
     return (
-      url.protocol === `${RustAcademy_SCHEME}:` ||
+      isAppScheme(url) ||
       ((url.protocol === 'https:' || url.protocol === 'http:') &&
-        RustAcademy_HOSTS.includes(url.hostname))
+        isAppHost(url))
     );
   } catch {
     return false;
@@ -72,13 +89,20 @@ function looksLikePaymentLink(raw: string): boolean {
   try {
     const url = new URL(raw);
 
-    if (url.protocol === `${RustAcademy_SCHEME}:`) {
-      const segments = url.pathname.replace(/^\/+/, '').split('/').filter(Boolean);
-      return segments.length === 0 || segments[0] !== 'transaction';
+    if (isAppScheme(url)) {
+      // transaction-hosted scheme links are transaction links; everything
+      // else under the scheme is treated as a payment link
+      return url.hostname.toLowerCase() !== 'transaction';
     }
 
-    if ((url.protocol === 'https:' || url.protocol === 'http:') && RustAcademy_HOSTS.includes(url.hostname)) {
-      const segments = url.pathname.replace(/^\/+/, '').split('/').filter(Boolean);
+    if (
+      (url.protocol === 'https:' || url.protocol === 'http:') &&
+      isAppHost(url)
+    ) {
+      const segments = url.pathname
+        .replace(/^\/+/, '')
+        .split('/')
+        .filter(Boolean);
       return segments.length === 0 || segments[0] !== 'transaction';
     }
 

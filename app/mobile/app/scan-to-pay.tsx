@@ -96,7 +96,7 @@ export default function ScanToPayScreen() {
           Camera Permission Required
         </Text>
         <Text style={[styles.permBody, { color: theme.textSecondary }]}>
-          Stellar Basic DAO needs camera access to scan QR payment codes.
+         Stellar Basic DAO needs camera access to scan QR payment codes.
         </Text>
         <Pressable
           style={[

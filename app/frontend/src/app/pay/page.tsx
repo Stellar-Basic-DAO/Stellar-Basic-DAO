@@ -90,7 +90,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      site: "@ Stellar Basic DAO",
+      site: "@RustAcademy",
       title,
       description,
       images: [dynamicOgImage],
@@ -118,7 +118,7 @@ function buildFallbackMetadata(
     },
     twitter: {
       card: "summary_large_image",
-      site: "@ Stellar Basic DAO",
+      site: "@RustAcademy",
       title: FALLBACK_PAYMENT_METADATA.title,
       description: FALLBACK_PAYMENT_METADATA.description,
       images: [ogImage],

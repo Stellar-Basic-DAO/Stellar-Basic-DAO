@@ -1,14 +1,14 @@
 import { parseTransactionDeepLink } from "../utils/deep-link-routing";
 
 describe("parseTransactionDeepLink", () => {
-  it("parses  RustAcademy://transaction/:id scheme", () => {
-    const result = parseTransactionDeepLink(" RustAcademy://transaction/12345");
+  it("parses RustAcademy://transaction/:id scheme", () => {
+    const result = parseTransactionDeepLink("RustAcademy://transaction/12345");
     expect(result).toEqual({ id: "12345", params: {} });
   });
 
-  it("parses  RustAcademy://transaction/:id with query params", () => {
+  it("parses RustAcademy://transaction/:id with query params", () => {
     const result = parseTransactionDeepLink(
-      " RustAcademy://transaction/12345?amount=100&asset=XLM&status=Success",
+      "RustAcademy://transaction/12345?amount=100&asset=XLM&status=Success",
     );
     expect(result).toEqual({
       id: "12345",
@@ -16,16 +16,16 @@ describe("parseTransactionDeepLink", () => {
     });
   });
 
-  it("parses https:// RustAcademy.to/transaction/:id", () => {
+  it("parses https://RustAcademy.to/transaction/:id", () => {
     const result = parseTransactionDeepLink(
-      "https:// RustAcademy.to/transaction/abc-def",
+      "https://RustAcademy.to/transaction/abc-def",
     );
     expect(result).toEqual({ id: "abc-def", params: {} });
   });
 
-  it("parses https://www. RustAcademy.to/transaction/:id with query params", () => {
+  it("parses https://www.RustAcademy.to/transaction/:id with query params", () => {
     const result = parseTransactionDeepLink(
-      "https://www. RustAcademy.to/transaction/999?memo=hello&txHash=0xabc",
+      "https://www.RustAcademy.to/transaction/999?memo=hello&txHash=0xabc",
     );
     expect(result).toEqual({
       id: "999",
@@ -34,7 +34,7 @@ describe("parseTransactionDeepLink", () => {
   });
 
   it("returns null for non-transaction paths", () => {
-    const result = parseTransactionDeepLink(" RustAcademy://payment/alice");
+    const result = parseTransactionDeepLink("RustAcademy://payment/alice");
     expect(result).toBeNull();
   });
 

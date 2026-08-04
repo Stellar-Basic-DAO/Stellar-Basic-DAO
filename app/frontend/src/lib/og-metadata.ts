@@ -20,7 +20,7 @@ export function getSiteUrl(): string {
       /:4000$/,
       ":3000",
     ) ||
-    "https:// Stellar Basic DAO.to"
+    "https://RustAcademy.to"
   );
 }
 
@@ -98,7 +98,7 @@ export function buildPaymentTitle(meta: SafePaymentMeta): string {
     case "DRAFT":
       return `Pay ${meta.amount} ${meta.asset} to @${meta.username}`;
     default:
-      return `Payment link —  Stellar Basic DAO`;
+      return `Payment link —Stellar Basic DAO`;
   }
 }
 
@@ -125,7 +125,7 @@ export function buildPaymentDescription(meta: SafePaymentMeta): string {
 export const FALLBACK_PAYMENT_METADATA = {
   title: `Payment Link — ${SITE_NAME}`,
   description:
-    "This payment link is unavailable, expired, or invalid. Visit  Stellar Basic DAO to create a new one.",
+    "This payment link is unavailable, expired, or invalid. Visit Stellar Basic DAO to create a new one.",
   ogImage: DEFAULT_OG_IMAGE,
 } as const;
 

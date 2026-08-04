@@ -6,13 +6,13 @@ import "./globals.css";
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  "https:// Stellar Basic DAO.to";
+  "https://RustAcademy.to";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
     default: "RustAcademy",
-    template: "%s |  Stellar Basic DAO",
+    template: "%s | Stellar Basic DAO",
   },
   description: "Privacy-focused payments on Stellar",
   applicationName: "RustAcademy",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "RustAcademy",
-    title: " Stellar Basic DAO — Privacy-focused payments on Stellar",
+    title: "Stellar Basic DAO — Privacy-focused payments on Stellar",
     description: "Privacy-focused payments on Stellar",
     url: siteUrl,
     images: [
@@ -30,14 +30,14 @@ export const metadata: Metadata = {
         url: "/api/og",
         width: 1200,
         height: 630,
-        alt: " Stellar Basic DAO — Privacy-focused payments on Stellar",
+        alt: "Stellar Basic DAO — Privacy-focused payments on Stellar",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    site: "@ Stellar Basic DAO",
-    title: " Stellar Basic DAO — Privacy-focused payments on Stellar",
+    site: "@RustAcademy",
+    title: "Stellar Basic DAO — Privacy-focused payments on Stellar",
     description: "Privacy-focused payments on Stellar",
     images: ["/api/og"],
   },
@@ -72,7 +72,7 @@ export default function RootLayout({
               <p>Copyright 2026 Stellar Basic DAO Platform. Built by Pulsefy.</p>
               <div className="flex gap-8 underline decoration-white/10 underline-offset-4 hover:decoration-white/20">
                 <a
-                  href="https://github.com/pulsefy/ Stellar Basic DAO"
+                  href="https://github.com/Stellar-Basic-DAO/Stellar-Basic-DAO"
                   target="_blank"
                   rel="noreferrer"
                 >

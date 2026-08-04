@@ -10,7 +10,7 @@ export {
   type StatusColors,
   LightTheme,
   DarkTheme,
-  RustAcademyBlueTheme,
+ RustAcademyBlueTheme,
   PulsefyPurpleTheme,
   ThemeRegistry,
   BrandThemes,
@@ -18,7 +18,7 @@ export {
 } from "./tokens";
 
 export {
-  RustAcademyThemeProvider,
+ RustAcademyThemeProvider,
   useTheme,
   type ThemeContextValue,
   type ThemeProviderProps,

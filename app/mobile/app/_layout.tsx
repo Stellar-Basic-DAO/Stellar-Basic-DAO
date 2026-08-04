@@ -32,7 +32,7 @@ import {
 } from "../services/notification-routing";
 
 // ── Theme System v2 ──────────────────────────────────────────────────────────
-import { RustAcademyThemeProvider, useTheme } from "../src/theme/ThemeContext";
+import {RustAcademyThemeProvider, useTheme } from "../src/theme/ThemeContext";
 import { invalidateOldCache } from "../services/cache";
 
 function useDeepLinkHandler(

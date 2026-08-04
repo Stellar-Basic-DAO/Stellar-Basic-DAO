@@ -1,7 +1,20 @@
-const RustAcademy_HOSTS = ["STELLAR_BASIC_DAO.to", "www. Stellar Basic DAO.to"];
+// NOTE: hosts are lowercase because the URL parser normalizes hostnames to
+// lowercase (matches the applinks:RustAcademy.to / intent-filter registrations).
+const RustAcademy_HOSTS = ["rustacademy.to", "www.rustacademy.to"];
 const RustAcademy_SCHEME = "RustAcademy";
 
-const EXPIRES_PARAM = "expires";
+function isAppScheme(url: URL): boolean {
+  // url.protocol is lowercased by the URL parser (e.g. "rustacademy:")
+  return (
+    url.protocol.slice(0, -1).toLowerCase() === RustAcademy_SCHEME.toLowerCase()
+  );
+}
+
+function isAppHost(url: URL): boolean {
+  // React Native's URL polyfill preserves hostname case, so compare
+  // case-insensitively (works in both Node and RN environments).
+  return RustAcademy_HOSTS.some((host) => url.hostname.toLowerCase() === host);
+}
 
 const ASSET_WHITELIST = ["XLM", "USDC", "AQUA", "yXLM"] as const;
 type AssetCode = (typeof ASSET_WHITELIST)[number];
@@ -29,8 +42,8 @@ function extractParts(
   try {
     const url = new URL(raw);
 
-    if (url.protocol === `${RustAcademy_SCHEME}:`) {
-      //  RustAcademy://username?amount=...  –  hostname holds the username
+    if (isAppScheme(url)) {
+      // RustAcademy://username?amount=...  –  hostname holds the username
       const username =
         url.hostname || url.pathname.replace(/^\/+/, "").split("/")[0];
       return username ? { username, params: url.searchParams } : null;
@@ -38,7 +51,7 @@ function extractParts(
 
     if (
       (url.protocol === "https:" || url.protocol === "http:") &&
-      RustAcademy_HOSTS.includes(url.hostname)
+      isAppHost(url)
     ) {
       const segments = url.pathname
         .replace(/^\/+/, "")
@@ -61,7 +74,7 @@ export function parsePaymentLink(raw: string): ParseResult {
 
   const parts = extractParts(trimmed);
   if (!parts) {
-    return { valid: false, error: "Not a valid  Stellar Basic DAO link" };
+    return { valid: false, error: "Not a valid Stellar Basic DAO link" };
   }
 
   const { username, params } = parts;

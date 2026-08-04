@@ -44,8 +44,8 @@ export async function generateMetadata({
   });
   const dynamicOgImage = `${siteUrl}/api/og?${ogImageParams.toString()}`;
 
-  const title = `@${safeUsername} — Pay with  Stellar Basic DAO`;
-  const description = `Send a payment to @${safeUsername} on the Stellar network using  Stellar Basic DAO. Fast, private, and fee-efficient.`;
+  const title = `@${safeUsername} — Pay with Stellar Basic DAO`;
+  const description = `Send a payment to @${safeUsername} on the Stellar network using Stellar Basic DAO. Fast, private, and fee-efficient.`;
 
   return {
     title: `${title} | ${SITE_NAME}`,
@@ -64,13 +64,13 @@ export async function generateMetadata({
           url: dynamicOgImage,
           width: 1200,
           height: 630,
-          alt: `${safeUsername} on  Stellar Basic DAO`,
+          alt: `${safeUsername} on Stellar Basic DAO`,
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      site: "@ Stellar Basic DAO",
+      site: "@RustAcademy",
       title,
       description,
       images: [dynamicOgImage],
@@ -94,7 +94,7 @@ function buildProfileFallback(siteUrl: string): Metadata {
     },
     twitter: {
       card: "summary_large_image",
-      site: "@ Stellar Basic DAO",
+      site: "@RustAcademy",
       title: `Profile not found — ${SITE_NAME}`,
       description: SITE_DESCRIPTION,
       images: [ogImage],

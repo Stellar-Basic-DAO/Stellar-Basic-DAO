@@ -15,14 +15,14 @@ const initialMembers: TeamMember[] = [
   {
     id: "1",
     name: "John Doe",
-    email: "john@ Stellar Basic DAO.to",
+    email: "john@RustAcademy.to",
     role: "admin",
     status: "active",
   },
   {
     id: "2",
     name: "Sarah Smith",
-    email: "sarah@ Stellar Basic DAO.to",
+    email: "sarah@RustAcademy.to",
     role: "operator",
     status: "active",
   },

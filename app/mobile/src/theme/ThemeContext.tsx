@@ -6,7 +6,7 @@
  *   - `brand` requires a selected `brandThemeId`.
  *
  * Per-profile persistence is handled via AsyncStorage with the key pattern:
- *   `@ Stellar Basic DAO/theme/<profileId>`.
+ *   `@RustAcademy/theme/<profileId>`.
  */
 
 import React, {
@@ -35,7 +35,7 @@ import {
 
 /** Build the AsyncStorage key for a given profile. */
 function storageKey(profileId: string): string {
-  return `@ Stellar Basic DAO/theme/${profileId}`;
+  return `@RustAcademy/theme/${profileId}`;
 }
 
 export interface PersistedThemePreference {
@@ -220,7 +220,7 @@ export function useTheme(): ThemeContextValue {
   const ctx = useContext(ThemeContext);
   if (!ctx) {
     throw new Error(
-      "useTheme must be used within a < RustAcademyThemeProvider>",
+      "useTheme must be used within a <RustAcademyThemeProvider>",
     );
   }
   return ctx;

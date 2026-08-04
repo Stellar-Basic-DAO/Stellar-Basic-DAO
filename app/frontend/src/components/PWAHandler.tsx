@@ -31,7 +31,7 @@ export function PWAHandler() {
                 // New content is available; please refresh.
                 if (
                   confirm(
-                    "A new version of  Stellar Basic DAO is available. Refresh now?",
+                    "A new version of Stellar Basic DAO is available. Refresh now?",
                   )
                 ) {
                   window.location.reload();
