@@ -274,6 +274,7 @@ describe("WalletProvider", () => {
     });
 
     it("preserves network after disconnect", async () => {
+      const randomSpy = jest.spyOn(Math, "random").mockReturnValue(0.5);
       const tree = renderWithProvider();
 
       await act(async () => {});
@@ -288,6 +289,7 @@ describe("WalletProvider", () => {
 
       expect(capturedWallet!.wallet.network).toBe("mainnet");
 
+      randomSpy.mockRestore();
       tree.unmount();
     });
   });
@@ -355,6 +357,7 @@ describe("WalletProvider", () => {
     });
 
     it("recovers from mismatch by switching network back to testnet", async () => {
+      const randomSpy = jest.spyOn(Math, "random").mockReturnValue(0.5);
       const tree = renderWithProvider();
 
       await act(async () => {});
@@ -374,6 +377,7 @@ describe("WalletProvider", () => {
 
       expect(capturedWallet!.wallet.network).toBe("testnet");
 
+      randomSpy.mockRestore();
       tree.unmount();
     });
 

@@ -13,10 +13,12 @@ const CARD_RE = /\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b/g;
 
 export function redactPII(value: unknown): unknown {
   if (typeof value === "string") {
+    // Order matters: card numbers are also matched by the phone pattern, so
+    // redact cards before phones.
     return value
       .replace(EMAIL_RE, "[REDACTED_EMAIL]")
-      .replace(PHONE_RE, "[REDACTED_PHONE]")
-      .replace(CARD_RE, "[REDACTED_CARD]");
+      .replace(CARD_RE, "[REDACTED_CARD]")
+      .replace(PHONE_RE, "[REDACTED_PHONE]");
   }
 
   if (Array.isArray(value)) {
