@@ -1,4 +1,4 @@
-//! Hot-path budget benchmarks for the  Stellar Basic DAO contract.
+//! Hot-path budget benchmarks for the Stellar Basic DAO contract.
 //!
 //! Uses Soroban's built-in `env.budget()` metering to measure CPU instruction
 //! count and memory bytes for each hot-path function.

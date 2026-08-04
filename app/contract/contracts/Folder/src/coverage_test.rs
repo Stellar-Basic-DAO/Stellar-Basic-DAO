@@ -1,4 +1,4 @@
-//! Coverage-completion tests for  Stellar Basic DAO contract modules.
+//! Coverage-completion tests for Stellar Basic DAO contract modules.
 //!
 //! This module uses [`TestContext`] and [`assert_helpers`] to cover code paths
 //! not reached by the existing integration tests in `test.rs`.

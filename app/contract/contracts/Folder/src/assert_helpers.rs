@@ -1,4 +1,4 @@
-//! Custom assertion helpers for  Stellar Basic DAO-specific types.
+//! Custom assertion helpers for Stellar Basic DAO-specific types.
 //!
 //! Reduces boilerplate in test assertions for [`EscrowStatus`], commitment
 //! verification, and contract error matching.

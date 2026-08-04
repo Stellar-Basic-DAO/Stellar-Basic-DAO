@@ -20,7 +20,7 @@ use soroban_sdk::{
     Address, Bytes, BytesN, ConversionError, Env, InvokeError, Map, Symbol, TryIntoVal, Val, Vec,
 };
 
-///  Stellar Basic DAO contract integration tests.
+/// Stellar Basic DAO contract integration tests.
 ///
 /// ## Upgrade / regression suite
 ///

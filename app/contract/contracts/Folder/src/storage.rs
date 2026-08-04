@@ -1,6 +1,6 @@
-//! #  Stellar Basic DAO Storage Schema
+//! # Stellar Basic DAO Storage Schema
 //!
-//! This module defines the persistent storage layout for the  Stellar Basic DAO contract.
+//! This module defines the persistent storage layout for the Stellar Basic DAO contract.
 //! All long-term data is stored via the [`DataKey`] enum, which centralises key
 //! construction and ensures type-safe storage access.
 //!

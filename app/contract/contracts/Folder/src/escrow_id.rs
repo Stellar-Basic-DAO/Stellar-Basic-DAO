@@ -53,7 +53,7 @@ use crate::errors:: StellarBasicDAOError;
 /// Bump the version suffix (`v1` → `v2`) if the canonical encoding ever
 /// changes; this guarantees that clients and storage from different
 /// versions cannot collide.
-pub const ESCROW_ID_DOMAIN_TAG: &[u8] = b" Stellar Basic DAO::ESCROW_ID::v1";
+pub const ESCROW_ID_DOMAIN_TAG: &[u8] = b"stellar_basic_dao::ESCROW_ID::v1";
 
 /// Arbiter presence tag for canonical serialization.
 const ARBITER_TAG_NONE: u8 = 0;
@@ -140,7 +140,7 @@ pub fn derive_escrow_id(
 ///
 /// Distinct from [`ESCROW_ID_DOMAIN_TAG`] to prevent cross-protocol collisions
 /// between full-payment and partial-payment escrow IDs.
-pub const PARTIAL_ESCROW_ID_DOMAIN_TAG: &[u8] = b" Stellar Basic DAO::PARTIAL_ESCROW_ID::v1";
+pub const PARTIAL_ESCROW_ID_DOMAIN_TAG: &[u8] = b"stellar_basic_dao::PARTIAL_ESCROW_ID::v1";
 
 /// Derive a deterministic 32-byte escrow id for a partial-payment deposit.
 ///

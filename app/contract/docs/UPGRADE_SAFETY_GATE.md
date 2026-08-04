@@ -386,5 +386,5 @@ A: Look for `UpgradeStarted` events without a corresponding `UpgradeCompleted` i
 
 - [Soroban Contract Upgrade Guide](https://developers.stellar.org/build/guides/soroban-migration)
 - [ Stellar Basic DAO Invariant Checks](./UPGRADE_SAFETY_GATE.md) (this file)
-- [`storage.rs::assert_post_upgrade_invariants()`](../contracts/ Stellar Basic DAO/src/storage.rs)
-- [`admin.rs::start_upgrade()`, `complete_upgrade()`](../contracts/ Stellar Basic DAO/src/admin.rs)
+- [`storage.rs::assert_post_upgrade_invariants()`](../contracts/Folder/src/storage.rs)
+- [`admin.rs::start_upgrade()`, `complete_upgrade()`](../contracts/Folder/src/admin.rs)

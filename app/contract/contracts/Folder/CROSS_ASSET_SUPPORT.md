@@ -61,7 +61,7 @@ pub fn deposit(
     salt: Bytes,
     timeout_secs: u64,
     arbiter: Option<Address>,
-) -> Result<BytesN<32>,  Stellar Basic DAOError>
+) -> Result<BytesN<32>,  StellarBasicDAOError>
 ```
 
 #### Withdrawal
@@ -75,7 +75,7 @@ pub fn withdraw(
     commitment: BytesN<32>,
     to: Address,
     salt: Bytes,
-) -> Result<bool,  Stellar Basic DAOError>
+) -> Result<bool,  StellarBasicDAOError>
 ```
 
 #### Refund
@@ -86,7 +86,7 @@ pub fn refund(
     env: Env,
     commitment: BytesN<32>,
     caller: Address,
-) -> Result<(),  Stellar Basic DAOError>
+) -> Result<(),  StellarBasicDAOError>
 ```
 
 ## Key Design Decisions

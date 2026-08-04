@@ -22,7 +22,7 @@ This document describes the **regression test suite** used to future-proof Stell
 
 ## How to run the regression suite
 
-From the **contract directory** (`app/contract/contracts/ Stellar Basic DAO/`):
+From the **contract directory** (`app/contract/contracts/Folder/`):
 
 ```sh
 # Run only the combined golden-path smoke test (fast)
@@ -41,7 +41,7 @@ cargo test
 From the **repository root**, using the workspace:
 
 ```sh
-cargo test -p  Stellar Basic DAO
+cargo test -p stellar_basic_dao
 ```
 
 Snapshots are stored under `test_snapshots/`. If your environment generates or checks snapshots (e.g. via Soroban CLI), ensure they are updated only when behavior is intentionally changed.

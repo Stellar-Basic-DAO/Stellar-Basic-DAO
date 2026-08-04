@@ -61,7 +61,7 @@ cargo build --target wasm32-unknown-unknown --profile release-with-logs
 Expected contract artifact path:
 
 ```text
-target/wasm32-unknown-unknown/release/ Stellar Basic DAO.wasm
+target/wasm32-unknown-unknown/release/stellar_basic_dao.wasm
 ```
 
 ## Test
@@ -113,7 +113,7 @@ In another terminal:
 cd app/contract
 
 stellar contract deploy \
-  --wasm target/wasm32v1-none/release/ Stellar Basic DAO.wasm \
+  --wasm target/wasm32v1-none/release/stellar_basic_dao.wasm \
   --source default
 ```
 
@@ -136,7 +136,7 @@ Record the result in [environment-registry.toml](environment-registry.toml).
 cd app/contract
 
 stellar contract deploy \
-  --wasm target/wasm32v1-none/release/ Stellar Basic DAO.wasm \
+  --wasm target/wasm32v1-none/release/stellar_basic_dao.wasm \
   --source test \
   --network testnet
 ```
@@ -168,7 +168,7 @@ Mainnet promotion also requires the registry entry to be reviewed and approved.
 cd app/contract
 
 stellar contract deploy \
-  --wasm target/wasm32v1-none/release/ Stellar Basic DAO.wasm \
+  --wasm target/wasm32v1-none/release/stellar_basic_dao.wasm \
   --source main \
   --network mainnet
 ```

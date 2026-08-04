@@ -216,7 +216,7 @@ All tests use the `GoldenState` fixture (legacy v0 contract pre-populated with e
 **Run Tests**:
 
 ```bash
-cd app/contract/contracts/ Stellar Basic DAO
+cd app/contract/contracts/Folder
 cargo test upgrade_safety_gate_ -- --nocapture
 ```
 

@@ -11,7 +11,7 @@ This checklist is the release gate for any Stellar Basic DAO deployment change. 
 - [ ] `cargo test upgrade_harness_ -- --nocapture`
 - [ ] `cargo test test_event_schema_catalog_locks_canonical_topics_and_payloads`
 
-If the PR touches an event payload, also run the relevant snapshot test(s) in [contracts/ Stellar Basic DAO/src/test.rs](../contracts/ Stellar Basic DAO/src/test.rs) and confirm the payload keys remain locked.
+If the PR touches an event payload, also run the relevant snapshot test(s) in [contracts/Folder/src/test.rs](../contracts/Folder/src/test.rs) and confirm the payload keys remain locked.
 
 ## 2. Governance requirements
 
@@ -36,7 +36,7 @@ Suggested validation commands:
 ```bash
 cargo build --target wasm32v1-none --release
 stellar contract deploy \
-  --wasm target/wasm32v1-none/release/ Stellar Basic DAO.wasm \
+  --wasm target/wasm32v1-none/release/stellar_basic_dao.wasm \
   --source test \
   --network testnet
 
@@ -72,7 +72,7 @@ Suggested command shape:
 
 ```bash
 stellar contract deploy \
-  --wasm target/wasm32v1-none/release/ Stellar Basic DAO.wasm \
+  --wasm target/wasm32v1-none/release/stellar_basic_dao.wasm \
   --source main \
   --network mainnet
 ```

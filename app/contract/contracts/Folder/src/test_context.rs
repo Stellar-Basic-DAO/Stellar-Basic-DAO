@@ -1,4 +1,4 @@
-//! Shared test scaffolding for  Stellar Basic DAO contract tests.
+//! Shared test scaffolding for Stellar Basic DAO contract tests.
 //!
 //! Pick the constructor that matches what your test needs and you're ready to go:
 //!
@@ -35,7 +35,7 @@ use soroban_sdk::{
 
 use crate::{types::FeeConfig,  StellarBasicDAOContract,  StellarBasicDAOContractClient};
 
-/// Test harness for  Stellar Basic DAO contract tests.
+/// Test harness for Stellar Basic DAO contract tests.
 ///
 /// See the module-level docs for usage examples.
 #[allow(dead_code)]

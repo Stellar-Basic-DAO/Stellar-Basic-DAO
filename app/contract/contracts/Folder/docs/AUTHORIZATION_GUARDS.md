@@ -142,7 +142,7 @@ When adding a new public mutating entry point:
 1. **Select the appropriate guard** from the guard selection guide above.
 2. **Add the guard call** at the beginning of your function:
    ```rust
-   pub fn new_operation(env: Env, caller: Address, ...) -> Result<(), Stellar Basic DAOError> {
+   pub fn new_operation(env: Env, caller: Address, ...) -> Result<(), StellarBasicDAOError> {
        admin::guard_deposit(&env, PauseFlag::YourFeature as u64)?;
        // Your logic here
    }
@@ -159,7 +159,7 @@ When adding a new public mutating entry point:
    ```
 4. **Implement the test function**:
    ```rust
-   fn test_new_operation(env: &Env, caller: &Address) -> Result<(), crate::errors::Stellar Basic DAOError> {
+   fn test_new_operation(env: &Env, caller: &Address) -> Result<(), crate::errors::StellarBasicDAOError> {
        StellarBasicDAOContract::new_operation(env.clone(), caller.clone(), ...)
    }
    ```

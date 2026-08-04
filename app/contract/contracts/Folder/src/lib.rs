@@ -59,10 +59,10 @@ use types::{
 
 pub use types::FeeRatio;
 
-///  Stellar Basic DAO Privacy Contract
+/// Stellar Basic DAO Privacy Contract
 ///
 /// Soroban smart contract providing escrow, privacy controls, and X-Ray-style amount
-/// commitments for the  Stellar Basic DAO platform. See the contract README for main flows.
+/// commitments for the Stellar Basic DAO platform. See the contract README for main flows.
 ///
 /// ## Asset Support
 ///

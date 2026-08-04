@@ -7,7 +7,7 @@
 ### 1. Set Upgrade Window (Admin)
 
 ```rust
-set_upgrade_window(env, caller, start_epoch, end_epoch) -> Result<(),  Stellar Basic DAOError>
+set_upgrade_window(env, caller, start_epoch, end_epoch) -> Result<(),  StellarBasicDAOError>
 ```
 
 - `start_epoch`: Ledger timestamp when upgrades allowed (0 = no window)
@@ -25,7 +25,7 @@ get_upgrade_window(env) -> (u64, u64)
 ### 3. Start Upgrade (Admin) – **Window Gated**
 
 ```rust
-start_upgrade(env, caller, new_version) -> Result<(),  Stellar Basic DAOError>
+start_upgrade(env, caller, new_version) -> Result<(),  StellarBasicDAOError>
 ```
 
 - **Must be called during active window** (AC1)
@@ -39,7 +39,7 @@ start_upgrade(env, caller, new_version) -> Result<(),  Stellar Basic DAOError>
 ### 4. Update WASM
 
 ```rust
-upgrade(env, caller, new_wasm_hash) -> Result<(),  Stellar Basic DAOError>
+upgrade(env, caller, new_wasm_hash) -> Result<(),  StellarBasicDAOError>
 ```
 
  - Swaps contract code (no storage changes)
@@ -52,7 +52,7 @@ upgrade(env, caller, new_wasm_hash) -> Result<(),  Stellar Basic DAOError>
 ### 5. Complete Upgrade (Admin)
 
 ```rust
-complete_upgrade(env, caller, new_version) -> Result<u32,  Stellar Basic DAOError>
+complete_upgrade(env, caller, new_version) -> Result<u32,  StellarBasicDAOError>
 ```
 
 - Calls `migrate()` + validates invariants (AC2)

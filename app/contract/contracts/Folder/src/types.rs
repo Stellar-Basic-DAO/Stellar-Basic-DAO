@@ -1,4 +1,4 @@
-//! Types used in the  Stellar Basic DAO storage layer and contract logic.
+//! Types used in the Stellar Basic DAO storage layer and contract logic.
 //!
 //! See [`crate::storage`] for the storage schema and key layout.
 
