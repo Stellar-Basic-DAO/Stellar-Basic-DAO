@@ -13,7 +13,7 @@
     "i18next": "^26.0.1",
     "lucide-react": "^1.11.0",
     "next": "15.5.9",
-    "react": "19.1.0",
+    "react": "19.2.8",
     "react-dom": "19.1.0",
     "react-i18next": "^17.0.4",
     "react-qr-code": "^2.0.18",
