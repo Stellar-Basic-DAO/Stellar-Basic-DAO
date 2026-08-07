@@ -31,7 +31,7 @@
     "@typescript-eslint/parser": "^8",
     "eslint": "^9",
     "eslint-config-next": "15.5.9",
-    "jsdom": "^20.0.3",
+    "jsdom": "^30.0.1",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^3.2.3"
