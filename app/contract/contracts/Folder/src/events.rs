@@ -1373,6 +1373,7 @@ pub struct DisputeAutoResolvedEvent {
     #[topic]
     pub action: Symbol,
 
+    pub event_type_id: u32,
     pub recipient: Address,
     pub amount: i128,
     pub schema_version: u32,
@@ -1390,6 +1391,7 @@ pub(crate) fn publish_dispute_auto_resolved(
     DisputeAutoResolvedEvent {
         escrow_id: commitment,
         action: dispute_action_symbol(env, action),
+        event_type_id: ETID_DISPUTE_AUTO_RESOLVED,
         recipient,
         amount,
         schema_version: EVENT_SCHEMA_VERSION,
@@ -1402,6 +1404,7 @@ pub(crate) fn publish_dispute_auto_resolved(
 #[contractevent(topics = ["TOPIC_ADMIN", "DisputeExpiryActionSet"])]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DisputeExpiryActionSetEvent {
+    pub event_type_id: u32,
     pub action: Symbol,
     pub schema_version: u32,
     pub ledger_sequence: u32,
@@ -1413,6 +1416,7 @@ pub(crate) fn publish_dispute_expiry_action_set(
     action: crate::types::DisputeExpiryAction,
 ) {
     DisputeExpiryActionSetEvent {
+        event_type_id: ETID_DISPUTE_EXPIRY_ACTION_SET,
         action: dispute_action_symbol(env, action),
         schema_version: EVENT_SCHEMA_VERSION,
         ledger_sequence: env.ledger().sequence(),
@@ -1424,6 +1428,7 @@ pub(crate) fn publish_dispute_expiry_action_set(
 #[contractevent(topics = ["TOPIC_ADMIN", "DisputeTimeoutConfigSet"])]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DisputeTimeoutConfigSetEvent {
+    pub event_type_id: u32,
     pub timeout_secs: u64,
     pub schema_version: u32,
     pub ledger_sequence: u32,
@@ -1432,6 +1437,7 @@ pub struct DisputeTimeoutConfigSetEvent {
 
 pub(crate) fn publish_dispute_timeout_config_set(env: &Env, timeout_secs: u64) {
     DisputeTimeoutConfigSetEvent {
+        event_type_id: ETID_DISPUTE_TIMEOUT_CONFIG_SET,
         timeout_secs,
         schema_version: EVENT_SCHEMA_VERSION,
         ledger_sequence: env.ledger().sequence(),
