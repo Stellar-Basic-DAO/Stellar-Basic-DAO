@@ -4,6 +4,10 @@
  * Limits notification dispatches to `maxPerWindow` per `windowMs`
  * per `(publicKey, channel)` key.  This runs in-process; for a
  * multi-instance deployment, swap the Map for a Redis ZSET.
+ *
+ * WARNING: Rate limit state is lost on server restart.
+ * NOT suitable for production multi-instance deployments.
+ * Migrate to Redis-backed rate limiting (@nestjs/throttler) for production.
  */
 export class NotificationRateLimiter {
   private readonly windows = new Map<string, number[]>();
