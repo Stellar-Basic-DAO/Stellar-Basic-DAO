@@ -9,6 +9,38 @@ import {
 } from 'stellar-sdk';
 import type { PathPreviewRow } from './link-metadata';
 
+/**
+ * Verified asset issuer whitelist for the Stellar Basic DAO platform.
+ * Maps asset codes to their canonical issuer accounts on Stellar Testnet.
+ *
+ * In production, this should be fetched from the backend's verified-assets endpoint
+ * to ensure automatic updates when new assets are added.
+ */
+const VERIFIED_ISSUERS: Record<string, string> = {
+  USDC: 'GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5',
+  EURC: 'GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5',
+  // Add additional verified assets here as they are onboarded.
+};
+
+/**
+ * Resolve the canonical issuer address for a given asset code.
+ * Falls back to the backend verified-assets constant for unknown assets.
+ *
+ * @param assetCode - The asset code (e.g., 'USDC', 'EURC')
+ * @returns The Stellar account ID of the asset issuer
+ * @throws Error if the asset code is not recognized
+ */
+function resolveIssuer(assetCode: string): string {
+  const issuer = VERIFIED_ISSUERS[assetCode];
+  if (!issuer) {
+    throw new Error(
+      `Unknown asset code: ${assetCode}. ` +
+      'Add the issuer to the verified assets whitelist or use the backend asset resolver.',
+    );
+  }
+  return issuer;
+}
+
 export interface PathPaymentOptions {
   sourceAsset: string;
   sourceAmount: string;
@@ -44,11 +76,11 @@ export function buildPathPaymentOperation(
   // Create Asset objects for source and destination
   const srcAsset = sourceAsset === 'XLM'
     ? Asset.native()
-    : new Asset(sourceAsset, 'GBUQWP3BOUZX34ULNQG23RQ6F4YUSXHTWYV2KY2H5YMWUT6YFPQQSTVY'); // TODO: Get correct issuer from whitelist
+    : new Asset(sourceAsset, resolveIssuer(sourceAsset));
 
   const dstAsset = destinationAsset === 'XLM'
     ? Asset.native()
-    : new Asset(destinationAsset, 'GBUQWP3BOUZX34ULNQG23RQ6F4YUSXHTWYV2KY2H5YMWUT6YFPQQSTVY'); // TODO: Get correct issuer from whitelist
+    : new Asset(destinationAsset, resolveIssuer(destinationAsset))
 
   return Operation.pathPaymentStrictReceive({
     destination: destinationAccount,
