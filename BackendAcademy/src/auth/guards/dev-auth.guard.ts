@@ -1,32 +1,34 @@
 /**
  * DevAuthGuard — Development-mode authentication guard
  *
- * In development, this guard LOGS a warning but ALLOWS all traffic through.
- * This lets developers iterate quickly without a running auth infrastructure.
+ * **IMPORTANT: This guard is environment-gated and will THROW in production.**
  *
- * ── To enable real auth in production ─────────────────────────────────
- * 1. Replace `DevAuthGuard` with `JwtLearnerGuard`, `JwtAdminGuard`, or
- *    `JwtTutorGuard` from `../auth/guards/`.
- * 2. Combine with `RolesGuard` and `@Roles()` decorator for fine-grained RBAC.
- * 3. Ensure `AuthModule` is imported in the target feature's `@Module()`.
+ * In development/NODE_ENV=test, this guard attaches a stub user and allows all
+ * traffic through for rapid iteration.
+ *
+ * In production, this guard immediately throws a 500 error to prevent
+ * accidentally shipping unprotected endpoints to production.
+ *
+ * All controllers using @UseGuards(DevAuthGuard) MUST be migrated to use
+ * real JWT guards (JwtLearnerGuard, JwtAdminGuard, JwtTutorGuard) combined
+ * with @Roles() decorator and RolesGuard before deployment.
+ *
+ * @deprecated Replace with JwtAdminGuard + @Roles() or appropriate JWT guard.
  *
  * @example
- * ```typescript
- * // Development:
- * @UseGuards(DevAuthGuard)
+ * // Development (current — must be migrated):
+ * @UseGuards(DevAuthGuard)  // ❌ Not safe for production
  *
- * // Production:
- * @UseGuards(JwtAdminGuard)
+ * // Production (target):
+ * @UseGuards(JwtAdminGuard, RolesGuard)
  * @Roles(UserRole.ADMIN)
- * ```
- *
- * TODO: Replace with JwtLearnerGuard / JwtAdminGuard before production launch.
  */
 
 import {
   CanActivate,
   ExecutionContext,
   Injectable,
+  InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
 
@@ -38,15 +40,29 @@ export class DevAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const handler = context.getHandler().name;
     const controller = context.getClass().name;
+    const nodeEnv = process.env.NODE_ENV || 'production';
+
+    // CRITICAL: Fail closed in production — never allow DevAuthGuard through
+    if (nodeEnv === 'production') {
+      this.logger.error(
+        `[PRODUCTION] ${controller}.${handler} — DevAuthGuard is blocking access. ` +
+          'This controller has not been migrated to real JWT auth guards. ' +
+          'Replace @UseGuards(DevAuthGuard) with @UseGuards(JwtAdminGuard, RolesGuard) immediately.',
+      );
+      throw new InternalServerErrorException(
+        'Authentication not configured for production. Contact the system administrator.',
+      );
+    }
 
     this.logger.warn(
-      `[DEV] ${controller}.${handler} — No real auth guard attached. ` +
-        'Allowing request through. Replace with JwtAdminGuard / RolesGuard before production.',
+      `[DEV] ${controller}.${handler} — DevAuthGuard is active. ` +
+        'Replace with JwtAdminGuard / RolesGuard before production deployment. ' +
+        `(NODE_ENV=${nodeEnv})`,
     );
 
-    // In dev mode, attach a stub user so downstream guards (RolesGuard) don't fail.
-    // NOTE: stub role is 'admin' — this bypasses all RBAC in development.
-    // Remove or change this before production.
+    // In dev/test mode, attach a stub user for rapid iteration.
+    // NOTE: stub role is 'admin' — bypasses all RBAC in development.
+    // NEVER expose this to production traffic.
     request.user = { userId: 'dev-user', role: 'admin' };
     return true;
   }
