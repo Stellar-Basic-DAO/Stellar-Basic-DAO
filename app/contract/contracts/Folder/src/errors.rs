@@ -104,7 +104,7 @@ pub enum StellarBasicDAOError {
     UpgradeAlreadyInProgress = 503,
     /// No upgrade is currently in progress; upgrade or complete_upgrade cannot proceed.
     UpgradeNotInProgress = 504,
-    // Governance multisig (505-511, governance-model-v1)
+    // Governance multisig (505-514, governance-model-v1)
     /// Caller is not a member of the governance signer set.
     NotASigner = 505,
     /// A proposal with the derived proposal_id already exists in storage.
