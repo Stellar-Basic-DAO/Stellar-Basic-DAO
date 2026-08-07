@@ -1,3 +1,14 @@
+/**
+ * Stellar Basic DAO — Test Payment Script
+ *
+ * Sends a test XLM payment on the Stellar testnet for integration testing.
+ * Requires STELLAR_SECRET_KEY env var with a funded testnet account.
+ *
+ * Usage: STELLAR_SECRET_KEY=S... node send_test_payment.js
+ *
+ * NOTE: This script uses the testnet. Never run with mainnet credentials.
+ */
+
 const Stellar = require("stellar-sdk");
 const fetch = require("node-fetch");
 
