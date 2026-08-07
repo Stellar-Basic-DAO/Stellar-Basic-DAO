@@ -24,7 +24,7 @@ jobs:
 
       # Forces pnpm to link all internal binaries across packages properly
       - name: Install Dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       # Run type-check for backend and frontend (exclude mobile which has known TS issues)
       - name: Validate backend type-check
