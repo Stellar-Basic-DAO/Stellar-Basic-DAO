@@ -3,9 +3,11 @@ use soroban_sdk::contracterror;
 /// Canonical contract error codes.
 ///
 /// Code bands:
-/// - 100-199: validation failures
-/// - 200-299: auth/admin failures
+/// - 100-199: validation failures (amount, salt, privacy)
+/// - 200-299: auth/admin failures (unauthorized, role, initialization)
 /// - 300-399: state, escrow, and commitment violations
+/// - 400-499: stealth address errors
+/// - 500-514: replay protection, upgrade gating, governance
 /// - 900-999: internal/unexpected conditions
 #[contracterror]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
