@@ -8,8 +8,9 @@
 
 | Version | Status |
 |---------|--------|
-| 0.x (development) | ⚠️ Not ready for production — in-memory stores, no auth guards |
-| 1.0 (planned) | 🔒 Target: production-ready with full auth, TypeORM, and audit trail |
+| 0.x (development) | ⚠️ Not ready for production — in-memory stores, DevAuthGuard bypass |
+| 1.0 (planned) | 🔒 Target: production-ready with full JWT auth, TypeORM, and audit trail |
+| 0.2.0 (current) | 🟡 Pre-production hardening — DevAuthGuard fail-closed, JWT required, frozed-lockfiles |
 
 ---
 
