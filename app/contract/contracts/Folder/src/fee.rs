@@ -1,4 +1,4 @@
-//! 플랫폼 fee calculation logic.
+//! Platform fee calculation logic.
 
 use crate::{errors::StellarBasicDAOError, oracle, storage, types::FeeRatio};
 use soroban_sdk::{Address, Env};
