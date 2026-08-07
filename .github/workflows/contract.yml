@@ -44,3 +44,18 @@ jobs:
 
       - name: Run tests
         run: cargo test
+
+      - name: Run tests with coverage
+        run: |
+          cargo install cargo-llvm-cov --locked 2>/dev/null || true
+          cargo llvm-cov --workspace --lcov --output-path lcov.info 2>/dev/null || echo "Coverage report skipped (cargo-llvm-cov not available)"
+        continue-on-error: true
+
+      - name: Upload coverage to Codecov
+        if: success()
+        uses: codecov/codecov-action@v4
+        with:
+          files: lcov.info
+          flags: contract
+          fail_ci_if_error: false
+        continue-on-error: true
