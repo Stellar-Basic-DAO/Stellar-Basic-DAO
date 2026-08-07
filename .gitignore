@@ -94,3 +94,5 @@ commit_*.ps1
 commit_*.sh
 
 main
+.vercel
+.env*
