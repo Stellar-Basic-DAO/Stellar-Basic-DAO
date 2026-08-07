@@ -164,7 +164,9 @@ pub fn set_threshold(env: &Env, threshold: u32) {
 pub fn is_signer(env: &Env, address: &Address) -> bool {
     let signers = get_signer_set(env);
     for i in 0..signers.len() {
-        if signers.get(i).unwrap() == *address {
+        // SAFETY: i is bounded by signers.len() from the loop condition,
+        // so get_unchecked is safe here (OOB impossible).
+        if signers.get_unchecked(i) == *address {
             return true;
         }
     }
@@ -568,7 +570,10 @@ fn apply_action(env: &Env, action: &ProposalAction) -> Result<(), StellarBasicDA
             let config = PerAssetFeeConfig {
                 fee_bps: *fee_bps,
                 arbiter_bps: *arbiter_bps,
-                ..Default::default()
+                arbiter_fee: crate::types::FeeRatio::default(),
+                platform_fee: crate::types::FeeRatio::default(),
+                collector_fee: crate::types::FeeRatio::default(),
+                schema_version: crate::types::PER_ASSET_FEE_SCHEMA_VERSION,
             };
             crate::storage::set_per_asset_fee(env, token, config);
             Ok(())
@@ -619,9 +624,10 @@ fn validate_signer_set(
 
     // Check for duplicates (O(n²) — acceptable for n ≤ 10)
     for i in 0..len {
-        let a = signers.get(i).unwrap();
+        // SAFETY: i < len from loop condition; j continues from i+1 < len.
+        let a = signers.get_unchecked(i);
         for j in (i + 1)..len {
-            let b = signers.get(j).unwrap();
+            let b = signers.get_unchecked(j);
             if a == b {
                 return Err(StellarBasicDAOError::DuplicateSigner);
             }

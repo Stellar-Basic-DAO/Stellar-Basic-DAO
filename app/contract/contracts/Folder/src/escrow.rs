@@ -1045,13 +1045,14 @@ pub fn cleanup_escrow(env: &Env, commitment: BytesN<32>) -> Result<(),  StellarB
             }
 
             // Remove dispute votes if this was a disputed escrow that was resolved.
-            if matches!(entry.status, EscrowStatus::Refunded) && entry.arbiter.is_some() {
-                // Single arbiter mode - remove the vote if it exists
-                let arbiter = entry.arbiter.unwrap();
-                let key = DataKey::DisputeVote(commitment_bytes.clone(), arbiter);
-                if env.storage().persistent().has(&key) {
-                    env.storage().persistent().remove(&key);
-                    indices_removed += 1;
+            if matches!(entry.status, EscrowStatus::Refunded) {
+                if let Some(arbiter) = &entry.arbiter {
+                    // Single arbiter mode - remove the vote if it exists
+                    let key = DataKey::DisputeVote(commitment_bytes.clone(), arbiter.clone());
+                    if env.storage().persistent().has(&key) {
+                        env.storage().persistent().remove(&key);
+                        indices_removed += 1;
+                    }
                 }
             } else if entry.arbiter_threshold > 0 {
                 // Multi-sig mode - remove all votes for this escrow
