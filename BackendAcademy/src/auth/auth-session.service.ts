@@ -220,11 +220,23 @@ export class AuthSessionService {
   /**
    * Separate secret for refresh tokens so a leaked access secret cannot
    * be used to forge refresh tokens (and vice-versa).
+   *
+   * Requires JWT_REFRESH_SECRET to be set explicitly. Falls back to
+   * JWT_SECRET only if JWT_REFRESH_SECRET is not provided, but logs a
+   * warning since using the same secret weakens the security model.
    */
   private get refreshSecret(): string {
-    return this.configService.get<string>(
-      'JWT_REFRESH_SECRET',
-      this.configService.get<string>('JWT_SECRET', 'changeme-refresh'),
-    );
+    const refreshSecret = this.configService.get<string>('JWT_REFRESH_SECRET');
+    if (refreshSecret) {
+      return refreshSecret;
+    }
+    const accessSecret = this.configService.get<string>('JWT_SECRET');
+    if (!accessSecret) {
+      throw new Error(
+        'JWT_REFRESH_SECRET is required. Set it in your environment variables. ' +
+          'Using a separate refresh secret prevents token forgery if the access secret is leaked.',
+      );
+    }
+    return accessSecret;
   }
 }

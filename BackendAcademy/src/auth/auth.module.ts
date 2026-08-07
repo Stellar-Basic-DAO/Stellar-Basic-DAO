@@ -14,10 +14,19 @@ import { AuthSessionController } from './auth-session.controller';
     ConfigModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: (config: ConfigService) => ({
-        secret: config.get<string>('JWT_SECRET', 'changeme'),
-        signOptions: { expiresIn: '15m' },
-      }),
+      useFactory: (config: ConfigService) => {
+        const secret = config.get<string>('JWT_SECRET');
+        if (!secret) {
+          throw new Error(
+            'JWT_SECRET is required. Set it in your environment variables. ' +
+              'Generate a secure random string: openssl rand -hex 64',
+          );
+        }
+        return {
+          secret,
+          signOptions: { expiresIn: '15m' },
+        };
+      },
       inject: [ConfigService],
     }),
   ],
