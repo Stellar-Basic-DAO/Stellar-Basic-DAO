@@ -12,7 +12,16 @@ import * as Joi from 'joi';
         DATABASE_URL: Joi.string().optional(),
         REDIS_HOST: Joi.string().default('localhost'),
         REDIS_PORT: Joi.number().default(6379),
-        JWT_SECRET: Joi.string().optional(),
+        JWT_SECRET: Joi.string().required().min(32).messages({
+          'any.required': 'JWT_SECRET is required for production security. Use: openssl rand -hex 64',
+          'string.min': 'JWT_SECRET must be at least 32 characters long for adequate security',
+        }),
+        JWT_REFRESH_SECRET: Joi.string().optional().min(32).messages({
+          'string.min': 'JWT_REFRESH_SECRET must be at least 32 characters long. Use a different value from JWT_SECRET.',
+        }),
+        API_KEY_SECRET: Joi.string().optional().min(32).messages({
+          'string.min': 'API_KEY_SECRET must be at least 32 characters long for production use.',
+        }),
         AI_PROVIDER: Joi.string().valid('claude', 'openai', 'mock').default('mock'),
         ANTHROPIC_API_KEY: Joi.string().optional(),
         OPENAI_API_KEY: Joi.string().optional(),
