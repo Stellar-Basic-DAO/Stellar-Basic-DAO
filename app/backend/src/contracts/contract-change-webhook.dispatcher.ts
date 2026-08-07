@@ -1,4 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common";
+//! Contract change webhook dispatcher.
+//!
+//! Dispatches signed webhook payloads to registered subscribers
+//! whenever the contract registry is published or rolled back.
+
 import { createHmac } from "crypto";
 
 export interface WebhookDispatchResult {
