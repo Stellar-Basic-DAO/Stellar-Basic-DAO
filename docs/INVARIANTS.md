@@ -2,6 +2,10 @@
 
 > **The Stellar Basic DAO Soroban contract (`StellarBasicDAOContract`) must preserve these invariants under every code path. Any change that could violate one of them MUST be reviewed against this document.**
 
+> **Version:** 1.0.0 — Last audited: 2025-08-07
+> **Status:** All 10 invariants enforced in contract v1. See
+> [SMART-CONTRACTS.md](SMART-CONTRACTS.md) for per-function enforcement detail.
+
 This document is the canonical specification of the 10 financial invariants the protocol enforces. Every Soroban entry point, every off-chain reconciliation, and every test failure referencing "invariant" should be traceable to a specific `INV-NN` entry below.
 
 ---
