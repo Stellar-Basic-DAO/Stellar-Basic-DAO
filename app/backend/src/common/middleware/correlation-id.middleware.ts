@@ -1,3 +1,8 @@
+//! Correlation ID middleware for request tracing.
+//!
+//! Assigns a unique X-Correlation-Id header to every incoming request
+//! so that all log entries for a single request can be correlated.
+
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { v4 as uuidv4 } from 'uuid';
