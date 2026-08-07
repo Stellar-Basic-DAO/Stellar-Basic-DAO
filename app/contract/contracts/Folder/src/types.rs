@@ -52,6 +52,9 @@ pub enum EscrowStatus {
     Spent,
     /// Kept for backwards-compat with any existing on-chain data; semantically
     /// equivalent to an escrow that has passed expiry but not yet been refunded.
+    ///
+    /// @deprecated New escrows should never enter this state. It exists only
+    /// for reading legacy on-chain records. Use `Refunded` for new code.
     Expired,
     Refunded,
     /// Funds are locked pending arbiter resolution.
