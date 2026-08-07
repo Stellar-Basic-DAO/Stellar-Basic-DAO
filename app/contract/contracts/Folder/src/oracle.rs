@@ -1,4 +1,11 @@
 use crate::{storage, types::OracleFeeConfig};
+//! Oracle integration for dynamic fee pricing.
+//!
+//! Queries external oracle contracts for USD-denominated asset prices
+//! and returns price feeds that the fee module uses for dynamic fee
+//! calculations. Falls back to static basis-point fees when the oracle
+//! is unavailable or returns stale data.
+
 use soroban_sdk::{Address, Env};
 
 pub fn get_oracle_fee_config(env: &Env) -> Option<OracleFeeConfig> {
