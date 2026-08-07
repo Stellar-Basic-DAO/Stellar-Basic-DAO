@@ -1,3 +1,9 @@
+//! External hook callback system for escrow lifecycle events.
+//!
+//! Registered hook contracts receive synchronous callbacks on escrow
+//! creation (`Create`), settlement (`Settle`), and refund (`Refund`).
+//! Reentrancy is guarded; unregistered hooks are silently skipped.
+
 use crate::{errors:: StellarBasicDAOError, events, storage, types::HookEventKind};
 use soroban_sdk::{Address, BytesN, Env, IntoVal, Symbol, Vec};
 
