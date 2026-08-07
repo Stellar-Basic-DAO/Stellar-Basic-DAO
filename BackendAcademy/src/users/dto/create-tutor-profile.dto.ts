@@ -1,11 +1,13 @@
-import { IsString, IsOptional, IsArray, IsNumber, IsBoolean, IsEnum } from 'class-validator';
+import { IsString, IsOptional, IsArray, IsNumber, IsBoolean, IsEnum, MaxLength } from 'class-validator';
 import { TutorSpecialty } from '../interfaces/tutor-specialty.enum';
 
 export class CreateTutorProfileDto {
   @IsString()
+  @MaxLength(64)
   userId: string;
 
   @IsString()
+  @MaxLength(4096)
   bio: string;
 
   @IsArray()
