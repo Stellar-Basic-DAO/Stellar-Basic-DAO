@@ -27,10 +27,13 @@ export class ScamAlertsService {
 	private readonly logger = new Logger(ScamAlertsService.name);
 
 	// Cache for external blocklist checks (in-memory for simplicity, could be Redis in prod)
+	// NOTE: This cache is local to each instance. For multi-instance production,
+	// replace with a shared Redis cache to avoid inconsistent state.
 	private readonly blocklistCache = new Map<string, { data: string[]; timestamp: number }>();
 	private readonly blocklistCacheTtl = 5 * 60 * 1000; // 5 minutes
 
 	// Cache for account age checks (to avoid repeated API calls)
+	// NOTE: Same caveat as above — local-only, not shared across instances.
 	private readonly accountAgeCache = new Map<string, { isRecent: boolean; timestamp: number }>();
 	private readonly accountAgeCacheTtl = 10 * 60 * 1000; // 10 minutes
 
