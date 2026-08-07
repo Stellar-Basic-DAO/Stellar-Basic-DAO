@@ -1,3 +1,10 @@
+//! On-chain privacy module.
+//!
+//! Controls per-address privacy that masks escrow amounts and owner
+//! addresses from non-owners in `get_escrow_details`. Privacy state
+//! is stored in persistent storage and toggle events are emitted for
+//! indexers to track changes.
+
 use crate::errors:: StellarBasicDAOError;
 use crate::events::publish_privacy_toggled;
 use crate::storage::{DataKey, PRIVACY_ENABLED_KEY};
