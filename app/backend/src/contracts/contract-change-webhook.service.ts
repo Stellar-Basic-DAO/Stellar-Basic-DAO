@@ -50,9 +50,16 @@ export class ContractChangeWebhookService {
       if (error) throw error;
       return (data ?? []).map((row) => this.mapRow(row));
     } catch (error) {
-      this.logger.warn(
-        `Falling back to in-memory webhook store: ${(error as Error).message}`,
-      );
+      const isProduction = process.env.NODE_ENV === 'production';
+      if (isProduction) {
+        this.logger.error(
+          `CRITICAL: Database unavailable in production. Webhooks falling back to in-memory store: ${(error as Error).message}`,
+        );
+      } else {
+        this.logger.warn(
+          `Falling back to in-memory webhook store: ${(error as Error).message}`,
+        );
+      }
       return this.fallbackStore.get('contract-change-webhooks') ?? [];
     }
   }
@@ -92,9 +99,16 @@ export class ContractChangeWebhookService {
       if (error) throw error;
       return (data ?? []).map((row) => this.mapRow(row));
     } catch (error) {
-      this.logger.warn(
-        `Unable to fetch enabled webhooks: ${(error as Error).message}`,
-      );
+      const isProduction = process.env.NODE_ENV === 'production';
+      if (isProduction) {
+        this.logger.error(
+          `CRITICAL: Database unavailable in production. Enabled webhooks falling back to in-memory: ${(error as Error).message}`,
+        );
+      } else {
+        this.logger.warn(
+          `Unable to fetch enabled webhooks: ${(error as Error).message}`,
+        );
+      }
       return (this.fallbackStore.get('contract-change-webhooks') ?? []).filter(
         (w) => w.enabled,
       );

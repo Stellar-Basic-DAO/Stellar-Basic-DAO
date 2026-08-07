@@ -580,9 +580,16 @@ async finalizeDualRead(
         active: Boolean(row.is_active),
       }));
     } catch (error) {
-      this.logger.warn(
-        `Falling back to in-memory contract registry: ${(error as Error).message}`,
-      );
+      const isProduction = process.env.NODE_ENV === 'production';
+      if (isProduction) {
+        this.logger.error(
+          `CRITICAL: Database unavailable in production. Contract registry falling back to in-memory store: ${(error as Error).message}`,
+        );
+      } else {
+        this.logger.warn(
+          `Falling back to in-memory contract registry: ${(error as Error).message}`,
+        );
+      }
       return fallback;
     }
   }
