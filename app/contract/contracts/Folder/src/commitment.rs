@@ -1,3 +1,8 @@
+//! Amount commitment hashing (KECCAK256-based, deterministic).
+//!
+//! Computes `KECCAK256(owner || amount || salt)` for escrow keying.
+//! Legacy `SHA256` commitments are also verified for backwards compatibility.
+
 use crate::errors:: StellarBasicDAOError;
 use soroban_sdk::{xdr::ToXdr, Address, Bytes, BytesN, Env};
 
