@@ -1,4 +1,4 @@
-import { IsString, IsOptional } from 'class-validator';
+import { IsString, IsOptional, MaxLength } from 'class-validator';
 
 /**
  * DTO for saving or updating a submission draft.
@@ -8,16 +8,20 @@ import { IsString, IsOptional } from 'class-validator';
  */
 export class SaveDraftDto {
   @IsString()
+  @MaxLength(128)
   taskId: string;
 
   @IsString()
+  @MaxLength(128)
   userId: string;
 
   @IsOptional()
   @IsString()
+  @MaxLength(65536)
   content?: string;
 
   @IsOptional()
   @IsString()
+  @MaxLength(2048)
   fileUrl?: string;
 }
