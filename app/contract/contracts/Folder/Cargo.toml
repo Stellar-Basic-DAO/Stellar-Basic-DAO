@@ -12,6 +12,13 @@ build = "build.rs"
 [lib]
 crate-type = ["cdylib", "rlib"]
 
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = "symbols"
+
 [dependencies]
 soroban-sdk = "23"
 
