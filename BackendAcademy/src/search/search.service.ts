@@ -9,20 +9,19 @@ import {
   UserSearchHit,
 } from './interfaces/search.interface';
 
+/** Defensive cap on page size. */
+const MAX_LIMIT = 50;
+const DEFAULT_LIMIT = 10;
+
+/** Maximum number of fixture records to retain. */
+const MAX_FIXTURE_USERS = 100;
+const MAX_FIXTURE_POSTS = 100;
+
 @Injectable()
 export class SearchService {
-  /** Defensive cap on page size. */
-  private static readonly MAX_LIMIT = 50;
-  private static readonly DEFAULT_LIMIT = 10;
-
   constructor(private readonly courseService: CourseService) {}
 
-  /**
-   * In-memory fixture set. Replace with a real SearchRepository backed by
-   * Postgres `tsvector` (or an external index like Meilisearch / pg_trgm).
-   *
-   * TODO: replace with a SearchRepository.searchUsers|searchCourses|searchPosts.
-   */
+  /** In-memory fixture sets (bounded). */
   private readonly users: UserSearchHit[] = [
     { id: 'user-0001', username: 'rustmaster', displayName: 'Rust Master' },
     { id: 'user-0002', username: 'codewarrior', displayName: 'Code Warrior' },
@@ -63,13 +62,7 @@ export class SearchService {
   ];
 
   /**
-   * Apply pagination + substring matching. Pure helper - intent is shared
-   * across all 3 resource types.
-   *
-   * Limit semantics: an explicit `limit = 0` (or any non-positive / non-finite
-   * value) is treated as "not provided" and falls back to `DEFAULT_LIMIT`.
-   * This avoids accidentally returning the full corpus when someone wires
-   * limit from a UI control that starts at zero.
+   * Paginate and filter items with relevance scoring.
    */
   private paginate<T>(
     items: T[],
@@ -77,20 +70,30 @@ export class SearchService {
     limit: number | undefined,
     offset: number | undefined,
     matchFields: (item: T) => string,
+    scorer?: (item: T, query: string) => number,
   ): SearchResults<T> {
     const rawLimit = Number(limit);
     const effectiveLimit =
       Number.isFinite(rawLimit) && rawLimit > 0
-        ? Math.min(rawLimit, SearchService.MAX_LIMIT)
-        : SearchService.DEFAULT_LIMIT;
+        ? Math.min(rawLimit, MAX_LIMIT)
+        : DEFAULT_LIMIT;
     const effectiveOffset = Math.max(0, Number(offset) || 0);
     const needle = (q || '').toLowerCase().trim();
 
-    const matched = needle
-      ? items.filter((item) =>
-          matchFields(item).toLowerCase().includes(needle),
-        )
-      : items;
+    let matched: T[];
+    if (needle) {
+      // Score and filter items based on relevance
+      const scored = items
+        .map((item) => ({
+          item,
+          score: scorer ? scorer(item, needle) : this.defaultScore(item, needle, matchFields),
+        }))
+        .filter((s) => s.score > 0)
+        .sort((a, b) => b.score - a.score);
+      matched = scored.map((s) => s.item);
+    } else {
+      matched = items;
+    }
 
     const total = matched.length;
     const page = matched.slice(effectiveOffset, effectiveOffset + effectiveLimit);
@@ -107,13 +110,30 @@ export class SearchService {
     return response;
   }
 
+  /** Default relevance scoring: exact match > prefix > substring. */
+  private defaultScore<T>(item: T, query: string, matchFields: (item: T) => string): number {
+    const text = matchFields(item).toLowerCase();
+    if (text === query) return 100;
+    if (text.startsWith(query)) return 50;
+    if (text.includes(query)) return 25;
+    return 0;
+  }
+
   searchUsers(query: SearchQueryDto): SearchResults<UserSearchHit> {
     return this.paginate(
       this.users,
       query.q,
       query.limit,
       query.offset,
-      (u) => `${u.id} ${u.username} ${u.displayName}`,
+      (u) => `${u.username} ${u.displayName}`,
+      (u, q) => {
+        const uname = u.username.toLowerCase();
+        const dname = u.displayName.toLowerCase();
+        if (uname === q || dname === q) return 100;
+        if (uname.startsWith(q) || dname.startsWith(q)) return 60;
+        if (uname.includes(q) || dname.includes(q)) return 30;
+        return 0;
+      },
     );
   }
 
@@ -127,6 +147,7 @@ export class SearchService {
       ...(query.categories ?? []),
     ]);
     const match = query.match ?? 'any';
+
     const filteredCourses =
       tags.length === 0 && categories.length === 0
         ? courses
@@ -143,7 +164,6 @@ export class SearchService {
                 courseCategories.includes(category),
               ),
             ];
-
             return match === 'all'
               ? checks.every(Boolean)
               : checks.some(Boolean);
@@ -163,6 +183,15 @@ export class SearchService {
           ...(c.categories ?? []),
           ...(c.tags ?? []),
         ].join(' '),
+      (c, q) => {
+        const title = c.title.toLowerCase();
+        if (title === q) return 100;
+        if (title.startsWith(q)) return 70;
+        if (title.includes(q)) return 40;
+        const desc = (c.description || '').toLowerCase();
+        if (desc.includes(q)) return 15;
+        return 0;
+      },
     );
   }
 
@@ -172,7 +201,16 @@ export class SearchService {
       query.q,
       query.limit,
       query.offset,
-      (p) => `${p.id} ${p.title} ${p.body}`,
+      (p) => `${p.title} ${p.body}`,
+      (p, q) => {
+        const title = p.title.toLowerCase();
+        const body = p.body.toLowerCase();
+        if (title === q) return 100;
+        if (title.startsWith(q)) return 70;
+        if (title.includes(q)) return 40;
+        if (body.includes(q)) return 15;
+        return 0;
+      },
     );
   }
 
