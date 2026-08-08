@@ -1,6 +1,15 @@
-import { Controller, Get, Post, Body, Param, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, HttpCode, HttpStatus, UseGuards, ParseArrayPipe } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { BadgesService } from './badges.service';
+import { JwtAdminGuard } from '../auth/guards/jwt-admin.guard';
+import { JwtLearnerGuard } from '../auth/guards/jwt-learner.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from '../auth/enums/user-role.enum';
 import type { BadgeListResponse, UserBadgesResponse } from './interfaces/badges.interfaces';
+
+/** Maximum batch size for badge awards */
+const BADGE_AWARD_BATCH_MAX = 50;
 
 @Controller('badges')
 export class BadgesController {
@@ -36,7 +45,7 @@ export class BadgesController {
 
   /**
    * Awards a badge to a user.
-   * (Internal endpoint/Admin endpoint in a real system)
+   * Admin-only internal endpoint with rate limiting.
    *
    * @param awardPayload The payload containing userId, badgeId, and nftTokenId
    *
@@ -45,6 +54,9 @@ export class BadgesController {
    *   → { userId: "user-123", badges: [...] }
    */
   @Post('award')
+  @UseGuards(JwtAdminGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @Throttle({ default: { limit: 20, ttl: 60_000 } })
   @HttpCode(HttpStatus.OK)
   awardBadge(
     @Body()
