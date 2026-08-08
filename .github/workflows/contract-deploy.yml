@@ -22,6 +22,13 @@ on:
         default: false
         type: boolean
 
+permissions:
+  contents: read
+
+concurrency:
+  group: contract-deploy-${{ github.event.inputs.network }}
+  cancel-in-progress: false
+
 env:
   CONTRACT_NAME: stellar_basic_dao
   WASM_PATH: target/wasm32-unknown-unknown/release/stellar_basic_dao.wasm
@@ -37,6 +44,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -55,11 +64,9 @@ jobs:
       # Code quality gates
       - name: Check formatting
         run: cargo fmt --all -- --check
-        continue-on-error: true
 
       - name: Run clippy
         run: cargo clippy --all-targets -- -D warnings
-        continue-on-error: true
 
       # Build
       - name: Build release WASM
