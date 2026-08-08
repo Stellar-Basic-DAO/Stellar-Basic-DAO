@@ -11,6 +11,13 @@ on:
         required: false
         default: 'true'
 
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   production-release:
     if: github.event_name == 'push'
@@ -25,6 +32,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
