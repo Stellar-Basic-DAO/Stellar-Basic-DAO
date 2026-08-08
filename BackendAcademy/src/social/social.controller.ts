@@ -10,6 +10,7 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { CreateSocialPostDto } from './dto/create-social-post.dto';
 import { GetSocialFeedDto } from './dto/get-social-feed.dto';
 import { UpdateModerationDto } from './dto/update-moderation.dto';
@@ -30,6 +31,7 @@ export class SocialController {
   constructor(private readonly socialService: SocialService) {}
 
   @Post('posts')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @HttpCode(HttpStatus.CREATED)
   createPost(
     @Body() dto: CreateSocialPostDto,
@@ -54,6 +56,7 @@ export class SocialController {
   }
 
   @Put('posts/:postId/moderate')
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
   moderatePost(
     @Param('postId') postId: string,
@@ -64,6 +67,7 @@ export class SocialController {
   }
 
   @Post('posts/:postId/flag')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
   flagPost(
     @Param('postId') postId: string,
@@ -73,18 +77,21 @@ export class SocialController {
   }
 
   @Post('posts/:postId/like')
+  @Throttle({ default: { limit: 50, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
   likePost(@Param('postId') postId: string): SocialPost {
     return this.socialService.likePost(postId);
   }
 
   @Post('posts/:postId/comment')
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
   commentOnPost(@Param('postId') postId: string): SocialPost {
     return this.socialService.commentOnPost(postId);
   }
 
   @Post('posts/:postId/repost')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
   repostPost(@Param('postId') postId: string): SocialPost {
     return this.socialService.repostPost(postId);
@@ -97,6 +104,7 @@ export class SocialController {
   }
 
   @Post('users/:userId/follow/:targetUserId')
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
   followUser(
     @Param('userId') userId: string,
