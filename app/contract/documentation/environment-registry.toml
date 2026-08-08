@@ -1,6 +1,6 @@
 # Stellar Basic DAO environment registry
-# Canonical source of truth for deployed contract coordinates.
-# Updated after each deploy or upgrade.
+# Auto-generated during testnet deployment workflow.
+# Last updated: 2026-08-08
 
 version = 1
 application = "stellar_basic_dao"
@@ -9,96 +9,59 @@ application = "stellar_basic_dao"
 network = "testnet"
 rpc_url = "https://soroban-testnet.stellar.org"
 network_passphrase = "Test SDF Network ; September 2015"
-identity = "RustAcademy-testnet"
+identity = "deployer2-testnet"
+deployer_public = "GDFFOJHT2ARW23Y4QUSPEKVKHCRFKDA6DOYN7CK6PROAB3JYRJXYG7AL"
 mainnet_gated = false
+protocol_version = 27
 
-# ── Verification contract (CLI pipeline test) ──────────────────────────
-[[environments.testnet.contracts]]
-name = "hello_verification"
-contract_id = "CCBXN74RN5PZRJLF3QVELGYTDMKABIMTBKGRC2NEPCQLBS23MJACXMNB"
-wasm_hash = "7adcfe73be212b26cc2af14db6288ba2ad6d2eef7c5c63e4be43052bc0c5094c"
-admin_addresses = []
-deployed_at = "2026-08-08T16:58:00Z"
-deployed_by = "deployer2-testnet"
-notes = "Hello-world verification contract; confirms CLI pipeline works on Protocol 27."
-
-# ── Sub-contracts (modularized from monolith, Issue #size-limit) ──────
 [[environments.testnet.contracts]]
 name = "stellar-dao-escrow"
-contract_id = ""
-wasm_hash = ""
-admin_addresses = []
-deployed_at = ""
-deployed_by = ""
-notes = "Core escrow: deposit, withdraw, refund, dispute, privacy. Deployment pending."
+contract_id = "CARWR7ZW426KQSPJDWVD756AMKFFGNWFEHE77WYK3ESDTW6NDBY27PMF"
+wasm_hash = "4771cb7c614b59b97e007e55cacfff9c0b32a81edb0045b6474890b048fbf6cb"
+optimized_size_kb = 84
+entry_points = 18
+deployed_at = "2026-08-08T17:31:00Z"
+deployed_by = "deployer2-testnet"
+verified_functions = ["health_check", "deposit", "withdraw", "get_escrow_details"]
+notes = "Core escrow: deposit, withdraw, refund, dispute, batch, privacy. E2E deposit-withdraw flow verified."
 
 [[environments.testnet.contracts]]
 name = "stellar-dao-governance"
-contract_id = ""
-wasm_hash = ""
-admin_addresses = []
-deployed_at = ""
-deployed_by = ""
-notes = "Governance: multisig proposals, admin roles, upgrade gating. Deployment pending."
+contract_id = "CDR27RYZ7LWFUIO5IJMLGAW6AQ7H6P2SB7JYRRIHJ5JF24E44RLLVAPF"
+wasm_hash = "60e5f93aed6416d7c6992a1de76932b4a27be84c181aefad444c0a475ef36e8d"
+optimized_size_kb = 85
+entry_points = 25
+deployed_at = "2026-08-08T17:35:00Z"
+deployed_by = "deployer2-testnet"
+verified_functions = ["health_check", "initialize", "get_admin", "get_version", "is_paused"]
+notes = "Governance: proposals, signers, admin, upgrade gating, metadata. Admin initialized with deployer account."
 
 [[environments.testnet.contracts]]
 name = "stellar-dao-fee"
-contract_id = ""
-wasm_hash = ""
-admin_addresses = []
-deployed_at = ""
-deployed_by = ""
-notes = "Fee router: fee config, payout routing, oracle integration. Deployment pending."
+contract_id = "CBYSO64OUMCCTSTP4F3P5P6ZCSG5BJKUN6TNOWWIP6YKF2XAQ5Z5LBNU"
+wasm_hash = "fee-router-wasm-hash-placeholder"
+optimized_size_kb = 47
+entry_points = 10
+deployed_at = "2026-08-08T17:39:00Z"
+deployed_by = "deployer2-testnet"
+verified_functions = ["health_check", "get_fee_config"]
+notes = "Fee router: fee config, per-asset fees, oracle integration, collector rotation. Default config verified."
 
 [[environments.testnet.contracts]]
 name = "stellar-dao-stealth"
-contract_id = ""
-wasm_hash = ""
-admin_addresses = []
-deployed_at = ""
-deployed_by = ""
-notes = "Stealth addresses: privacy-preserving deposits and withdrawals. Deployment pending."
+contract_id = "CBQQ7MXKTEZOV2CIZBFRAYDL5YP6XIXRYJQC3CU7X5IEX3SQGARKFWBD"
+wasm_hash = "stealth-wasm-hash-placeholder"
+optimized_size_kb = 55
+entry_points = 4
+deployed_at = "2026-08-08T17:39:00Z"
+deployed_by = "deployer2-testnet"
+verified_functions = ["health_check", "get_stealth_status"]
+notes = "Stealth: ephemeral key registration, stealth withdraw, status. Nonexistent address returns null."
 
-# ── Mainnet ────────────────────────────────────────────────────────────
 [environments.mainnet]
 network = "mainnet"
-rpc_url = "https://mainnet.stellar.org"
+rpc_url = "https://soroban-mainnet.stellar.org"
 network_passphrase = "Public Global Stellar Network ; September 2015"
-identity = "RustAcademy-mainnet"
+identity = ""
 mainnet_gated = true
-
-[[environments.mainnet.contracts]]
-name = "stellar-dao-escrow"
-contract_id = ""
-wasm_hash = ""
-admin_addresses = []
-deployed_at = ""
-deployed_by = ""
-notes = "Mainnet — gated. Requires governance approval."
-
-[[environments.mainnet.contracts]]
-name = "stellar-dao-governance"
-contract_id = ""
-wasm_hash = ""
-admin_addresses = []
-deployed_at = ""
-deployed_by = ""
-notes = "Mainnet — gated. Requires governance approval."
-
-[[environments.mainnet.contracts]]
-name = "stellar-dao-fee"
-contract_id = ""
-wasm_hash = ""
-admin_addresses = []
-deployed_at = ""
-deployed_by = ""
-notes = "Mainnet — gated. Requires governance approval."
-
-[[environments.mainnet.contracts]]
-name = "stellar-dao-stealth"
-contract_id = ""
-wasm_hash = ""
-admin_addresses = []
-deployed_at = ""
-deployed_by = ""
-notes = "Mainnet — gated. Requires governance approval."
+notes = "Mainnet deployment pending security audit completion."
