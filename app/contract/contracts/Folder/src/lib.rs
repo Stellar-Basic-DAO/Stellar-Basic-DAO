@@ -229,6 +229,7 @@ impl StellarBasicDAOContract {
     /// * `ContractPaused` - Contract is currently paused
     /// * `PrivacyAlreadySet` - Privacy state is already at the requested value
     pub fn set_privacy(env: Env, owner: Address, enabled: bool) -> Result<(), StellarBasicDAOError> {
+        owner.require_auth();
         admin::guard_initialized(&env)?;
         if is_feature_paused(&env, PauseFlag::SetPrivacy) {
             return Err(StellarBasicDAOError::OperationPaused);
