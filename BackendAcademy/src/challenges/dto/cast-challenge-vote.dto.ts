@@ -1,7 +1,8 @@
-import { IsString, IsIn } from 'class-validator';
+import { IsString, IsIn, MaxLength } from 'class-validator';
 
 export class CastChallengeVoteDto {
   @IsString()
+  @MaxLength(128)
   userId: string;
 
   @IsIn(['up', 'down'])
