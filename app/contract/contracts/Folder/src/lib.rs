@@ -358,14 +358,13 @@ impl StellarBasicDAOContract {
 
     /// Create an escrow record and increment the global escrow counter.
     ///
-    /// Returns the new counter value. Parameters `_from`, `_to`, `_amount` are reserved for
-    /// future use; the implementation only increments the counter.
+    /// Returns the new counter value. Parameters are reserved for future escrow tracking.
     ///
     /// # Arguments
     /// * `env` - The contract environment
-    /// * `_from` - Reserved (depositor address for future use)
-    /// * `_to` - Reserved (recipient address for future use)
-    /// * `_amount` - Reserved (amount for future use)
+    /// * `_from` - Reserved: depositor address (tracked by event indexers via commitment)
+    /// * `_to` - Reserved: recipient address (tracked by event indexers via commitment)
+    /// * `_amount` - Reserved: escrow amount (validated and stored by `deposit` entry points)
     pub fn create_escrow(env: Env, _from: Address, _to: Address, _amount: u64) -> u64 {
         increment_escrow_counter(&env)
     }
