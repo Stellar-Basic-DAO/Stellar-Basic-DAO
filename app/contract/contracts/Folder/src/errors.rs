@@ -65,6 +65,12 @@ pub enum StellarBasicDAOError {
     InsufficientVotes = 321,
     /// Fee ratios or denominators are invalid for the configured payout split.
     InvalidFeeConfiguration = 322,
+    /// The configured fee split exceeds the available fee budget.
+    FeeSplitExceedsTotal = 323,
+    /// Dispute resolution timeout has not yet elapsed.
+    DisputeNotExpired = 324,
+    /// No dispute expiry metadata exists for this escrow.
+    NoDisputeExpiry = 325,
     /// Dispute resolution threshold is zero, exceeds arbiter count, or the
     /// arbiters list is empty.
     InvalidThreshold = 326,
@@ -78,12 +84,6 @@ pub enum StellarBasicDAOError {
     TooManyFeeRecipients = 330,
     /// The operation references more token transfer paths than the supported limit.
     TooManyTokens = 331,
-    /// The configured fee split exceeds the available fee budget.
-    FeeSplitExceedsTotal = 323,
-    /// Dispute resolution timeout has not yet elapsed.
-    DisputeNotExpired = 324,
-    /// No dispute expiry metadata exists for this escrow.
-    NoDisputeExpiry = 325,
     // Stealth address errors (400-499)
     /// Derived stealth address does not match the provided one.
     StealthAddressMismatch = 400,
