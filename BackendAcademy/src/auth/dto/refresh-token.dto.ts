@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 /**
  * Request body for POST /auth/session/refresh.
@@ -6,5 +6,6 @@ import { IsNotEmpty, IsString } from 'class-validator';
 export class RefreshTokenDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(4096)
   refreshToken: string;
 }
