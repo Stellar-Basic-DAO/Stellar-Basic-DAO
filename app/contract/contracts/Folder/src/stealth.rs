@@ -145,7 +145,7 @@ pub fn register_ephemeral_key(
 
     // Reject duplicate stealth addresses (replay protection).
     if get_stealth_escrow(env, &stealth_address).is_some() {
-        return Err( StellarBasicDAOError::StealthAddressAlreadyUsed);
+        return Err( StellarBasicDAOError::CommitmentAlreadyExists);
     }
 
     // Validate balance invariant before state transition
@@ -227,7 +227,7 @@ pub fn stealth_withdraw(
     recipient.require_auth();
 
     let entry =
-        get_stealth_escrow(env, &stealth_address).ok_or(StellarBasicDAOError::StealthEscrowNotFound)?;
+        get_stealth_escrow(env, &stealth_address).ok_or(StellarBasicDAOError::CommitmentNotFound)?;
 
     if entry.status != EscrowStatus::Pending {
         return Err(StellarBasicDAOError::AlreadySpent);
@@ -308,7 +308,7 @@ pub fn get_stealth_status(env: &Env, stealth_address: &BytesN<32>) -> Option<Esc
 /// no stale lookup can resolve to the cleaned address. O(1) — no state scan.
 ///
 /// # Errors
-/// - [`StealthEscrowNotFound`](StellarBasicDAOError::StealthEscrowNotFound) – no entry for the address.
+/// - [`StealthEscrowNotFound`](StellarBasicDAOError::CommitmentNotFound) – no entry for the address.
 /// - [`AlreadySpent`](StellarBasicDAOError::AlreadySpent) – entry is not in a terminal state.
 /// - [`InternalError`] – balance invariant check fails for stale entry.
 pub fn cleanup_stealth_escrow(
@@ -316,7 +316,7 @@ pub fn cleanup_stealth_escrow(
     stealth_address: BytesN<32>,
 ) -> Result<(), StellarBasicDAOError> {
     let entry = get_stealth_escrow(env, &stealth_address)
-        .ok_or(StellarBasicDAOError::StealthEscrowNotFound)?;
+        .ok_or(StellarBasicDAOError::CommitmentNotFound)?;
 
     match entry.status {
         EscrowStatus::Spent | EscrowStatus::Refunded => {

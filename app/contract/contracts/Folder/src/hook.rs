@@ -10,7 +10,7 @@ use soroban_sdk::{Address, BytesN, Env, IntoVal, Symbol, Vec};
 pub fn register_hook(env: &Env, hook_contract: Address) -> Result<(),  StellarBasicDAOError> {
     let mut hooks = storage::get_registered_hooks(env);
     if hooks.contains(hook_contract.clone()) {
-        return Err( StellarBasicDAOError::HookAlreadyRegistered);
+        return Err( StellarBasicDAOError::InternalError);
     }
     hooks.push_back(hook_contract.clone());
     storage::set_registered_hooks(env, &hooks);
@@ -30,7 +30,7 @@ pub fn unregister_hook(env: &Env, hook_contract: Address) -> Result<(),  Stellar
         }
     }
     if !found {
-        return Err( StellarBasicDAOError::HookNotRegistered);
+        return Err( StellarBasicDAOError::InternalError);
     }
     storage::set_registered_hooks(env, &updated);
     events::publish_hook_unregistered(env, hook_contract);

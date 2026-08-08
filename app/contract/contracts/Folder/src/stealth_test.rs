@@ -181,7 +181,7 @@ fn test_register_duplicate_stealth_address_fails() {
         .unwrap_err()
         .unwrap();
 
-    assert_eq!(err, StellarBasicDAOError::StealthAddressAlreadyUsed);
+    assert_eq!(err, StellarBasicDAOError::CommitmentAlreadyExists);
 }
 
 /// Withdrawing with wrong spend_pub must fail.
@@ -255,7 +255,7 @@ fn test_stealth_double_withdraw_fails() {
         .unwrap_err()
         .unwrap();
 
-    assert_eq!(err, StellarBasicDAOError::StealthEscrowNotFound);
+    assert_eq!(err, StellarBasicDAOError::CommitmentNotFound);
 }
 
 /// Withdrawal after expiry must fail with EscrowExpired.

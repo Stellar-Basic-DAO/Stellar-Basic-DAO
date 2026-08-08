@@ -1,131 +1,99 @@
 use soroban_sdk::contracterror;
 
-/// Canonical contract error codes.
+/// Core contract error codes (≤ 32 variants for Soroban compatibility).
 ///
+/// Includes most frequently referenced escrow, dispute, and stealth codes.
 /// Code bands:
-/// - 100-199: validation failures (amount, salt, privacy)
-/// - 200-299: auth/admin failures (unauthorized, role, initialization)
-/// - 300-399: state, escrow, and commitment violations
-/// - 400-499: stealth address errors
-/// - 500-514: replay protection, upgrade gating, governance
-/// - 900-999: internal/unexpected conditions
+/// - 100-199: validation
+/// - 200-299: auth/admin
+/// - 300-399: essential escrow/state/fee
+/// - 400-499: stealth
+/// - 500-599: replay/upgrade
+/// - 900-999: internal
 #[contracterror]
-#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
-#[repr(u32)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum StellarBasicDAOError {
     // Validation failures (100-199)
     InvalidAmount = 100,
     InvalidSalt = 101,
-    InvalidPrivacyLevel = 102,
     // Auth/admin failures (200-299)
     Unauthorized = 200,
     AlreadyInitialized = 201,
     InsufficientRole = 202,
-    /// The stored admin/role snapshot is internally inconsistent.
     InvalidRoleState = 203,
-    /// No pending admin transfer is available to accept or cancel.
     NoPendingAdminTransfer = 204,
-    // State, escrow, and commitment violations (300-399)
+    // Essential escrow & state (300-399)
     ContractPaused = 300,
-    PrivacyAlreadySet = 301,
     CommitmentNotFound = 302,
     CommitmentAlreadyExists = 303,
     AlreadySpent = 304,
-    InvalidCommitment = 305,
     CommitmentMismatch = 306,
-    /// Escrow has passed its expiry; withdrawal is no longer possible.
     EscrowExpired = 307,
-    /// Escrow has not yet expired; refund is not yet available.
     EscrowNotExpired = 308,
-    /// Caller is not the original owner of the escrow.
     InvalidOwner = 309,
-    /// No arbiter assigned to the escrow; dispute cannot be raised.
     NoArbiter = 310,
-    /// Escrow is not in the required state for this operation.
     InvalidDisputeState = 311,
-    /// Caller is not the assigned arbiter.
-    NotArbiter = 312,
-    /// The requested operation is paused via granular pause flags.
     OperationPaused = 313,
-    /// The stored contract version cannot be migrated by this release.
     InvalidContractVersion = 314,
-    /// Payment amount exceeds the remaining amount due for the escrow.
     Overpayment = 315,
-    /// Reentrant callback detected during hook invocation.
     ReentrancyDetected = 316,
-    /// Hook contract is already registered.
-    HookAlreadyRegistered = 317,
-    /// Hook contract was not registered.
-    HookNotRegistered = 318,
-    /// Caller is not one of the assigned multi-sig arbiters.
-    NotAnArbiter = 319,
-    /// Arbiter has already voted on this dispute.
     ArbiterAlreadyVoted = 320,
-    /// Insufficient arbiter votes to reach the threshold for resolution.
     InsufficientVotes = 321,
-    /// Fee ratios or denominators are invalid for the configured payout split.
     InvalidFeeConfiguration = 322,
-    /// The configured fee split exceeds the available fee budget.
-    FeeSplitExceedsTotal = 323,
-    /// Dispute resolution timeout has not yet elapsed.
-    DisputeNotExpired = 324,
-    /// No dispute expiry metadata exists for this escrow.
-    NoDisputeExpiry = 325,
-    /// Dispute resolution threshold is zero, exceeds arbiter count, or the
-    /// arbiters list is empty.
     InvalidThreshold = 326,
-    /// The arbiters list contains a duplicate address.
     DuplicateArbiter = 327,
-    /// The arbiters list exceeds the maximum allowed count.
     TooManyArbiters = 328,
-    /// The request payload exceeds the supported bounded size for predictable execution.
-    PayloadTooLarge = 329,
-    /// The operation would fan out to more fee recipients than the supported limit.
-    TooManyFeeRecipients = 330,
-    /// The operation references more token transfer paths than the supported limit.
-    TooManyTokens = 331,
-    // Stealth address errors (400-499)
-    /// Derived stealth address does not match the provided one.
+    // Stealth (400-499)
     StealthAddressMismatch = 400,
-    /// A stealth escrow already exists for this stealth address.
-    StealthAddressAlreadyUsed = 401,
-    /// No stealth escrow found for the given stealth address.
-    StealthEscrowNotFound = 402,
-    // Internal/unexpected conditions (900-999)
+    // Internal (900-999)
     InternalError = 900,
     InvalidTimeout = 901,
     // Replay protection (500-599)
-    /// The (signer, nonce) pair has already been consumed; replay detected.
     NonceAlreadyUsed = 500,
-    /// The signature's valid_until timestamp has passed; signature expired.
     SignatureExpired = 501,
-    // Upgrade gating (502-504)
-    /// The upgrade window is not currently active; start_upgrade is blocked.
+}
+
+/// Detailed escrow, fee, and stealth error codes (≤ 16 variants).
+///
+/// Less-commonly referenced error codes split from [`StellarBasicDAOError`]
+/// to keep each error enum under Soroban's variant limit.
+#[contracterror]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum EscrowError {
+    PrivacyAlreadySet = 301,
+    InvalidCommitment = 305,
+    NotArbiter = 312,
+    NotAnArbiter = 319,
+    HookAlreadyRegistered = 317,
+    HookNotRegistered = 318,
+    FeeSplitExceedsTotal = 323,
+    DisputeNotExpired = 324,
+    NoDisputeExpiry = 325,
+    PayloadTooLarge = 329,
+    TooManyFeeRecipients = 330,
+    TooManyTokens = 331,
+    StealthAddressAlreadyUsed = 401,
+    StealthEscrowNotFound = 402,
+}
+
+/// Governance-specific error codes (≤ 16 variants).
+///
+/// Upgrade gating and DAO multisig governance errors separated to keep
+/// the core error enum under the variant limit.
+#[contracterror]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum GovernanceError {
     UpgradeWindowNotActive = 502,
-    /// An upgrade is already in progress; start_upgrade cannot be called again.
     UpgradeAlreadyInProgress = 503,
-    /// No upgrade is currently in progress; upgrade or complete_upgrade cannot proceed.
     UpgradeNotInProgress = 504,
-    // Governance multisig (505-514, governance-model-v1)
-    /// Caller is not a member of the governance signer set.
     NotASigner = 505,
-    /// A proposal with the derived proposal_id already exists in storage.
     ProposalAlreadyExists = 506,
-    /// No proposal found for the given proposal_id.
     ProposalNotFound = 507,
-    /// Proposal is not in the expected state for this operation.
     InvalidProposalState = 508,
-    /// Signer has already approved this proposal.
     AlreadyApproved = 509,
-    /// Insufficient approvals to execute the proposal.
     InsufficientApprovals = 510,
-    /// valid_until is more than 30 days in the future.
     ExpiryTooFar = 511,
-    // Governance signer set validation (512-514)
-    /// The proposed signer set is empty, exceeds 10 members, or contains zero-addresses.
     InvalidSignerSet = 512,
-    /// The governance threshold is 0 or exceeds the signer count.
     InvalidGovernanceThreshold = 513,
-    /// The signer set contains duplicate addresses.
     DuplicateSigner = 514,
 }

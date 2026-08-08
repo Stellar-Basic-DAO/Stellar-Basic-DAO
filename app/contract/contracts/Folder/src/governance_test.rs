@@ -15,6 +15,7 @@ mod tests {
         vec, Address, Env,
     };
 
+    use crate::errors::{GovernanceError, StellarBasicDAOError};
     use crate::governance::{
         approve_proposal, cancel_proposal, create_proposal, execute_proposal,
         get_proposal, get_signer_set, get_threshold, initialize_governance, is_signer,
@@ -75,7 +76,7 @@ mod tests {
         let env = setup_env();
         let signers = vec![&env];
         let err = initialize_governance(&env, signers, 1).unwrap_err();
-        assert_eq!(err, crate::errors::StellarBasicDAOError::InvalidSignerSet);
+        assert_eq!(err, GovernanceError::InvalidSignerSet);
     }
 
     #[test]
@@ -83,7 +84,7 @@ mod tests {
         let env = setup_env();
         let signers = make_signers(&env, 3);
         let err = initialize_governance(&env, signers, 0).unwrap_err();
-        assert_eq!(err, crate::errors::StellarBasicDAOError::InvalidThreshold);
+        assert_eq!(err, GovernanceError::InvalidGovernanceThreshold);
     }
 
     #[test]
@@ -91,7 +92,7 @@ mod tests {
         let env = setup_env();
         let signers = make_signers(&env, 3);
         let err = initialize_governance(&env, signers, 4).unwrap_err();
-        assert_eq!(err, crate::errors::StellarBasicDAOError::InvalidThreshold);
+        assert_eq!(err, GovernanceError::InvalidGovernanceThreshold);
     }
 
     #[test]
@@ -99,7 +100,7 @@ mod tests {
         let env = setup_env();
         let signers = make_signers(&env, 11); // MAX is 10
         let err = initialize_governance(&env, signers, 6).unwrap_err();
-        assert_eq!(err, crate::errors::StellarBasicDAOError::InvalidSignerSet);
+        assert_eq!(err, GovernanceError::InvalidSignerSet);
     }
 
     // -----------------------------------------------------------------------
@@ -140,7 +141,7 @@ mod tests {
             valid_until,
         )
         .unwrap_err();
-        assert_eq!(err, crate::errors::StellarBasicDAOError::NotASigner);
+        assert_eq!(err, GovernanceError::NotASigner);
     }
 
     #[test]
@@ -158,7 +159,7 @@ mod tests {
             valid_until,
         )
         .unwrap_err();
-        assert_eq!(err, crate::errors::StellarBasicDAOError::SignatureExpired);
+        assert_eq!(err, GovernanceError::ExpiryTooFar);
     }
 
     #[test]
@@ -176,7 +177,7 @@ mod tests {
             valid_until,
         )
         .unwrap_err();
-        assert_eq!(err, crate::errors::StellarBasicDAOError::ExpiryTooFar);
+        assert_eq!(err, GovernanceError::ExpiryTooFar);
     }
 
     // -----------------------------------------------------------------------
@@ -250,7 +251,7 @@ mod tests {
 
         approve_proposal(&env, s2.clone(), proposal_id.clone()).unwrap();
         let err = approve_proposal(&env, s2.clone(), proposal_id.clone()).unwrap_err();
-        assert_eq!(err, crate::errors::StellarBasicDAOError::AlreadyApproved);
+        assert_eq!(err, GovernanceError::AlreadyApproved);
     }
 
     // -----------------------------------------------------------------------
@@ -271,7 +272,7 @@ mod tests {
 
         // Only 1 approval, threshold is 3
         let err = execute_proposal(&env, proposal_id).unwrap_err();
-        assert_eq!(err, crate::errors::StellarBasicDAOError::InsufficientApprovals);
+        assert_eq!(err, GovernanceError::InsufficientApprovals);
     }
 
     // -----------------------------------------------------------------------
@@ -310,6 +311,6 @@ mod tests {
         ).unwrap();
 
         let err = cancel_proposal(&env, stranger, proposal_id).unwrap_err();
-        assert_eq!(err, crate::errors::StellarBasicDAOError::NotASigner);
+        assert_eq!(err, GovernanceError::NotASigner);
     }
 }

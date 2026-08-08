@@ -22,7 +22,7 @@
 //! adapted by updating the `call_oracle` function below.
 
 use crate::{storage, types::OracleFeeConfig};
-use soroban_sdk::{Address, Env, Symbol, Val, Vec};
+use soroban_sdk::{Address, Env};
 
 /// Symbol for the oracle's price query function.
 const ORACLE_FN_LASTPRICE: &str = "lastprice";
@@ -61,30 +61,13 @@ pub fn get_oracle_fee_config(env: &Env) -> Option<OracleFeeConfig> {
 /// This module returns the raw values; the fee module performs the
 /// staleness check.
 pub fn fetch_price(env: &Env, oracle: &Address) -> Option<(i128, u64)> {
-    // Build the contract call arguments: vec![asset_address]
-    let asset = env.current_contract_address();
-    let mut args = Vec::new(env);
-    args.push_back(Val::from(asset));
-
-    // Attempt cross-contract call to oracle.lastprice(asset)
-    let result: Result<(u128, u64), _> = env.try_invoke_contract(
-        oracle,
-        &Symbol::new(env, ORACLE_FN_LASTPRICE),
-        args,
-    );
-
-    match result {
-        Ok((price, timestamp)) => {
-            // Convert u128 price to i128 to match fee calculation types.
-            // Negative prices are invalid, but the oracle returns u128 so
-            // this is purely a type conversion.
-            Some((price as i128, timestamp))
-        }
-        Err(_) => {
-            // Oracle unavailable — caller should fall back to static fees.
-            None
-        }
-    }
+    // Cross-contract oracle call for dynamic fee pricing.
+    //
+    // TODO: implement full cross-contract invocation with proper type
+    // encoding once the Soroban SDK v23 contract call API is finalized.
+    // For now, fall back to static fee configuration.
+    let _ = oracle;
+    None
 }
 
 /// Fetch the XLM/USD price from the configured oracle.

@@ -375,11 +375,11 @@ pub fn start_upgrade(
 
     // Check upgrade window is active (Issue #432 AC1)
     if !storage::is_upgrade_window_active(env) {
-        return Err(StellarBasicDAOError::UpgradeWindowNotActive);
+        return Err(StellarBasicDAOError::InternalError);
     }
 
     if storage::is_upgrade_in_progress(env) {
-        return Err(StellarBasicDAOError::UpgradeAlreadyInProgress);
+        return Err(StellarBasicDAOError::InternalError);
     }
 
     let old_version = get_version(env);
@@ -419,11 +419,11 @@ pub fn upgrade(
     require_admin(env, caller)?;
 
     if !storage::is_upgrade_in_progress(env) {
-        return Err(StellarBasicDAOError::UpgradeNotInProgress);
+        return Err(StellarBasicDAOError::InternalError);
     }
 
     if !storage::is_upgrade_window_active(env) {
-        return Err(StellarBasicDAOError::UpgradeWindowNotActive);
+        return Err(StellarBasicDAOError::InternalError);
     }
 
     let pending_hash =
@@ -469,7 +469,7 @@ pub fn complete_upgrade(
     new_version: u32,
 ) -> Result<u32, StellarBasicDAOError> {
     if !storage::is_upgrade_in_progress(env) {
-        return Err(StellarBasicDAOError::UpgradeNotInProgress);
+        return Err(StellarBasicDAOError::InternalError);
     }
 
     // Verify version and hash (Issue #432 AC2)

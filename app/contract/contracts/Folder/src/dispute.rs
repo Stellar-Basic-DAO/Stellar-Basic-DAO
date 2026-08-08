@@ -124,10 +124,10 @@ pub fn resolve_expired_dispute(
         return Err(StellarBasicDAOError::InvalidDisputeState);
     }
 
-    let expiry = get_dispute_expiry(env, &commitment_bytes).ok_or(StellarBasicDAOError::NoDisputeExpiry)?;
+    let expiry = get_dispute_expiry(env, &commitment_bytes).ok_or(StellarBasicDAOError::InvalidDisputeState)?;
     let now = env.ledger().timestamp();
     if now < expiry.expires_at {
-        return Err(StellarBasicDAOError::DisputeNotExpired);
+        return Err(StellarBasicDAOError::InvalidDisputeState);
     }
 
     let recipient = resolve_expiry_recipient(&entry, expiry.action)?;

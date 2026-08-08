@@ -190,7 +190,7 @@ fn estimate_deposit_resources(
     arbiter_count: u32,
 ) -> Result<EscrowOperationEstimate, StellarBasicDAOError> {
     if salt_bytes > MAX_OPERATION_SALT_BYTES {
-        return Err(StellarBasicDAOError::PayloadTooLarge);
+        return Err(StellarBasicDAOError::InvalidAmount);
     }
     if arbiter_count > MAX_ARBITERS {
         return Err(StellarBasicDAOError::TooManyArbiters);
@@ -219,10 +219,10 @@ fn estimate_withdraw_resources(
     fee_recipient_count: u32,
 ) -> Result<EscrowOperationEstimate, StellarBasicDAOError> {
     if salt_bytes > MAX_OPERATION_SALT_BYTES {
-        return Err(StellarBasicDAOError::PayloadTooLarge);
+        return Err(StellarBasicDAOError::InvalidAmount);
     }
     if fee_recipient_count > MAX_WITHDRAW_FEE_RECIPIENTS {
-        return Err(StellarBasicDAOError::TooManyFeeRecipients);
+        return Err(StellarBasicDAOError::InvalidAmount);
     }
 
     Ok(EscrowOperationEstimate {
@@ -248,12 +248,12 @@ fn estimate_withdraw_resources(
 fn validate_deposit_resources(salt: &Bytes, arbiter_count: u32) -> Result<(), StellarBasicDAOError> {
     let estimate = estimate_deposit_resources(salt.len(), arbiter_count)?;
     if estimate.token_count > MAX_SUPPORTED_TOKEN_COUNT {
-        return Err(StellarBasicDAOError::TooManyTokens);
+        return Err(StellarBasicDAOError::InvalidAmount);
     }
     if estimate.estimated_cpu_instructions > SUPPORTED_DEPOSIT_MAX_CPU_INSTRUCTIONS
         || estimate.estimated_memory_bytes > SUPPORTED_DEPOSIT_MAX_MEMORY_BYTES
     {
-        return Err(StellarBasicDAOError::PayloadTooLarge);
+        return Err(StellarBasicDAOError::InvalidAmount);
     }
     Ok(())
 }
@@ -288,12 +288,12 @@ fn validate_withdraw_resources(
 ) -> Result<(), StellarBasicDAOError> {
     let estimate = estimate_withdraw_resources(salt.len(), withdraw_fee_recipient_count(env, token))?;
     if estimate.token_count > MAX_SUPPORTED_TOKEN_COUNT {
-        return Err(StellarBasicDAOError::TooManyTokens);
+        return Err(StellarBasicDAOError::InvalidAmount);
     }
     if estimate.estimated_cpu_instructions > SUPPORTED_WITHDRAW_MAX_CPU_INSTRUCTIONS
         || estimate.estimated_memory_bytes > SUPPORTED_WITHDRAW_MAX_MEMORY_BYTES
     {
-        return Err(StellarBasicDAOError::PayloadTooLarge);
+        return Err(StellarBasicDAOError::InvalidAmount);
     }
     Ok(())
 }
@@ -876,7 +876,7 @@ pub fn withdraw(env: &Env, amount: i128, to: Address, salt: Bytes) -> Result<boo
     }
 
     if entry.amount_due != amount {
-        return Err( StellarBasicDAOError::InvalidCommitment);
+        return Err( StellarBasicDAOError::CommitmentMismatch);
     }
 
     // Check if escrow is fully paid
@@ -1162,7 +1162,7 @@ pub fn resolve_dispute(
     }
 
     if !is_authorized {
-        return Err( StellarBasicDAOError::NotArbiter);
+        return Err( StellarBasicDAOError::NoArbiter);
     }
 
     // Guard: escrow must be in Disputed state
@@ -1311,7 +1311,7 @@ pub fn vote_for_dispute(
     }
 
     if !is_arbiter {
-        return Err( StellarBasicDAOError::NotAnArbiter);
+        return Err( StellarBasicDAOError::NoArbiter);
     }
 
     // Guard: arbiter must not have already voted

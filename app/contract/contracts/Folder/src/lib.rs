@@ -1415,6 +1415,7 @@ impl StellarBasicDAOContract {
         valid_until: u64,
     ) -> Result<BytesN<32>, StellarBasicDAOError> {
         governance::create_proposal(&env, proposer, action, nonce, valid_until)
+            .map_err(|_| StellarBasicDAOError::InternalError)
     }
 
     /// Approve an existing governance proposal.
@@ -1426,6 +1427,7 @@ impl StellarBasicDAOContract {
         proposal_id: BytesN<32>,
     ) -> Result<(), StellarBasicDAOError> {
         governance::approve_proposal(&env, caller, proposal_id)
+            .map_err(|_| StellarBasicDAOError::InternalError)
     }
 
     /// Execute a proposal that has reached the approval threshold.
@@ -1436,6 +1438,7 @@ impl StellarBasicDAOContract {
         proposal_id: BytesN<32>,
     ) -> Result<(), StellarBasicDAOError> {
         governance::execute_proposal(&env, proposal_id)
+            .map_err(|_| StellarBasicDAOError::InternalError)
     }
 
     /// Cancel a pending governance proposal.
@@ -1447,6 +1450,7 @@ impl StellarBasicDAOContract {
         proposal_id: BytesN<32>,
     ) -> Result<(), StellarBasicDAOError> {
         governance::cancel_proposal(&env, caller, proposal_id)
+            .map_err(|_| StellarBasicDAOError::InternalError)
     }
 
     /// Get the current governance signer set.

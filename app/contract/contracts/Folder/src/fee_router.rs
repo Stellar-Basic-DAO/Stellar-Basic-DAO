@@ -168,7 +168,7 @@ pub fn route_payout(
                 .ok_or(StellarBasicDAOError::InvalidFeeConfiguration)?;
 
             if distributed > total_fee {
-                return Err(StellarBasicDAOError::FeeSplitExceedsTotal);
+                return Err(StellarBasicDAOError::InvalidFeeConfiguration);
             }
 
             collector_fee = collector_fee.saturating_add(total_fee - distributed);
