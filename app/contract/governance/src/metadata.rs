@@ -3,8 +3,8 @@
 //! This module provides read-only views of the contract's runtime state for
 //! tooling, backends, and indexers.  None of the functions here mutate storage.
 
-use crate::{
-    admin,
+use crate::admin;
+use stellar_dao_shared::{
     events::{EVENT_REPLAY_FIELDS, EVENT_SCHEMA_VERSION},
     storage::{
         self, CURRENT_CONTRACT_VERSION, LEGACY_CONTRACT_VERSION,
