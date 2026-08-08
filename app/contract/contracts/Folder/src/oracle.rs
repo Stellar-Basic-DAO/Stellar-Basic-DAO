@@ -62,12 +62,19 @@ pub fn get_oracle_fee_config(env: &Env) -> Option<OracleFeeConfig> {
 /// staleness check.
 pub fn fetch_price(env: &Env, oracle: &Address) -> Option<(i128, u64)> {
     // Cross-contract oracle call for dynamic fee pricing.
-    //
-    // TODO: implement full cross-contract invocation with proper type
-    // encoding once the Soroban SDK v23 contract call API is finalized.
-    // For now, fall back to static fee configuration.
-    let _ = oracle;
-    None
+    // Calls oracle.lastprice() and expects (i128, u64) return: (price_micros, timestamp).
+    // Uses try_invoke_contract for safe fallback on any call failure.
+    use soroban_sdk::{Symbol, Val, Vec};
+    let args: Vec<Val> = Vec::new(env);
+    let result = env.try_invoke_contract::<(i128, u64), soroban_sdk::Error>(
+        oracle,
+        &Symbol::new(env, ORACLE_FN_LASTPRICE),
+        args,
+    );
+    match result {
+        Ok(Ok((price, timestamp))) if price > 0 => Some((price, timestamp)),
+        _ => None,
+    }
 }
 
 /// Fetch the XLM/USD price from the configured oracle.
