@@ -9,8 +9,15 @@ import {
   HttpCode,
   HttpStatus,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { RewardsService } from './rewards.service';
+import { JwtLearnerGuard } from '../auth/guards/jwt-learner.guard';
+import { JwtAdminGuard } from '../auth/guards/jwt-admin.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from '../auth/enums/user-role.enum';
 import type {
   UserProgressionResponse,
   ThresholdsResponse,
@@ -148,6 +155,7 @@ export class RewardsController {
 
   /**
    * Creates a new prize pool with the given amount and optional currency.
+   * Admin-only operation.
    *
    * @example
    *   POST /rewards/prize-pool
@@ -155,6 +163,9 @@ export class RewardsController {
    *   → { id: "prize_…", totalAmount: 5000, … }
    */
   @Post('prize-pool')
+  @UseGuards(JwtAdminGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @HttpCode(HttpStatus.CREATED)
   createPrizePool(
     @Body() body: CreatePrizePoolRequest,
@@ -167,12 +178,16 @@ export class RewardsController {
 
   /**
    * Distributes the current prize pool to the top 10 leaderboard members.
+   * Admin-only operation.
    *
    * @example
    *   POST /rewards/prize-pool/distribute
    *   → { id: "prize_…", totalAmount: 1000, …, distributedAt: "…", distribution: […] }
    */
   @Post('prize-pool/distribute')
+  @UseGuards(JwtAdminGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @Throttle({ default: { limit: 3, ttl: 60_000 } })
   @HttpCode(HttpStatus.OK)
   distributePrizes(): PrizePoolResponse {
     return this.rewardsService.distributePrizes();
