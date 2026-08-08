@@ -1,8 +1,9 @@
-import { IsOptional, IsDateString, IsString } from 'class-validator';
+import { IsOptional, IsDateString, IsString, MaxLength } from 'class-validator';
 
 export class ListOfficeHoursDto {
   @IsOptional()
   @IsString()
+  @MaxLength(128)
   tutorId?: string;
 
   @IsOptional()
