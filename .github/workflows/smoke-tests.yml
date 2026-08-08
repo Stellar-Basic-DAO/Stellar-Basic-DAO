@@ -15,6 +15,13 @@ on:
           - staging
           - development
 
+permissions:
+  contents: read
+
+concurrency:
+  group: smoke-tests-${{ github.event.inputs.environment || github.event.deployment.environment }}
+  cancel-in-progress: false
+
 jobs:
   smoke-tests:
     name: Run Smoke Tests
@@ -26,6 +33,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
