@@ -1,14 +1,17 @@
-import { IsString, IsNumber, IsOptional, IsArray, IsEnum, Min } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsArray, IsEnum, MaxLength, Min } from 'class-validator';
 import { TaskDifficulty } from '../interfaces/task-difficulty.enum';
 
 export class CreateTaskDto {
   @IsString()
+  @MaxLength(128)
   lessonId: string;
 
   @IsString()
+  @MaxLength(256)
   title: string;
 
   @IsString()
+  @MaxLength(8192)
   description: string;
 
   @IsEnum(TaskDifficulty)
@@ -20,6 +23,7 @@ export class CreateTaskDto {
   testCases?: string[];
 
   @IsString()
+  @MaxLength(16384)
   expectedOutput: string;
 
   @IsOptional()
@@ -33,5 +37,6 @@ export class CreateTaskDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(65536)
   templateCode?: string;
 }

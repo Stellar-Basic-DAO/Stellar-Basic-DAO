@@ -1,10 +1,12 @@
-import { IsArray, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { IsArray, IsNumber, IsOptional, IsString, MaxLength, Min } from 'class-validator';
 
 export class InvokeContractDto {
   @IsString()
+  @MaxLength(128)
   contractId: string;
 
   @IsString()
+  @MaxLength(128)
   method: string;
 
   @IsArray()
@@ -12,6 +14,7 @@ export class InvokeContractDto {
   args: string[];
 
   @IsString()
+  @MaxLength(64)
   sourceAccount: string;
 
   @IsOptional()
@@ -22,14 +25,18 @@ export class InvokeContractDto {
 
 export class DeployContractDto {
   @IsString()
+  @MaxLength(128)
   contractId: string;
 
   @IsString()
+  @MaxLength(72)
   wasmHash: string;
 
   @IsString()
+  @MaxLength(128)
   deployedBy: string;
 
   @IsString()
+  @MaxLength(32)
   network: string;
 }
