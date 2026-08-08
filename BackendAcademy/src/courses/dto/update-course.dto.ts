@@ -1,13 +1,15 @@
-import { IsString, IsNumber, IsOptional, IsArray, IsBoolean, IsEnum } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsArray, IsBoolean, IsEnum, MaxLength } from 'class-validator';
 import { CourseLevel } from '../interfaces/course-level.enum';
 
 export class UpdateCourseDto {
   @IsOptional()
   @IsString()
+  @MaxLength(256)
   title?: string;
 
   @IsOptional()
   @IsString()
+  @MaxLength(8192)
   description?: string;
 
   @IsOptional()
@@ -20,6 +22,7 @@ export class UpdateCourseDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(128)
   learningPathId?: string;
 
   @IsOptional()
@@ -28,6 +31,7 @@ export class UpdateCourseDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(128)
   category?: string;
 
   @IsOptional()
@@ -60,9 +64,11 @@ export class UpdateCourseDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(4096)
   changeNote?: string;
 
   @IsOptional()
   @IsString()
+  @MaxLength(128)
   revisionAuthor?: string;
 }
