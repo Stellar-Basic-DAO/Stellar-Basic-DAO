@@ -17,12 +17,6 @@ importers:
       express:
         specifier: ^5.2.1
         version: 5.2.1
-      node-fetch:
-        specifier: '2'
-        version: 2.7.0
-      stellar-sdk:
-        specifier: ^13.3.0
-        version: 13.3.0
       toml:
         specifier: ^3.0.0
         version: 3.0.0
