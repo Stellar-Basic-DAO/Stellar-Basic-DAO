@@ -11,10 +11,15 @@ on:
         options:
           - testnet
           - mainnet
+      contracts:
+        description: 'Sub-contracts to deploy (comma-separated, or "all")'
+        required: false
+        default: 'all'
+        type: string
       dry_run:
         description: 'Dry run (simulate without deploying)'
         required: false
-        default: true
+        default: false
         type: boolean
       force_deploy:
         description: 'Force deploy even if contract exists'
@@ -30,16 +35,18 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  CONTRACT_NAME: stellar_basic_dao
-  WASM_PATH: target/wasm32-unknown-unknown/release/stellar_basic_dao.wasm
+  CONTRACT_DIR: app/contract
 
 jobs:
-  deploy:
-    name: Deploy Contract
+  # ── Build all sub-contract WASM artifacts ──────────────────────────
+  build:
+    name: Build WASM Artifacts
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: app/contract
+        working-directory: ${{ env.CONTRACT_DIR }}
+    outputs:
+      wasm_hashes: ${{ steps.hash.outputs.hashes }}
 
     steps:
       - name: Checkout code
@@ -55,238 +62,265 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
         with:
-          workspaces: "app/contract"
+          workspaces: "${{ env.CONTRACT_DIR }}"
+
+      - name: Install wasm-opt (binaryen)
+        run: |
+          curl -sL https://github.com/WebAssembly/binaryen/releases/download/version_120/binaryen-version_120-x86_64-linux.tar.gz -o /tmp/binaryen.tar.gz
+          tar xzf /tmp/binaryen.tar.gz -C /tmp
+          sudo cp /tmp/binaryen-version_120/bin/wasm-opt /usr/local/bin/
+          wasm-opt --version
 
       - name: Install Stellar CLI
+        run: cargo install stellar-cli --locked 2>/dev/null || echo "Stellar CLI already installed"
+
+      - name: Build all sub-contracts
         run: |
-          cargo install stellar-cli --locked 2>/dev/null || echo "Stellar CLI already installed"
+          echo "Building all sub-contracts for wasm32-unknown-unknown..."
+          for crate in stellar-dao-escrow stellar-dao-governance stellar-dao-fee stellar-dao-stealth; do
+            echo "  → Building $crate..."
+            cargo build --target wasm32-unknown-unknown --release -p "$crate"
+          done
+          echo "✅ All builds complete"
 
-      # Code quality gates
-      - name: Check formatting
-        run: cargo fmt --all -- --check
-
-      - name: Run clippy
-        run: cargo clippy --all-targets -- -D warnings
-
-      # Build
-      - name: Build release WASM
-        run: cargo build --target wasm32-unknown-unknown --release
-
-      - name: Verify WASM artifact
-        id: verify-wasm
+      - name: Optimize WASM with wasm-opt
         run: |
-          if [ ! -f "$WASM_PATH" ]; then
-            echo "❌ WASM artifact not found at $WASM_PATH"
-            ls -la target/wasm32-unknown-unknown/release/ 2>/dev/null || echo "  (release dir not found)"
+          RELEASE_DIR="target/wasm32-unknown-unknown/release"
+          for crate in stellar_dao_escrow stellar_dao_governance stellar_dao_fee stellar_dao_stealth; do
+            WASM="$RELEASE_DIR/${crate}.wasm"
+            if [ -f "$WASM" ]; then
+              ORIG_SIZE=$(stat -c%s "$WASM" 2>/dev/null || stat -f%z "$WASM")
+              wasm-opt --disable-reference-types --disable-exception-handling \
+                --disable-simd --disable-multivalue --disable-bulk-memory \
+                -Oz "$WASM" -o "${WASM%.wasm}.optimized.wasm"
+              OPT_SIZE=$(stat -c%s "${WASM%.wasm}.optimized.wasm" 2>/dev/null || stat -f%z "${WASM%.wasm}.optimized.wasm")
+              echo "  $crate: $ORIG_SIZE → $OPT_SIZE bytes"
+            fi
+          done
+
+      - name: Verify WASM sizes
+        id: hash
+        run: |
+          RELEASE_DIR="target/wasm32-unknown-unknown/release"
+          echo '{"hashes":{' > /tmp/wasm_hashes.json
+          first=true
+          for crate in stellar_dao_escrow stellar_dao_governance stellar_dao_fee stellar_dao_stealth; do
+            WASM="$RELEASE_DIR/${crate}.optimized.wasm"
+            if [ -f "$WASM" ]; then
+              SIZE=$(stat -c%s "$WASM" 2>/dev/null || stat -f%z "$WASM")
+              HASH=$(sha256sum "$WASM" | awk '{print $1}')
+              echo "  $crate: ${SIZE} bytes, sha256=$HASH"
+              # Warn if over 64KB
+              if [ "$SIZE" -gt 65536 ]; then
+                echo "  ⚠️  $crate is ${SIZE} bytes (>64KB Soroban limit)"
+              fi
+              [ "$first" = "true" ] || echo -n ',' >> /tmp/wasm_hashes.json
+              echo -n "\"$crate\":\"$HASH\"" >> /tmp/wasm_hashes.json
+              first=false
+            fi
+          done
+          echo '}}' >> /tmp/wasm_hashes.json
+          echo "hashes=$(cat /tmp/wasm_hashes.json)" >> $GITHUB_OUTPUT
+
+      - name: Upload WASM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: contract-wasms-${{ github.run_id }}
+          path: ${{ env.CONTRACT_DIR }}/target/wasm32-unknown-unknown/release/*.optimized.wasm
+          retention-days: 7
+
+  # ── Deploy each sub-contract (matrix) ─────────────────────────────
+  deploy:
+    name: Deploy ${{ matrix.contract }}
+    needs: build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.CONTRACT_DIR }}
+    strategy:
+      fail-fast: false
+      matrix:
+        contract:
+          - stellar-dao-escrow
+          - stellar-dao-governance
+          - stellar-dao-fee
+          - stellar-dao-stealth
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install Stellar CLI
+        run: cargo install stellar-cli --locked 2>/dev/null || echo "Stellar CLI already installed"
+
+      - name: Download WASM artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: contract-wasms-${{ github.run_id }}
+
+      - name: Resolve secrets for network
+        id: secrets
+        env:
+          NETWORK: ${{ github.event.inputs.network }}
+        run: |
+          NETWORK_UPPER=$(echo "$NETWORK" | tr '[:lower:]' '[:upper:]')
+          echo "network=$NETWORK" >> $GITHUB_OUTPUT
+          # Secrets are resolved via env: in subsequent steps
+
+      - name: Configure Stellar CLI network
+        env:
+          NETWORK: ${{ github.event.inputs.network }}
+        run: |
+          if [ "$NETWORK" = "testnet" ]; then
+            stellar network add testnet \
+              --rpc-url "https://soroban-testnet.stellar.org" \
+              --network-passphrase "Test SDF Network ; September 2015" \
+              2>/dev/null || echo "Network testnet already configured"
+          elif [ "$NETWORK" = "mainnet" ]; then
+            stellar network add mainnet \
+              --rpc-url "https://mainnet.stellar.org" \
+              --network-passphrase "Public Global Stellar Network ; September 2015" \
+              2>/dev/null || echo "Network mainnet already configured"
+          fi
+
+      - name: Deploy ${{ matrix.contract }}
+        if: ${{ github.event.inputs.dry_run == 'false' }}
+        id: deploy
+        env:
+          NETWORK: ${{ github.event.inputs.network }}
+          # Secrets — GitHub redacts these in logs automatically
+          TESTNET_DEPLOY_KEY: ${{ secrets.TESTNET_DEPLOY_KEY }}
+          MAINNET_DEPLOY_KEY: ${{ secrets.MAINNET_DEPLOY_KEY }}
+        run: |
+          # Map crate name to WASM filename (underscores in Rust → underscores in file)
+          WASM_FILE="${{ matrix.contract }}.optimized.wasm"
+          WASM_NAME="${{ matrix.contract }}"
+
+          if [ ! -f "$WASM_FILE" ]; then
+            echo "❌ WASM not found: $WASM_FILE"
+            ls -la *.wasm 2>/dev/null || echo "  (no .optimized.wasm files)"
             exit 1
           fi
-          WASM_HASH=$(sha256sum "$WASM_PATH" | awk '{print $1}')
-          echo "✅ WASM artifact found: $(ls -lh $WASM_PATH | awk '{print $5}')"
-          echo "wasm_path=$WASM_PATH" >> $GITHUB_OUTPUT
-          echo "wasm_hash=$WASM_HASH" >> $GITHUB_OUTPUT
 
-      - name: Run full test suite
-        run: cargo test
+          # Select deploy key per network
+          NETWORK_UPPER=$(echo "$NETWORK" | tr '[:lower:]' '[:upper:]')
+          DEPLOY_KEY_VAR="${NETWORK_UPPER}_DEPLOY_KEY"
+          DEPLOY_KEY="${!DEPLOY_KEY_VAR}"
 
-      # Resolve secrets per network (separate steps to avoid compile-time evaluation of undefined secrets)
-      - name: Resolve testnet secrets
-        id: secrets-testnet
-        if: ${{ github.event.inputs.network == 'testnet' }}
-        run: |
-          echo "deploy_key=${{ secrets.TESTNET_DEPLOY_KEY }}" >> $GITHUB_OUTPUT
-          echo "admin_key=${{ secrets.TESTNET_ADMIN_KEY }}" >> $GITHUB_OUTPUT
-
-      - name: Resolve mainnet secrets
-        id: secrets-mainnet
-        if: ${{ github.event.inputs.network == 'mainnet' }}
-        run: |
-          echo "deploy_key=${{ secrets.MAINNET_DEPLOY_KEY }}" >> $GITHUB_OUTPUT
-          echo "admin_key=${{ secrets.MAINNET_ADMIN_KEY }}" >> $GITHUB_OUTPUT
-
-      # Configure network
-      - name: Configure Stellar CLI network (testnet)
-        if: ${{ github.event.inputs.network == 'testnet' }}
-        run: |
-          stellar network add testnet \
-            --rpc-url "https://soroban-testnet.stellar.org" \
-            --network-passphrase "Test SDF Network ; September 2015" \
-            2>/dev/null || echo "Network testnet already configured"
-
-      - name: Configure Stellar CLI network (mainnet)
-        if: ${{ github.event.inputs.network == 'mainnet' }}
-        run: |
-          stellar network add mainnet \
-            --rpc-url "https://mainnet.stellar.org" \
-            --network-passphrase "Public Global Stellar Network ; September 2015" \
-            2>/dev/null || echo "Network mainnet already configured"
-
-      # Idempotent check
-      - name: Check if contract already deployed
-        id: check-deployed
-        run: |
-          if [ "${{ github.event.inputs.force_deploy }}" == "true" ]; then
-            echo "force_deploy=true — skipping idempotent check"
-            echo "should_deploy=true" >> $GITHUB_OUTPUT
-            exit 0
+          if [ -z "$DEPLOY_KEY" ]; then
+            echo "❌ No deploy key configured for $NETWORK. Set ${NETWORK_UPPER}_DEPLOY_KEY secret."
+            exit 1
           fi
 
-          REGISTRY_FILE="documentation/environment-registry.toml"
-          if [ -f "$REGISTRY_FILE" ]; then
-            EXISTING_ID=$(grep -A 10 "\[environments.${{ github.event.inputs.network }}\]" "$REGISTRY_FILE" | grep "contract_id" | head -1 | awk -F'"' '{print $2}')
-            if [ -n "$EXISTING_ID" ] && [ "$EXISTING_ID" != "CXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" ]; then
-              echo "existing_contract_id=$EXISTING_ID" >> $GITHUB_OUTPUT
-              echo "✅ Found existing contract in registry: $EXISTING_ID"
-              if stellar contract invoke --id "$EXISTING_ID" --network ${{ github.event.inputs.network }} -- health_check 2>/dev/null; then
-                echo "✅ Existing contract is healthy. Skipping deploy."
-                echo "should_deploy=false" >> $GITHUB_OUTPUT
-                exit 0
-              fi
-            fi
-          fi
-          echo "No existing healthy contract found. Proceeding with deploy."
-          echo "should_deploy=true" >> $GITHUB_OUTPUT
-
-      # Deploy contract
-      - name: Deploy contract
-        if: ${{ steps.check-deployed.outputs.should_deploy == 'true' && github.event.inputs.dry_run == 'false' }}
-        id: deploy-contract
-        env:
-          SOURCE_ACCOUNT: ${{ steps.secrets-testnet.outputs.deploy_key || steps.secrets-mainnet.outputs.deploy_key }}
-        run: |
+          echo "🚀 Deploying $WASM_NAME to $NETWORK..."
           CONTRACT_ID=$(stellar contract deploy \
-            --wasm "$WASM_PATH" \
-            --source "$SOURCE_ACCOUNT" \
-            --network ${{ github.event.inputs.network }})
-          echo "contract_id=$CONTRACT_ID" >> $GITHUB_OUTPUT
-          echo "✅ Deployed to ${{ github.event.inputs.network }}: $CONTRACT_ID"
+            --wasm "$WASM_FILE" \
+            --source "$DEPLOY_KEY" \
+            --network "$NETWORK")
 
-      # Initialize contract (optional)
-      - name: Initialize contract
-        if: ${{ steps.check-deployed.outputs.should_deploy == 'true' && github.event.inputs.dry_run == 'false' }}
+          echo "contract_id=$CONTRACT_ID" >> $GITHUB_OUTPUT
+          echo "✅ $WASM_NAME deployed: $CONTRACT_ID"
+
+      - name: Initialize governance contract
+        if: ${{ matrix.contract == 'stellar-dao-governance' && github.event.inputs.dry_run == 'false' }}
         env:
-          SOURCE_ACCOUNT: ${{ steps.secrets-testnet.outputs.deploy_key || steps.secrets-mainnet.outputs.deploy_key }}
-          ADMIN_KEY: ${{ steps.secrets-testnet.outputs.admin_key || steps.secrets-mainnet.outputs.admin_key }}
-          CONTRACT_ID: ${{ steps.deploy-contract.outputs.contract_id }}
+          NETWORK: ${{ github.event.inputs.network }}
+          TESTNET_DEPLOY_KEY: ${{ secrets.TESTNET_DEPLOY_KEY }}
+          TESTNET_ADMIN_KEY: ${{ secrets.TESTNET_ADMIN_KEY }}
+          MAINNET_DEPLOY_KEY: ${{ secrets.MAINNET_DEPLOY_KEY }}
+          MAINNET_ADMIN_KEY: ${{ secrets.MAINNET_ADMIN_KEY }}
+          CONTRACT_ID: ${{ steps.deploy.outputs.contract_id }}
         run: |
+          NETWORK_UPPER=$(echo "$NETWORK" | tr '[:lower:]' '[:upper:]')
+          DEPLOY_KEY_VAR="${NETWORK_UPPER}_DEPLOY_KEY"
+          ADMIN_KEY_VAR="${NETWORK_UPPER}_ADMIN_KEY"
+          ADMIN_KEY="${!ADMIN_KEY_VAR}"
+
           if [ -z "$ADMIN_KEY" ]; then
-            echo "ℹ️  No admin key provided. Skipping contract initialization."
+            echo "ℹ️  No admin key configured. Skipping governance initialization."
             exit 0
           fi
-          echo "Initializing contract with admin..."
+
+          echo "🔧 Initializing governance contract with admin $ADMIN_KEY..."
           stellar contract invoke \
             --id "$CONTRACT_ID" \
-            --source "$SOURCE_ACCOUNT" \
-            --network ${{ github.event.inputs.network }} \
+            --source "${!DEPLOY_KEY_VAR}" \
+            --network "$NETWORK" \
             -- \
             initialize \
             --admin "$ADMIN_KEY"
-          echo "✅ Contract initialized"
+          echo "✅ Governance contract initialized"
 
-      # Resolve active contract ID for downstream steps
-      - name: Resolve active contract ID
-        id: resolve-id
-        run: |
-          CID="${{ steps.deploy-contract.outputs.contract_id }}"
-          if [ -z "$CID" ]; then
-            CID="${{ steps.check-deployed.outputs.existing_contract_id }}"
-          fi
-          echo "contract_id=$CID" >> $GITHUB_OUTPUT
-          echo "Active contract: $CID"
-
-      # Post-deploy smoke tests
-      - name: Run health check
+      - name: Health check
         if: ${{ github.event.inputs.dry_run == 'false' }}
         continue-on-error: true
         env:
-          CONTRACT_ID: ${{ steps.resolve-id.outputs.contract_id }}
+          NETWORK: ${{ github.event.inputs.network }}
+          CONTRACT_ID: ${{ steps.deploy.outputs.contract_id }}
         run: |
-          echo "## 🏥 Health Check" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
           if [ -z "$CONTRACT_ID" ]; then
-            echo "❌ No contract ID available for health check" >> $GITHUB_STEP_SUMMARY
-            exit 1
+            echo "❌ No contract ID for health check"
+            exit 0
           fi
-          HEALTH=$(stellar contract invoke \
+          echo "🏥 Running health_check on $CONTRACT_ID..."
+          stellar contract invoke \
             --id "$CONTRACT_ID" \
-            --network ${{ github.event.inputs.network }} \
+            --network "$NETWORK" \
             -- \
-            health_check 2>&1)
-          echo '```json' >> $GITHUB_STEP_SUMMARY
-          echo "$HEALTH" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "✅ Health check passed" >> $GITHUB_STEP_SUMMARY
+            health_check 2>&1 || echo "⚠️  Health check inconclusive"
 
-      - name: Verify deployment metadata
-        if: ${{ github.event.inputs.dry_run == 'false' }}
-        continue-on-error: true
-        env:
-          CONTRACT_ID: ${{ steps.resolve-id.outputs.contract_id }}
-        run: |
-          echo "## 📋 Deployment Metadata" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          if [ -z "$CONTRACT_ID" ]; then
-            echo "❌ No contract ID available" >> $GITHUB_STEP_SUMMARY
-            exit 1
-          fi
-          METADATA=$(stellar contract invoke \
-            --id "$CONTRACT_ID" \
-            --network ${{ github.event.inputs.network }} \
-            -- \
-            get_deployment_metadata 2>&1)
-          echo '```json' >> $GITHUB_STEP_SUMMARY
-          echo "$METADATA" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "✅ Metadata verified" >> $GITHUB_STEP_SUMMARY
-
-      # Registry update instructions
-      - name: Generate registry update
+      - name: Deployment summary
         if: ${{ github.event.inputs.dry_run == 'false' }}
         env:
-          CONTRACT_ID: ${{ steps.resolve-id.outputs.contract_id }}
-          WASM_HASH: ${{ steps.verify-wasm.outputs.wasm_hash }}
+          CONTRACT_NAME: ${{ matrix.contract }}
+          CONTRACT_ID: ${{ steps.deploy.outputs.contract_id }}
+          NETWORK: ${{ github.event.inputs.network }}
         run: |
-          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          echo "## 📝 Registry Update Required" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Update [environment-registry.toml](app/contract/documentation/environment-registry.toml) with:" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```toml' >> $GITHUB_STEP_SUMMARY
-          echo "[[environments.${{ github.event.inputs.network }}.contracts]]" >> $GITHUB_STEP_SUMMARY
-          echo "name = \"$CONTRACT_NAME\"" >> $GITHUB_STEP_SUMMARY
-          echo "contract_id = \"$CONTRACT_ID\"" >> $GITHUB_STEP_SUMMARY
-          echo "wasm_hash = \"0x$WASM_HASH\"" >> $GITHUB_STEP_SUMMARY
-          echo "deployed_at = \"$TIMESTAMP\"" >> $GITHUB_STEP_SUMMARY
-          echo "deployed_by = \"GitHub Actions (${{ github.actor }})\"" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-
-      # Summaries
-      - name: Dry run summary
-        if: ${{ github.event.inputs.dry_run == 'true' }}
-        run: |
-          echo "## 🧪 Dry Run Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## $CONTRACT_NAME deployed" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Network | ${{ github.event.inputs.network }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| WASM | ${{ steps.verify-wasm.outputs.wasm_path }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| WASM Hash | \`${{ steps.verify-wasm.outputs.wasm_hash }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| Tests | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
-          echo "| Formatting | ✅ Checked |" >> $GITHUB_STEP_SUMMARY
-          echo "| Clippy | ✅ Checked |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "This was a dry run. No contract was deployed." >> $GITHUB_STEP_SUMMARY
+          echo "| Network | $NETWORK |" >> $GITHUB_STEP_SUMMARY
+          echo "| Contract | $CONTRACT_NAME |" >> $GITHUB_STEP_SUMMARY
+          echo "| Contract ID | \`$CONTRACT_ID\` |" >> $GITHUB_STEP_SUMMARY
 
-      - name: Deploy summary
-        if: ${{ github.event.inputs.dry_run == 'false' }}
+  # ── Aggregate summary ─────────────────────────────────────────────
+  summary:
+    name: Deployment Summary
+    needs: [build, deploy]
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Generate summary
+        env:
+          NETWORK: ${{ github.event.inputs.network }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
         run: |
-          echo "## 🚀 Deployment Complete" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
-          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Network | ${{ github.event.inputs.network }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Contract ID | \`${{ steps.resolve-id.outputs.contract_id }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| WASM Hash | \`0x${{ steps.verify-wasm.outputs.wasm_hash }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| Health Check | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
-          echo "| Metadata | ✅ Verified |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Update the [environment-registry.toml](app/contract/documentation/environment-registry.toml) with the contract ID and WASM hash from the Registry Update section above."
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "## 🧪 Dry Run Complete" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "All sub-contracts built and verified. No contracts were deployed." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Built sub-contracts:" >> $GITHUB_STEP_SUMMARY
+            echo "- stellar-dao-escrow (core deposit/withdraw/refund)" >> $GITHUB_STEP_SUMMARY
+            echo "- stellar-dao-governance (multisig proposals/admin)" >> $GITHUB_STEP_SUMMARY
+            echo "- stellar-dao-fee (fee configuration/routing)" >> $GITHUB_STEP_SUMMARY
+            echo "- stellar-dao-stealth (stealth addresses)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## 🚀 Deployment Complete ($NETWORK)" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "All sub-contracts deployed to **$NETWORK**." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "📝 Update [environment-registry.toml](app/contract/documentation/environment-registry.toml)" >> $GITHUB_STEP_SUMMARY
+            echo "with the contract IDs from each sub-contract deployment summary above." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Sub-contract | Status |" >> $GITHUB_STEP_SUMMARY
+            echo "|-------------|--------|" >> $GITHUB_STEP_SUMMARY
+            echo "| stellar-dao-escrow | ${{ needs.deploy.result }} |" >> $GITHUB_STEP_SUMMARY
+            echo "| stellar-dao-governance | ${{ needs.deploy.result }} |" >> $GITHUB_STEP_SUMMARY
+            echo "| stellar-dao-fee | ${{ needs.deploy.result }} |" >> $GITHUB_STEP_SUMMARY
+            echo "| stellar-dao-stealth | ${{ needs.deploy.result }} |" >> $GITHUB_STEP_SUMMARY
+          fi

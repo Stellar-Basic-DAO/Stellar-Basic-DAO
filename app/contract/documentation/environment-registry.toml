@@ -1,5 +1,6 @@
 # Stellar Basic DAO environment registry
-# Auto-generated during testnet deployment workflow.
+# Canonical source of truth for deployed contract coordinates.
+# Updated after each deploy or upgrade.
 
 version = 1
 application = "stellar_basic_dao"
@@ -11,6 +12,7 @@ network_passphrase = "Test SDF Network ; September 2015"
 identity = "RustAcademy-testnet"
 mainnet_gated = false
 
+# ── Verification contract (CLI pipeline test) ──────────────────────────
 [[environments.testnet.contracts]]
 name = "hello_verification"
 contract_id = "CCBXN74RN5PZRJLF3QVELGYTDMKABIMTBKGRC2NEPCQLBS23MJACXMNB"
@@ -20,15 +22,44 @@ deployed_at = "2026-08-08T16:58:00Z"
 deployed_by = "deployer2-testnet"
 notes = "Hello-world verification contract; confirms CLI pipeline works on Protocol 27."
 
+# ── Sub-contracts (modularized from monolith, Issue #size-limit) ──────
 [[environments.testnet.contracts]]
-name = "stellar_basic_dao"
+name = "stellar-dao-escrow"
 contract_id = ""
 wasm_hash = ""
 admin_addresses = []
 deployed_at = ""
 deployed_by = ""
-notes = "BLOCKED: Contract WASM is 164KB which exceeds Soroban deployment limits (~64KB). Contract must be modularized into smaller sub-contracts before testnet deployment."
+notes = "Core escrow: deposit, withdraw, refund, dispute, privacy. Deployment pending."
 
+[[environments.testnet.contracts]]
+name = "stellar-dao-governance"
+contract_id = ""
+wasm_hash = ""
+admin_addresses = []
+deployed_at = ""
+deployed_by = ""
+notes = "Governance: multisig proposals, admin roles, upgrade gating. Deployment pending."
+
+[[environments.testnet.contracts]]
+name = "stellar-dao-fee"
+contract_id = ""
+wasm_hash = ""
+admin_addresses = []
+deployed_at = ""
+deployed_by = ""
+notes = "Fee router: fee config, payout routing, oracle integration. Deployment pending."
+
+[[environments.testnet.contracts]]
+name = "stellar-dao-stealth"
+contract_id = ""
+wasm_hash = ""
+admin_addresses = []
+deployed_at = ""
+deployed_by = ""
+notes = "Stealth addresses: privacy-preserving deposits and withdrawals. Deployment pending."
+
+# ── Mainnet ────────────────────────────────────────────────────────────
 [environments.mainnet]
 network = "mainnet"
 rpc_url = "https://mainnet.stellar.org"
@@ -37,10 +68,37 @@ identity = "RustAcademy-mainnet"
 mainnet_gated = true
 
 [[environments.mainnet.contracts]]
-name = "stellar_basic_dao"
+name = "stellar-dao-escrow"
 contract_id = ""
 wasm_hash = ""
 admin_addresses = []
 deployed_at = ""
 deployed_by = ""
-notes = "Mainnet record empty - blocked by contract size limitation."
+notes = "Mainnet — gated. Requires governance approval."
+
+[[environments.mainnet.contracts]]
+name = "stellar-dao-governance"
+contract_id = ""
+wasm_hash = ""
+admin_addresses = []
+deployed_at = ""
+deployed_by = ""
+notes = "Mainnet — gated. Requires governance approval."
+
+[[environments.mainnet.contracts]]
+name = "stellar-dao-fee"
+contract_id = ""
+wasm_hash = ""
+admin_addresses = []
+deployed_at = ""
+deployed_by = ""
+notes = "Mainnet — gated. Requires governance approval."
+
+[[environments.mainnet.contracts]]
+name = "stellar-dao-stealth"
+contract_id = ""
+wasm_hash = ""
+admin_addresses = []
+deployed_at = ""
+deployed_by = ""
+notes = "Mainnet — gated. Requires governance approval."
