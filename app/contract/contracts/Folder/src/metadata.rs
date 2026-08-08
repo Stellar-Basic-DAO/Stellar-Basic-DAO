@@ -182,15 +182,34 @@ pub fn event_replay_fields(env: &Env) -> Vec<Symbol> {
 /// - `build_timestamp`: UNIX epoch timestamp when the WASM was compiled
 /// - `source_hash`: Deterministic hash of all Rust source files (BLAKE3)
 /// - `schema_version`: Build manifest format version
+/// Simple hex-to-bytes decoder for no_std environments.
+/// Returns `None` on invalid hex characters or odd-length input.
+fn decode_hex(s: &str) -> Option<[u8; 32]> {
+    let s = s.trim();
+    if s.len() < 64 {
+        return None;
+    }
+    let mut out = [0u8; 32];
+    for i in 0..32 {
+        let hi = hex_val(s.as_bytes()[i * 2])?;
+        let lo = hex_val(s.as_bytes()[i * 2 + 1])?;
+        out[i] = (hi << 4) | lo;
+    }
+    Some(out)
+}
+
+fn hex_val(b: u8) -> Option<u8> {
+    match b {
+        b'0'..=b'9' => Some(b - b'0'),
+        b'a'..=b'f' => Some(b - b'a' + 10),
+        b'A'..=b'F' => Some(b - b'A' + 10),
+        _ => None,
+    }
+}
+
 pub fn build_manifest() -> BuildManifest {
-    let git_bytes = hex::decode(GIT_HASH.trim())
-        .ok()
-        .and_then(|v| v.try_into().ok())
-        .unwrap_or([0u8; 32]);
-    let source_bytes = hex::decode(SOURCE_HASH.trim())
-        .ok()
-        .and_then(|v| v.try_into().ok())
-        .unwrap_or([0u8; 32]);
+    let git_bytes = decode_hex(GIT_HASH).unwrap_or([0u8; 32]);
+    let source_bytes = decode_hex(SOURCE_HASH).unwrap_or([0u8; 32]);
     BuildManifest {
         git_hash: BytesN::from_array(&Env::default(), &git_bytes),
         build_timestamp: BUILD_TIMESTAMP,
