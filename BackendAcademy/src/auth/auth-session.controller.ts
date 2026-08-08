@@ -7,8 +7,8 @@ import {
   HttpStatus,
   Param,
   Post,
-  Query,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { AuthSessionService } from './auth-session.service';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
@@ -39,6 +39,7 @@ export class AuthSessionController {
    * to a specific auth strategy.
    */
   @Post('login')
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @HttpCode(HttpStatus.CREATED)
   async login(@Body() dto: LoginDto): Promise<AuthTokensResponse> {
     return this.authSessionService.createSession(
@@ -52,6 +53,7 @@ export class AuthSessionController {
    * The old refresh token is revoked after a successful rotation.
    */
   @Post('refresh')
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
   async refresh(@Body() dto: RefreshTokenDto): Promise<AuthTokensResponse> {
     return this.authSessionService.refreshTokens(dto.refreshToken);
@@ -65,6 +67,7 @@ export class AuthSessionController {
    * Uses @Body instead of @Query to avoid leaking session IDs in server logs.
    */
   @Post('logout')
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
   @HttpCode(HttpStatus.NO_CONTENT)
   logout(@Body('sessionId') sessionId: string): void {
     this.authSessionService.revokeSession(sessionId);
@@ -76,6 +79,7 @@ export class AuthSessionController {
    * Uses @Body instead of @Query to avoid leaking user IDs in server logs.
    */
   @Post('logout-all')
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @HttpCode(HttpStatus.NO_CONTENT)
   logoutAll(@Body('userId') userId: string): void {
     this.authSessionService.revokeAllUserSessions(userId);
