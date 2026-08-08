@@ -80,6 +80,9 @@ pub fn batch_create(
             created_at: env.ledger().timestamp(),
             expires_at: item.expires_at,
             arbiter: None,
+            arbiters: soroban_sdk::Vec::new(env),
+            arbiter_threshold: 0,
+            schema_version: 1,
         };
 
         put_escrow(env, &item.escrow_id, &entry);

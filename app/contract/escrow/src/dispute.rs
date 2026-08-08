@@ -21,10 +21,10 @@
 
 use soroban_sdk::{token, Address, Bytes, BytesN, Env};
 
+use crate::{admin, hook};
 use stellar_dao_shared::{
-    admin,
     errors::StellarBasicDAOError,
-    events, hook,
+    events,
     storage::{
         self, clear_dispute_state, get_dispute_expiry, get_dispute_expiry_action,
         get_dispute_timeout, get_escrow, put_dispute_expiry, put_escrow,
