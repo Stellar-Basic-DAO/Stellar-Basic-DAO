@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 import { UserRole } from '../enums/user-role.enum';
 
 /**
@@ -11,6 +11,7 @@ import { UserRole } from '../enums/user-role.enum';
 export class LoginDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(128)
   userId: string;
 
   @IsEnum(UserRole)
@@ -19,5 +20,6 @@ export class LoginDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(6)
+  @MaxLength(256)
   password: string;
 }
