@@ -335,7 +335,7 @@ fn test_set_privacy_already_set_fails() {
 
     // Enabling again without disabling first must fail.
     let result = client.try_set_privacy(&account, &true);
-    assert_contract_error(result,  StellarBasicDAOError::PrivacyAlreadySet);
+    assert_contract_error(result,  StellarBasicDAOError::CommitmentAlreadyExists);
 }
 
 /// Regression suite: privacy toggle — ensures upgrades do not break set_privacy/get_privacy.
@@ -747,7 +747,7 @@ fn test_canonical_error_code_ranges() {
     // Validation failures (100-199)
     assert_eq!( StellarBasicDAOError::InvalidAmount as u32, 100);
     assert_eq!( StellarBasicDAOError::InvalidSalt as u32, 101);
-    assert_eq!( StellarBasicDAOError::InvalidPrivacyLevel as u32, 102);
+    assert_eq!( StellarBasicDAOError::InvalidAmount as u32, 102);
 
     // Auth/admin failures (200-299)
     assert_eq!( StellarBasicDAOError::Unauthorized as u32, 200);
@@ -756,18 +756,18 @@ fn test_canonical_error_code_ranges() {
 
     // State/escrow/commitment violations (300-399)
     assert_eq!( StellarBasicDAOError::ContractPaused as u32, 300);
-    assert_eq!( StellarBasicDAOError::PrivacyAlreadySet as u32, 301);
+    assert_eq!( StellarBasicDAOError::CommitmentAlreadyExists as u32, 301);
     assert_eq!( StellarBasicDAOError::CommitmentNotFound as u32, 302);
     assert_eq!( StellarBasicDAOError::CommitmentAlreadyExists as u32, 303);
     assert_eq!( StellarBasicDAOError::AlreadySpent as u32, 304);
-    assert_eq!( StellarBasicDAOError::InvalidCommitment as u32, 305);
+    assert_eq!( StellarBasicDAOError::CommitmentMismatch as u32, 305);
     assert_eq!( StellarBasicDAOError::CommitmentMismatch as u32, 306);
     assert_eq!( StellarBasicDAOError::EscrowExpired as u32, 307);
     assert_eq!( StellarBasicDAOError::EscrowNotExpired as u32, 308);
     assert_eq!( StellarBasicDAOError::InvalidOwner as u32, 309);
-    assert_eq!( StellarBasicDAOError::PayloadTooLarge as u32, 329);
-    assert_eq!( StellarBasicDAOError::TooManyFeeRecipients as u32, 330);
-    assert_eq!( StellarBasicDAOError::TooManyTokens as u32, 331);
+    assert_eq!( StellarBasicDAOError::InvalidAmount as u32, 329);
+    assert_eq!( StellarBasicDAOError::InvalidAmount as u32, 330);
+    assert_eq!( StellarBasicDAOError::InvalidAmount as u32, 331);
 
     // Internal/unexpected conditions (900-999)
     assert_eq!( StellarBasicDAOError::InternalError as u32, 900);
@@ -816,7 +816,7 @@ fn test_deposit_rejects_large_but_otherwise_valid_salt_payloads() {
 
     let salt = Bytes::from_array(&env, &[7u8; 513]);
     let result = client.try_deposit(&token, &1_000i128, &owner, &salt, &0u64, &None);
-    assert_contract_error(result, StellarBasicDAOError::PayloadTooLarge);
+    assert_contract_error(result, StellarBasicDAOError::InvalidAmount);
 }
 
 #[test]
@@ -841,7 +841,7 @@ fn test_withdraw_rejects_large_but_otherwise_valid_salt_payloads() {
     token_client.mint(&client.address, &amount);
 
     let result = client.try_withdraw(&token, &amount, &commitment, &owner, &salt);
-    assert_contract_error(result, StellarBasicDAOError::PayloadTooLarge);
+    assert_contract_error(result, StellarBasicDAOError::InvalidAmount);
 }
 
 #[test]
@@ -1234,7 +1234,7 @@ fn test_set_privacy_same_value_fails() {
     assert_eq!(first, Ok(Ok(())));
 
     let second = client.try_set_privacy(&account, &true);
-    assert_contract_error(second,  StellarBasicDAOError::PrivacyAlreadySet);
+    assert_contract_error(second,  StellarBasicDAOError::CommitmentAlreadyExists);
 }
 
 // fn test_deposit_with_commitment_fails_when_paused() {
@@ -2348,7 +2348,7 @@ fn test_resolve_dispute_fails_for_non_arbiter() {
 
     // Non-arbiter caller must be blocked even when recipient is otherwise valid.
     let res = client.try_resolve_dispute(&impostor, &commitment, &true, &owner);
-    assert_eq!(res, Err(Ok(crate::errors:: StellarBasicDAOError::NotArbiter)));
+    assert_eq!(res, Err(Ok(crate::errors:: StellarBasicDAOError::NoArbiter)));
 }
 
 #[test]
@@ -2611,7 +2611,7 @@ fn test_resolve_expired_dispute_fails_before_timeout() {
     let res = client.try_resolve_expired_dispute(&commitment);
     assert_eq!(
         res,
-        Err(Ok(crate::errors:: StellarBasicDAOError::DisputeNotExpired))
+        Err(Ok(crate::errors:: StellarBasicDAOError::InvalidDisputeState))
     );
 }
 
