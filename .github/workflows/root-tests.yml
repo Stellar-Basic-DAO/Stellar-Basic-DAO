@@ -16,6 +16,13 @@ on:
       - "jest.config.js"
       - ".github/workflows/root-tests.yml"
 
+permissions:
+  contents: read
+
+concurrency:
+  group: root-tests-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     name: Test Root Source
@@ -24,6 +31,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -37,7 +46,7 @@ jobs:
           cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Run root test suite
         run: pnpm test:root
