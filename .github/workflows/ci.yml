@@ -4,12 +4,21 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -33,5 +42,5 @@ jobs:
 
       - name: Validate frontend type-check
         working-directory: app/frontend
-        run: pnpm exec tsc --noEmit || echo "Frontend type-check has warnings (non-blocking)"
+        run: pnpm exec tsc --noEmit
 
