@@ -36,8 +36,8 @@ Below are the findings from the latest security audit of the `BackendAcademy/` N
 
 | ID | Finding | Location | Status |
 |----|---------|----------|--------|
-| AUTH-01 | **No authentication guards on sensitive endpoints** — wallet, rewards, contracts, and admin controllers lack auth guards | `wallet.controller.ts`, `rewards.controller.ts`, `contracts.controller.ts`, `admin.controller.ts` | ⚠️ **Mitigated**: `DevAuthGuard` applied (TODO: replace with real guards) |
-| AUTH-02 | **Anti-cheat batch endpoint accepts unbounded array** — `check-batch` receives `CheckSubmissionDto[]` without `@ValidateNested({ each: true })` wrapper | `anti-cheat.controller.ts` | ⚠️ **Partial fix**: added note in doc comment |
+| AUTH-01 | **No authentication guards on sensitive endpoints** — wallet, rewards, contracts, and admin controllers lack auth guards | `wallet.controller.ts`, `rewards.controller.ts`, `contracts.controller.ts`, `admin.controller.ts` | ✅ **Fixed**: JwtAdminGuard/JwtLearnerGuard applied on all controllers |
+| AUTH-02 | **Anti-cheat batch endpoint accepts unbounded array** — `check-batch` receives `CheckSubmissionDto[]` without `@ValidateNested({ each: true })` wrapper | `anti-cheat.controller.ts` | ✅ **Fixed**: ParseArrayPipe with maxSize, JwtAdminGuard, RolesGuard applied |
 
 ### 🟠 High
 
@@ -50,8 +50,8 @@ Below are the findings from the latest security audit of the `BackendAcademy/` N
 
 | ID | Finding | Location | Status |
 |----|---------|----------|--------|
-| VAL-01 | **No input size limits on DTO string fields** — Several DTOs allow unbounded strings | Multiple DTOs | 📝 **Noted**: Add `@MaxLength()` decorators |
-| VAL-02 | **Batch operations lack request size limits** — No limit on batch sizes for anti-cheat, badge issuance | `anti-cheat.controller.ts`, `badges.controller.ts` | 📝 **Noted**: Add max batch size validation |
+| VAL-01 | **No input size limits on DTO string fields** — Several DTOs allow unbounded strings | Multiple DTOs | ✅ **Fixed**: `@MaxLength()` decorators added to all DTO string fields |
+| VAL-02 | **Batch operations lack request size limits** — No limit on batch sizes for anti-cheat, badge issuance | `anti-cheat.controller.ts`, `badges.controller.ts` | ✅ **Fixed**: Batch size limits added, JWT guards with rate limiting applied |
 
 ---
 
