@@ -6,6 +6,7 @@ import {
   Body,
   Param,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { OnboardingService } from './onboarding.service';
 import { OnboardingProgress } from './onboarding.entity';
 import { CreateOnboardingProgressDto } from './dto/create-onboarding-progress.dto';
@@ -16,6 +17,7 @@ export class OnboardingController {
   constructor(private readonly onboardingService: OnboardingService) {}
 
   @Post()
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   async create(
     @Body() dto: CreateOnboardingProgressDto,
   ): Promise<OnboardingProgress> {
@@ -30,6 +32,7 @@ export class OnboardingController {
   }
 
   @Put(':id')
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
   async update(
     @Param('id') id: string,
     @Body() dto: UpdateOnboardingProgressDto,
@@ -38,6 +41,7 @@ export class OnboardingController {
   }
 
   @Post(':id/step')
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
   async completeStep(
     @Param('id') id: string,
     @Body('step') step: string,
