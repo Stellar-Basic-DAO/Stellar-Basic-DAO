@@ -14,6 +14,13 @@ on:
       - "app/frontend/**"
       - ".github/workflows/frontend-ci.yml"
 
+permissions:
+  contents: read
+
+concurrency:
+  group: frontend-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint-and-type-check:
     name: Lint and Type Check
@@ -54,6 +61,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -87,6 +96,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -106,7 +117,6 @@ jobs:
       - name: Run pnpm audit
         working-directory: ./app/frontend
         run: pnpm audit --audit-level=moderate
-        continue-on-error: true
 
       - name: Check for mixed content
         run: |
