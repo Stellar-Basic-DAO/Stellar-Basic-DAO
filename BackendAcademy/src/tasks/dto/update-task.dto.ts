@@ -1,13 +1,15 @@
-import { IsString, IsNumber, IsOptional, IsArray, IsEnum, Min, IsBoolean } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsArray, IsEnum, MaxLength, Min, IsBoolean } from 'class-validator';
 import { TaskDifficulty } from '../interfaces/task-difficulty.enum';
 
 export class UpdateTaskDto {
   @IsOptional()
   @IsString()
+  @MaxLength(256)
   title?: string;
 
   @IsOptional()
   @IsString()
+  @MaxLength(8192)
   description?: string;
 
   @IsOptional()
@@ -21,6 +23,7 @@ export class UpdateTaskDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(16384)
   expectedOutput?: string;
 
   @IsOptional()
@@ -34,6 +37,7 @@ export class UpdateTaskDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(65536)
   templateCode?: string;
 
   @IsOptional()
