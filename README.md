@@ -98,9 +98,21 @@ Stellar Basic DAO is unique on Stellar: no other project combines Rust education
 └──────────────────────────────┬──────────────────────────────────────┘
                                │ Stellar SDK + Soroban RPC
 ┌──────────────────────────────▼──────────────────────────────────────┐
-│                    STELLAR BLOCKCHAIN LAYER                          │
-│   StellarBasicDAOContract (Soroban WASM) — single monolithic contract     │
-│   Escrow · Fee Router · Privacy · Stealth · Dispute · Governance    │
+│                 STELLAR BLOCKCHAIN LAYER (Modular)                   │
+│                                                                     │
+│   ┌──────────────────────────────────────────────────────────┐     │
+│   │              stellar-dao-shared (no_std rlib)              │     │
+│   │     errors · types · storage · events · nonce · escrow_id │     │
+│   └────────┬─────────┬─────────┬──────────┬──────────────────┘     │
+│            │         │         │          │                          │
+│   ┌────────▼──┐ ┌────▼────┐ ┌──▼───┐ ┌───▼──────┐                  │
+│   │  Escrow   │ │Governanc│ │ Fee  │ │ Stealth  │                  │
+│   │  84 KB    │ │  85 KB  │ │47 KB │ │  55 KB   │                  │
+│   │ deposit   │ │proposals│ │config│ │ register │                  │
+│   │ withdraw  │ │ signers │ │route │ │ withdraw │                  │
+│   │ refund    │ │ admin   │ │oracle│ │  status  │                  │
+│   │ dispute   │ │ upgrade │ │collect│ │ cleanup  │                  │
+│   └───────────┘ └─────────┘ └──────┘ └──────────┘                  │
 └─────────────────────────────────────────────────────────────────────┘
                                │ Horizon API
 ┌──────────────────────────────▼──────────────────────────────────────┐
@@ -167,9 +179,21 @@ Stellar Basic DAO is unique on Stellar: no other project combines Rust education
 
 ---
 
-## ⚡ Soroban Smart Contract — `StellarBasicDAOContract`
+## ⚡ Soroban Smart Contracts — Modular Architecture
 
-The entire on-chain logic is deployed as a single monolithic Soroban contract (`StellarBasicDAOContract`). This minimizes cross-contract call overhead and simplifies upgrades.
+The on-chain logic is deployed as **4 independent sub-contracts** sharing a common `stellar-dao-shared` crate. This modular architecture keeps each WASM artifact under Soroban's deployment limits (~64–85 KB) while maintaining clean separation of concerns.
+
+### 🚀 Deployment Status (Stellar Testnet — Protocol 27)
+
+| # | Contract | Size | Contract ID | Key Functions Verified |
+|:---|:---|:---|:---|:---|
+| 1 | **stellar-dao-escrow** | 84 KB | `CARWR7ZW...27PMF` | deposit, withdraw, refund, dispute, batch, privacy, get_escrow_details, health_check |
+| 2 | **stellar-dao-governance** | 85 KB | `CDR27RYZ...LLVAPF` | initialize, get_admin, get_version, is_paused, proposals, upgrade gating, health_check |
+| 3 | **stellar-dao-stealth** | 55 KB | `CBQQ7MXK...RKFWBD` | register_ephemeral_key, stealth_withdraw, get_stealth_status, health_check |
+| 4 | **stellar-dao-fee** | 47 KB | `CBYSO64O...Z5LBNU` | set_fee_config, get_fee_config, set_per_asset_fee, oracle fees, rotate_fee_collector, health_check |
+
+> **Deployer account**: `GDFFOJHT2ARW23Y4QUSPEKVKHCRFKDA6DOYN7CK6PROAB3JYRJXYG7AL`  
+> **All contracts verified with on-chain deposit/withdraw, governance init, fee config, and stealth status checks.**
 
 ### Escrow State Machine
 
@@ -188,19 +212,48 @@ The entire on-chain logic is deployed as a single monolithic Soroban contract (`
 
 ### Contract Function Surface
 
+#### Escrow Sub-contract (`stellar-dao-escrow`)
+
 | Category | Functions |
 |---|---|
-| **Escrow** | `deposit`, `deposit_with_commitment`, `deposit_partial`, `deposit_with_arbiters`, `withdraw`, `refund`, `partial_payment` |
-| **Dispute** | `dispute`, `vote_for_dispute`, `resolve_dispute`, `resolve_dispute_multi_sig`, `resolve_expired_dispute` |
-| **Privacy** | `enable_privacy`, `set_privacy`, `get_privacy`, `privacy_status`, `privacy_history` |
-| **Stealth** | `register_ephemeral_key`, `stealth_withdraw`, `get_stealth_status` |
-| **Commitment** | `create_amount_commitment`, `verify_amount_commitment`, `derive_escrow_id` |
-| **Admin** | `initialize`, `set_admin`, `propose_admin_transfer`, `accept_admin_transfer`, `set_paused`, `pause_features`, `unpause_features`, `activate_emergency_mode` |
-| **Fee** | `set_fee_config`, `set_per_asset_fee`, `set_oracle_fee_config`, `rotate_fee_collector`, `get_active_fee_collector` |
-| **Upgrade** | `upgrade`, `start_upgrade`, `complete_upgrade`, `cancel_upgrade`, `set_upgrade_window`, `migrate` |
+| **Deposit** | `deposit`, `deposit_with_commitment`, `deposit_partial`, `deposit_with_arbiters`, `partial_payment` |
+| **Withdraw** | `withdraw`, `refund` |
+| **Dispute** | `dispute`, `vote_for_dispute`, `resolve_dispute`, `resolve_dispute_multi_sig` |
+| **TTL / Cleanup** | `extend_escrow_ttl`, `cleanup_escrow` |
+| **Privacy** | `set_privacy`, `get_privacy`, `get_escrow_details` |
+| **Health** | `health_check` |
+
+#### Governance Sub-contract (`stellar-dao-governance`)
+
+| Category | Functions |
+|---|---|
+| **Admin** | `initialize`, `set_admin`, `propose_admin_transfer`, `accept_admin_transfer`, `cancel_admin_transfer`, `get_admin` |
+| **Pause** | `set_paused`, `is_paused`, `pause_features`, `unpause_features` |
 | **Roles** | `grant_role`, `revoke_role`, `clear_roles`, `get_roles` |
-| **Hooks** | `register_hook`, `unregister_hook`, `get_registered_hooks` |
-| **Metadata** | `get_deployment_metadata`, `get_contract_health`, `get_feature_flags`, `get_upgrade_state`, `get_supported_versions`, `check_schema_compatibility`, `get_pause_flags`, `health_check` |
+| **Upgrade** | `set_upgrade_window`, `get_upgrade_window`, `start_upgrade`, `upgrade`, `cancel_upgrade`, `complete_upgrade`, `migrate` |
+| **Proposals** | `create_proposal`, `approve_proposal`, `execute_proposal`, `cancel_proposal` |
+| **Signers** | `get_signer_set`, `get_governance_threshold`, `is_governance_signer`, `get_governance_proposal` |
+| **Metadata** | `get_deployment_metadata`, `get_contract_health`, `get_feature_flags`, `get_upgrade_state`, `get_supported_versions`, `check_schema_compatibility`, `get_version` |
+| **Health** | `health_check` |
+
+#### Fee Router Sub-contract (`stellar-dao-fee`)
+
+| Category | Functions |
+|---|---|
+| **Fee Config** | `set_fee_config`, `get_fee_config`, `set_per_asset_fee`, `get_per_asset_fee` |
+| **Oracle Fees** | `set_oracle_fee_config`, `get_oracle_fee_config` |
+| **Wallet** | `set_platform_wallet`, `get_platform_wallet` |
+| **Collector** | `rotate_fee_collector`, `get_active_fee_collector` |
+| **Health** | `health_check` |
+
+#### Stealth Sub-contract (`stellar-dao-stealth`)
+
+| Category | Functions |
+|---|---|
+| **Deposit** | `register_ephemeral_key` |
+| **Withdraw** | `stealth_withdraw` |
+| **Status** | `get_stealth_status`, `cleanup_stealth_escrow` |
+| **Health** | `health_check` |
 
 ### On-Chain Event Schema (v2)
 
@@ -237,20 +290,41 @@ stellar-basic-dao/
 │   │   │   └── ...           # 35+ modules total
 │   │   └── docs/             # openapi.yaml + API reference docs
 │   │
-│   ├── contract/             # Soroban smart contracts (Rust)
-│   │   └── contracts/Folder/
-│   │       └── src/
-│   │           ├── lib.rs         # Contract entry points
-│   │           ├── escrow.rs      # Escrow logic
-│   │           ├── fee_router.rs  # Fee routing & splits
-│   │           ├── dispute.rs     # Dispute resolution
-│   │           ├── stealth.rs     # Stealth address deposits
-│   │           ├── privacy.rs     # Privacy levels
-│   │           ├── governance.rs  # DAO governance (multisig)
-│   │           ├── types.rs       # All contract types
-│   │           ├── events.rs      # Event schema (v2)
-│   │           ├── errors.rs      # Error codes
-│   │           └── storage.rs     # Storage layout
+│   ├── contract/             # Soroban smart contracts (Rust workspace)
+│   │   ├── Cargo.toml         # Workspace manifest (6 members)
+│   │   ├── shared/            # stellar-dao-shared (no_std rlib)
+│   │   │   └── src/
+│   │   │       ├── errors.rs      # Error codes (StellarBasicDAOError, GovernanceError)
+│   │   │       ├── types.rs       # EscrowEntry, FeeConfig, Role, ProposalAction, etc.
+│   │   │       ├── storage.rs     # Storage keys, get/set helpers, TTL management
+│   │   │       ├── events.rs      # Event schema (v2 with replay fields)
+│   │   │       ├── nonce.rs       # Per-signer nonce replay protection
+│   │   │       ├── commitment.rs  # Amount commitment hashing
+│   │   │       └── escrow_id.rs   # Deterministic escrow ID derivation
+│   │   ├── escrow/            # stellar-dao-escrow (84KB)
+│   │   │   └── src/
+│   │   │       ├── escrow.rs      # Deposit, withdraw, refund, partial payment
+│   │   │       ├── dispute.rs     # Dispute resolution (single + multi-sig)
+│   │   │       ├── hook.rs        # Event hooks and reentrancy guard
+│   │   │       ├── privacy.rs     # Privacy-aware escrow views
+│   │   │       └── batch.rs       # Batch create, release, refund
+│   │   ├── governance/        # stellar-dao-governance (85KB)
+│   │   │   ├── build.rs          # Build manifest (GIT_HASH, BUILD_TIMESTAMP)
+│   │   │   └── src/
+│   │   │       ├── governance.rs  # Multisig proposals, signers, threshold
+│   │   │       ├── admin.rs       # Admin/role management, upgrade gating
+│   │   │       └── metadata.rs    # Deployment metadata, health, feature flags
+│   │   ├── fee/               # stellar-dao-fee (47KB)
+│   │   │   └── src/
+│   │   │       ├── fee.rs         # Fee calculation helpers
+│   │   │       ├── fee_router.rs  # Payout routing, collector rotation
+│   │   │       └── oracle.rs      # Oracle price feed integration
+│   │   ├── stealth/           # stellar-dao-stealth (55KB)
+│   │   │   └── src/
+│   │   │       └── stealth.rs     # Stealth address deposit/withdraw
+│   │   ├── contracts/Folder/  # (Legacy) Original monolithic contract
+│   │   ├── documentation/     # Deployment playbook, secrets, env registry
+│   │   └── scripts/           # deploy-testnet.sh for sub-contracts
 │   │
 │   ├── frontend/             # Next.js 15 web app
 │   │   └── src/app/          # App Router pages
@@ -291,6 +365,7 @@ stellar-basic-dao/
 | pnpm | ≥ 9 | `npm install -g pnpm` |
 | Rust | stable | `rustup update stable` |
 | Stellar CLI | latest | `cargo install --locked stellar-cli` |
+| Binaryen (wasm-opt) | ≥ 120 | `wget https://github.com/WebAssembly/binaryen/releases/download/version_120/binaryen-version_120-x86_64-linux.tar.gz` |
 | Docker | latest | For PostgreSQL + Redis |
 | Freighter | browser ext | [freighter.app](https://freighter.app) |
 
@@ -332,17 +407,37 @@ pnpm --filter mobile start      # Mobile (Expo)
 ```bash
 cd app/contract
 
-# Build WASM artifact
-cargo build --target wasm32-unknown-unknown --release
+# Build all 4 sub-contracts
+cargo build --target wasm32-unknown-unknown --release \
+  -p stellar-dao-escrow \
+  -p stellar-dao-governance \
+  -p stellar-dao-fee \
+  -p stellar-dao-stealth
 
 # Run all contract tests
 cargo test
 
-# Deploy to Stellar Testnet
+# Optimize WASM for Soroban deployment (requires wasm-opt / Binaryen v120)
+wasm-opt \
+  --disable-reference-types --disable-exception-handling \
+  --disable-simd --disable-multivalue --disable-bulk-memory \
+  -Oz \
+  target/wasm32-unknown-unknown/release/stellar_dao_escrow.wasm \
+  -o target/wasm32-unknown-unknown/release/stellar_dao_escrow.optimized.wasm
+
+# Deploy to Stellar Testnet (per sub-contract)
 stellar contract deploy \
   --network testnet \
-  --wasm target/wasm32-unknown-unknown/release/stellar_basic_dao.wasm
+  --source deployer-testnet \
+  --wasm target/wasm32-unknown-unknown/release/stellar_dao_escrow.optimized.wasm
+
+# Or use the automated deployment script
+bash scripts/deploy-testnet.sh
 ```
+
+#### CI/CD Automated Deployment
+
+The `.github/workflows/contract-deploy.yml` workflow builds all 4 sub-contracts in a matrix, optimizes with wasm-opt, verifies WASM sizes, and deploys each independently. See `app/contract/documentation/SECRETS.md` for required GitHub Secrets (`TESTNET_DEPLOY_KEY`, `TESTNET_ADMIN_KEY`).
 
 ---
 
@@ -420,10 +515,15 @@ The contract enforces 10 core financial invariants (see [`docs/INVARIANTS.md`](d
 ## 🗺️ Roadmap
 
 ### Phase 1 — Foundation ✅
-- Monorepo setup and CI/CD pipelines
-- Soroban escrow contract (deposit, withdraw, refund, dispute)
-- Fee routing with per-asset overrides
-- Privacy levels and stealth address deposits
+- Monorepo setup with Turborepo + pnpm
+- CI/CD pipelines (GitHub Actions: backend, frontend, contract, deploy, CD)
+- ✅ **Modular Soroban contracts** — 4 sub-contracts (escrow 84KB, governance 85KB, stealth 55KB, fee 47KB)
+- ✅ **Testnet deployment** — all 4 contracts verified on-chain (Protocol 27)
+- Escrow: deposit, withdraw, refund, dispute, partial payment, batch ops
+- Governance: multisig proposals, signer management, admin roles, upgrade gating
+- Fee router: per-asset fee config, oracle integration, collector rotation
+- Stealth: stealth address deposits with ephemeral key registration
+- Privacy levels and privacy-aware escrow views
 - Backend API (NestJS + Supabase)
 
 ### Phase 2 — Academy Core 🚧
