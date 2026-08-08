@@ -1,9 +1,10 @@
-import { IsString, IsNumber, IsOptional, IsArray, IsEnum, Min, Max } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsArray, IsEnum, MaxLength, Min, Max } from 'class-validator';
 import { GradingResultStatus } from '../interfaces/grading-result-status.enum';
 import { RubricEntry } from '../interfaces/grading-result.interface';
 
 export class SaveGradingResultDto {
   @IsString()
+  @MaxLength(128)
   graderId: string;
 
   @IsEnum(GradingResultStatus)
@@ -18,10 +19,12 @@ export class SaveGradingResultDto {
   maxScore: number;
 
   @IsString()
+  @MaxLength(16384)
   feedback: string;
 
   @IsOptional()
   @IsString()
+  @MaxLength(16384)
   privateNotes?: string;
 
   @IsOptional()
