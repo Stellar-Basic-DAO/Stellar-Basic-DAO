@@ -1,7 +1,8 @@
-import { IsString, IsOptional, IsObject } from 'class-validator';
+import { IsString, IsOptional, IsObject, MaxLength } from 'class-validator';
 
 export class CreateChatRequestDto {
   @IsString()
+  @MaxLength(16384)
   message: string;
 
   @IsOptional()
@@ -9,5 +10,6 @@ export class CreateChatRequestDto {
   context?: Record<string, any>;
 
   @IsString()
+  @MaxLength(128)
   userId: string;
 }
