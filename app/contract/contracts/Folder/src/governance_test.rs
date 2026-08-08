@@ -114,7 +114,7 @@ mod tests {
         initialize_governance(&env, signers, 1).unwrap();
 
         let valid_until = 1_000_000 + 86_400; // 1 day from now
-        let action = ProposalAction::SetPaused { paused: true };
+        let action = ProposalAction::SetPaused(true);
 
         let proposal_id = create_proposal(&env, signer.clone(), action.clone(), 1u64, valid_until).unwrap();
 
@@ -135,7 +135,7 @@ mod tests {
         let err = create_proposal(
             &env,
             stranger,
-            ProposalAction::SetPaused { paused: true },
+            ProposalAction::SetPaused(true),
             1u64,
             valid_until,
         )
@@ -153,7 +153,7 @@ mod tests {
         let err = create_proposal(
             &env,
             signer,
-            ProposalAction::SetPaused { paused: false },
+            ProposalAction::SetPaused(false),
             1u64,
             valid_until,
         )
@@ -171,7 +171,7 @@ mod tests {
         let err = create_proposal(
             &env,
             signer,
-            ProposalAction::SetPaused { paused: false },
+            ProposalAction::SetPaused(false),
             1u64,
             valid_until,
         )
@@ -193,7 +193,7 @@ mod tests {
         let proposal_id = create_proposal(
             &env,
             signer,
-            ProposalAction::SetPaused { paused: true },
+            ProposalAction::SetPaused(true),
             1u64,
             valid_until,
         )
@@ -217,7 +217,7 @@ mod tests {
         let proposal_id = create_proposal(
             &env,
             s1.clone(),
-            ProposalAction::SetPaused { paused: false },
+            ProposalAction::SetPaused(false),
             42u64,
             valid_until,
         )
@@ -245,7 +245,7 @@ mod tests {
 
         let valid_until = 1_000_000 + 86_400;
         let proposal_id = create_proposal(
-            &env, s1.clone(), ProposalAction::SetPaused { paused: true }, 1u64, valid_until,
+            &env, s1.clone(), ProposalAction::SetPaused(true), 1u64, valid_until,
         ).unwrap();
 
         approve_proposal(&env, s2.clone(), proposal_id.clone()).unwrap();
@@ -266,7 +266,7 @@ mod tests {
 
         let valid_until = 1_000_000 + 86_400;
         let proposal_id = create_proposal(
-            &env, s1, ProposalAction::SetPaused { paused: true }, 1u64, valid_until,
+            &env, s1, ProposalAction::SetPaused(true), 1u64, valid_until,
         ).unwrap();
 
         // Only 1 approval, threshold is 3
@@ -288,7 +288,7 @@ mod tests {
 
         let valid_until = 1_000_000 + 86_400;
         let proposal_id = create_proposal(
-            &env, s1.clone(), ProposalAction::SetPaused { paused: false }, 1u64, valid_until,
+            &env, s1.clone(), ProposalAction::SetPaused(false), 1u64, valid_until,
         ).unwrap();
 
         cancel_proposal(&env, s2.clone(), proposal_id.clone()).unwrap();
@@ -306,7 +306,7 @@ mod tests {
 
         let valid_until = 1_000_000 + 86_400;
         let proposal_id = create_proposal(
-            &env, signer, ProposalAction::SetPaused { paused: true }, 1u64, valid_until,
+            &env, signer, ProposalAction::SetPaused(true), 1u64, valid_until,
         ).unwrap();
 
         let err = cancel_proposal(&env, stranger, proposal_id).unwrap_err();

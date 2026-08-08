@@ -50,29 +50,33 @@ pub const TOPIC_GOVERNANCE: &str = "TOPIC_GOVERNANCE";
 // ---------------------------------------------------------------------------
 
 /// All privileged actions that can be proposed and executed through governance.
+///
+/// Variants use tuple-style fields for Soroban SDK `#[contracttype]` compatibility.
+/// SDK v23+ implements SCALE-based codec for enum variants; tuple fields guarantee
+/// deterministic encoding across compiler versions and avoid field-ordering issues.
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ProposalAction {
     /// Toggle the global contract pause state.
-    SetPaused { paused: bool },
+    SetPaused(bool),
     /// Set granular pause flags for specific operations.
-    SetPauseFlags { enable_mask: u64, disable_mask: u64 },
+    SetPauseFlags(u64, u64),
     /// Upgrade the contract WASM to a new hash.
-    UpgradeContract { new_wasm_hash: BytesN<32> },
+    UpgradeContract(BytesN<32>),
     /// Update the global platform fee configuration.
-    SetFeeConfig { fee_bps: u32 },
-    /// Override fee configuration for a specific token.
-    SetPerAssetFee { token: Address, fee_bps: u32, arbiter_bps: u32 },
+    SetFeeConfig(u32),
+    /// Override fee configuration for a specific token (`token`, `fee_bps`, `arbiter_bps`).
+    SetPerAssetFee(Address, u32, u32),
     /// Change the platform wallet address.
-    SetPlatformWallet { wallet: Address },
+    SetPlatformWallet(Address),
     /// Transfer the admin role to a new address.
-    SetAdmin { new_admin: Address },
-    /// Grant a role to a target address.
-    GrantRole { target: Address, role: u32 },
-    /// Revoke a role from a target address.
-    RevokeRole { target: Address, role: u32 },
-    /// Replace the signer set and threshold.
-    UpdateSignerSet { new_signers: Vec<Address>, new_threshold: u32 },
+    SetAdmin(Address),
+    /// Grant a role to a target address (`target`, `role`).
+    GrantRole(Address, u32),
+    /// Revoke a role from a target address (`target`, `role`).
+    RevokeRole(Address, u32),
+    /// Replace the signer set and threshold (`new_signers`, `new_threshold`).
+    UpdateSignerSet(Vec<Address>, u32),
 }
 
 // ---------------------------------------------------------------------------
@@ -262,16 +266,16 @@ pub fn derive_proposal_id(
 /// Extract a stable action tag symbol from a ProposalAction variant.
 pub fn action_tag(action: &ProposalAction) -> &'static str {
     match action {
-        ProposalAction::SetPaused { .. } => "SetPaused",
-        ProposalAction::SetPauseFlags { .. } => "SetPauseFlags",
-        ProposalAction::UpgradeContract { .. } => "UpgradeContract",
-        ProposalAction::SetFeeConfig { .. } => "SetFeeConfig",
-        ProposalAction::SetPerAssetFee { .. } => "SetPerAssetFee",
-        ProposalAction::SetPlatformWallet { .. } => "SetPlatformWallet",
-        ProposalAction::SetAdmin { .. } => "SetAdmin",
-        ProposalAction::GrantRole { .. } => "GrantRole",
-        ProposalAction::RevokeRole { .. } => "RevokeRole",
-        ProposalAction::UpdateSignerSet { .. } => "UpdateSignerSet",
+        ProposalAction::SetPaused(..) => "SetPaused",
+        ProposalAction::SetPauseFlags(..) => "SetPauseFlags",
+        ProposalAction::UpgradeContract(..) => "UpgradeContract",
+        ProposalAction::SetFeeConfig(..) => "SetFeeConfig",
+        ProposalAction::SetPerAssetFee(..) => "SetPerAssetFee",
+        ProposalAction::SetPlatformWallet(..) => "SetPlatformWallet",
+        ProposalAction::SetAdmin(..) => "SetAdmin",
+        ProposalAction::GrantRole(..) => "GrantRole",
+        ProposalAction::RevokeRole(..) => "RevokeRole",
+        ProposalAction::UpdateSignerSet(..) => "UpdateSignerSet",
     }
 }
 
@@ -521,15 +525,15 @@ pub fn cancel_proposal(
 /// operations. It is called atomically inside `execute_proposal()`.
 fn apply_action(env: &Env, action: &ProposalAction) -> Result<(), StellarBasicDAOError> {
     match action {
-        ProposalAction::SetPaused { paused } => {
+        ProposalAction::SetPaused(paused) => {
             crate::storage::set_paused(env, *paused);
             Ok(())
         }
-        ProposalAction::SetPauseFlags { enable_mask, disable_mask } => {
+        ProposalAction::SetPauseFlags(enable_mask, disable_mask) => {
             crate::storage::apply_pause_flags(env, *enable_mask, *disable_mask);
             Ok(())
         }
-        ProposalAction::SetFeeConfig { fee_bps } => {
+        ProposalAction::SetFeeConfig(fee_bps) => {
             use crate::types::FeeConfig;
             let config = FeeConfig {
                 fee_bps: *fee_bps,
@@ -538,34 +542,34 @@ fn apply_action(env: &Env, action: &ProposalAction) -> Result<(), StellarBasicDA
             crate::storage::set_fee_config(env, config);
             Ok(())
         }
-        ProposalAction::SetPlatformWallet { wallet } => {
+        ProposalAction::SetPlatformWallet(wallet) => {
             crate::storage::set_platform_wallet(env, wallet);
             Ok(())
         }
-        ProposalAction::SetAdmin { new_admin } => {
+        ProposalAction::SetAdmin(new_admin) => {
             crate::storage::set_admin(env, new_admin);
             Ok(())
         }
-        ProposalAction::UpdateSignerSet { new_signers, new_threshold } => {
+        ProposalAction::UpdateSignerSet(new_signers, new_threshold) => {
             validate_signer_set(env, new_signers, *new_threshold)?;
             set_signer_set(env, new_signers);
             set_threshold(env, *new_threshold);
             emit_signer_set_updated(env, *new_threshold, new_signers.len());
             Ok(())
         }
-        ProposalAction::GrantRole { target, role } => {
+        ProposalAction::GrantRole(target, role) => {
             use crate::types::Role;
             let r = u32_to_role(*role)?;
             crate::storage::grant_role(env, target, r);
             Ok(())
         }
-        ProposalAction::RevokeRole { target, role } => {
+        ProposalAction::RevokeRole(target, role) => {
             use crate::types::Role;
             let r = u32_to_role(*role)?;
             crate::storage::revoke_role(env, target, r);
             Ok(())
         }
-        ProposalAction::SetPerAssetFee { token, fee_bps, arbiter_bps } => {
+        ProposalAction::SetPerAssetFee(token, fee_bps, arbiter_bps) => {
             use crate::types::PerAssetFeeConfig;
             let config = PerAssetFeeConfig {
                 fee_bps: *fee_bps,
@@ -578,7 +582,7 @@ fn apply_action(env: &Env, action: &ProposalAction) -> Result<(), StellarBasicDA
             crate::storage::set_per_asset_fee(env, token, config);
             Ok(())
         }
-        ProposalAction::UpgradeContract { new_wasm_hash } => {
+        ProposalAction::UpgradeContract(new_wasm_hash) => {
             // Upgrade is executed after the governance threshold is met.
             // The actual WASM swap happens here.
             env.deployer().update_current_contract_wasm(new_wasm_hash.clone());

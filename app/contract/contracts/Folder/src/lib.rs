@@ -23,6 +23,8 @@ mod fee_test;
 #[cfg(test)]
 mod fuzz_test;
 mod governance;
+#[cfg(test)]
+mod governance_test;
 mod hook;
 mod metadata;
 #[cfg(test)]
