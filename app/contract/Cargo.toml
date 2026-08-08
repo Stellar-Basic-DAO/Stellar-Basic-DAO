@@ -2,6 +2,11 @@
 resolver = "2"
 members = [
   "contracts/Folder",
+  "shared",
+  "escrow",
+  "governance",
+  "fee",
+  "stealth",
 ]
 
 [workspace.dependencies]
