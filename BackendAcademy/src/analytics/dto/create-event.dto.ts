@@ -1,15 +1,18 @@
-import { IsString, IsOptional, IsObject, IsDateString } from 'class-validator';
+import { IsString, IsOptional, IsObject, IsDateString, MaxLength } from 'class-validator';
 
 export class CreateEventDto {
   @IsString()
+  @MaxLength(128)
   eventType: string;
 
   @IsString()
   @IsOptional()
+  @MaxLength(128)
   userId?: string;
 
   @IsString()
   @IsOptional()
+  @MaxLength(128)
   sessionId?: string;
 
   @IsObject()
@@ -18,9 +21,11 @@ export class CreateEventDto {
 
   @IsString()
   @IsOptional()
+  @MaxLength(64)
   ipAddress?: string;
 
   @IsString()
   @IsOptional()
+  @MaxLength(512)
   userAgent?: string;
 }
