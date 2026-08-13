@@ -11,7 +11,8 @@ This checklist is the release gate for any Stellar Basic DAO deployment change. 
 - [ ] `cargo test upgrade_harness_ -- --nocapture`
 - [ ] `cargo test test_event_schema_catalog_locks_canonical_topics_and_payloads`
 
-If the PR touches an event payload, also run the relevant snapshot test(s) in [contracts/Folder/src/test.rs](../contracts/Folder/src/test.rs) and confirm the payload keys remain locked.
+If the PR touches an event payload, also run the relevant snapshot test(s) in the sub-contract test directories (e.g., `escrow/src/test.rs`, `governance/src/governance_test.rs`) and confirm the payload keys remain locked.  
+  > **Note:** The original monolithic contract tests have been archived on the `legacy` branch — see [`contracts/legacy/DEPRECATED.md`](../contracts/legacy/DEPRECATED.md).
 
 ## 2. Governance requirements
 

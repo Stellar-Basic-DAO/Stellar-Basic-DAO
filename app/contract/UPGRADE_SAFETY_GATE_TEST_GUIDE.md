@@ -411,8 +411,9 @@ fn upgrade_to_current<'a>(env: &'a Env, contract_id: &Address) ->  StellarBasicD
 ### Run All Upgrade Safety Gate Tests
 
 ```bash
-cd app/contract/contracts/Folder
-cargo test upgrade_safety_gate_ -- --nocapture
+# Legacy monolithic contract — run tests from the modular sub-contracts:
+cd app/contract && cargo test upgrade_safety_gate_ -- --nocapture
+# See contracts/legacy/DEPRECATED.md for details.
 ```
 
 **Expected Output**:
@@ -520,8 +521,8 @@ These tests should run in CI/CD pipeline:
 
 ## References
 
-- **Test Code**: `app/contract/contracts/Folder/src/upgrade_test.rs` (lines 660–820)
-- **Implementation**: `app/contract/contracts/Folder/src/admin.rs`, `storage.rs`, `events.rs`
+- **Test Code**: Original in legacy `upgrade_test.rs` — archived on `legacy` branch (see `contracts/legacy/DEPRECATED.md`)
+- **Implementation**: `governance/src/admin.rs`, `shared/src/storage.rs`, `shared/src/events.rs` (modular architecture)
 - **Full Spec**: `app/contract/docs/UPGRADE_SAFETY_GATE.md`
 - **API Reference**: `app/contract/UPGRADE_SAFETY_GATE_QUICK_REFERENCE.md`
 

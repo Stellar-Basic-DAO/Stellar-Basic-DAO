@@ -5,7 +5,8 @@ It complements the [deployment-playbook.md](deployment-playbook.md) and [deploym
 
 ## 1. Governance Model
 
-The contract uses an **M-of-N multisig governance model** implemented in [`governance.rs`](../contracts/Folder/src/governance.rs).
+The contract uses an **M-of-N multisig governance model** implemented in `governance/src/governance.rs` (modular architecture).
+> **Note:** The original monolithic contract has been archived on the `legacy` branch — see [`contracts/legacy/DEPRECATED.md`](../contracts/legacy/DEPRECATED.md).
 
 Key parameters:
 - **Signer Set**: A list of N addresses authorized to vote on proposals
@@ -187,5 +188,5 @@ After any mainnet deployment:
 - [Environment Registry](environment-registry.toml) — Deployment state
 - [Upgrade Safety Gate](../docs/UPGRADE_SAFETY_GATE.md) — Upgrade lifecycle
 - [Events Schema](../docs/events-schema.md) — Event format documentation
-- [Governance Module](../contracts/Folder/src/governance.rs) — On-chain governance implementation
+- [Governance Module](../../governance/src/governance.rs) — On-chain governance implementation (modular architecture)
 - [Smart Contracts Overview](../../docs/SMART-CONTRACTS.md) — Architecture overview

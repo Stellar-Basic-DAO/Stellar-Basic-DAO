@@ -1,6 +1,8 @@
 /**
  * Domain types for Stellar Basic DAO Soroban contract events.
- * These mirror the Rust event structs defined in contracts/Folder/src/events.rs
+ * These mirror the Rust event structs defined in shared/src/events.rs (modular architecture).
+ * The original monolithic contract has been archived on the `legacy` branch.
+ * See contracts/legacy/DEPRECATED.md for details.
  */
 
 export type SorobanEventType =

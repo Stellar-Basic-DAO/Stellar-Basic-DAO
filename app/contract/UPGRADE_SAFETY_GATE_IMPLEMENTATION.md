@@ -216,8 +216,9 @@ All tests use the `GoldenState` fixture (legacy v0 contract pre-populated with e
 **Run Tests**:
 
 ```bash
-cd app/contract/contracts/Folder
-cargo test upgrade_safety_gate_ -- --nocapture
+# Legacy monolithic contract — run tests from the modular sub-contracts instead:
+# cd app/contract && cargo test upgrade_safety_gate_ -- --nocapture
+# See contracts/legacy/DEPRECATED.md for the archived monolithic code.
 ```
 
 **Expected Output**:
