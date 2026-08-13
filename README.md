@@ -171,7 +171,8 @@ Stellar Basic DAO is unique on Stellar: no other project combines Rust education
 |---|---|
 | Docker + Docker Compose | Local and production containers |
 | GitHub Actions | CI/CD pipelines |
-| Vercel | Frontend hosting |
+| Vercel | Frontend hosting — `https://stellar-basic-dao-frontend.vercel.app` |
+| Render | Backend API hosting — `https://stellar-basic-dao-backend.onrender.com` |
 | Cloudflare R2 | Media/asset storage |
 | Turborepo 2 | Monorepo build orchestration |
 | pnpm 10 | Fast, disk-efficient package manager |
@@ -322,7 +323,7 @@ stellar-basic-dao/
 │   │   ├── stealth/           # stellar-dao-stealth (55KB)
 │   │   │   └── src/
 │   │   │       └── stealth.rs     # Stealth address deposit/withdraw
-│   │   ├── contracts/Folder/  # (Legacy) Original monolithic contract
+│   │   ├── contracts/legacy/  # ⚠️ Archived monolithic contract → see `legacy` branch
 │   │   ├── documentation/     # Deployment playbook, secrets, env registry
 │   │   └── scripts/           # deploy-testnet.sh for sub-contracts
 │   │

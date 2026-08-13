@@ -6,7 +6,6 @@ on:
 
 permissions:
   contents: read
-  deployments: write
 
 concurrency:
   group: cd-release
@@ -29,7 +28,7 @@ jobs:
           VERSION_TAG="$(date +'%Y.%m.%d')-${{ github.run_number }}"
           echo "sha=$SHORT_SHA" >> $GITHUB_OUTPUT
           echo "version=$VERSION_TAG" >> $GITHUB_OUTPUT
-          echo "::notice::Deploying version $VERSION_TAG from commit $SHORT_SHA"
+          echo "::notice::Releasing version $VERSION_TAG from commit $SHORT_SHA"
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -58,8 +57,14 @@ jobs:
         run: pnpm audit --audit-level=high
         continue-on-error: true
 
-      - name: Deploy Application
-        run: |
-          echo "Deploying version ${{ steps.meta.outputs.version }} successfully."
-          # This acts as the structural baseline for your cloud's rolling zero-downtime upgrades
-
+      # Deployment is performed by the hosting platforms' Git integrations,
+      # which auto-deploy on every push to `main`:
+      #   - Frontend: Vercel  → https://stellar-basic-dao-frontend.vercel.app
+      #   - Backend:  Render  → https://stellar-basic-dao-backend.onrender.com
+      #
+      # This workflow is intentionally limited to release gating (database
+      # migrations + dependency audit) so it does not duplicate or conflict
+      # with those integrations. To wire up an explicit deploy step instead,
+      # add the required secrets and use `vercel deploy --prod` (frontend) or
+      # the `.github/actions/deploy-app` action (backend), which is currently
+      # an unwired placeholder.
